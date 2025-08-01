@@ -11,6 +11,7 @@ class PacienteObraSocial extends Model
     use HasFactory;
 
     protected $table = 'pacientesobrassociales';
+    public $timestamps = false;
 
     protected $fillable = [
         'fechavigencia',

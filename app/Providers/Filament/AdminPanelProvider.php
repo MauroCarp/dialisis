@@ -44,6 +44,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Dashboard::class,
             ])
             ->widgets([
+                \App\Filament\Widgets\PacienteBuscadorWidget::class,
             ])
             ->middleware([
             EncryptCookies::class,

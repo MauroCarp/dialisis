@@ -6,30 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MedicacionPaciente extends Model
+class PatologiaPaciente extends Model
 {
     use HasFactory;
 
-    protected $table = 'medicacionespacientes';
+    protected $table = 'patologiaspacientes';
     public $timestamps = false;
 
     protected $fillable = [
-        'fechamedicacion',
-        'id_medicacion',
-        'cantidad',
+        'fechapatologia',
+        'id_patologia',
         'id_paciente',
         'observaciones'
     ];
 
     protected $casts = [
-        'fechamedicacion' => 'datetime',
-        'cantidad' => 'decimal:2'
+        'fechapatologia' => 'datetime'
     ];
 
-    // Relación con Medicación
-    public function medicacion(): BelongsTo
+    // Relación con Patología
+    public function patologia(): BelongsTo
     {
-        return $this->belongsTo(Medicacion::class, 'id_medicacion');
+        return $this->belongsTo(Patologia::class, 'id_patologia');
     }
 
     // Relación con Paciente

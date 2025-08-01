@@ -11,6 +11,7 @@ class EstudioPaciente extends Model
     use HasFactory;
 
     protected $table = 'estudiospacientes';
+    public $timestamps = false;
 
     protected $fillable = [
         'fechaestudio',

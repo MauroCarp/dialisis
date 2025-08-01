@@ -22,7 +22,7 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Widgets\PacienteBuscadorWidget::class,
+            // \App\Filament\Widgets\PacienteBuscadorWidget::class,
         ];
     }
 }

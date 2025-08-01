@@ -74,8 +74,7 @@ class Paciente extends Model
     public function obrasSociales(): BelongsToMany
     {
         return $this->belongsToMany(ObraSocial::class, 'pacientesobrassociales', 'id_paciente', 'id_obrasocial')
-                    ->withPivot('fechavigencia', 'nroafiliado')
-                    ->withTimestamps();
+                    ->withPivot('fechavigencia', 'nroafiliado');
     }
 
     // Relación con Accesos Vasculares
@@ -88,15 +87,14 @@ class Paciente extends Model
     public function patologias(): BelongsToMany
     {
         return $this->belongsToMany(Patologia::class, 'patologiaspacientes', 'id_paciente', 'id_patologia')
-                    ->withTimestamps();
+                    ->withPivot('fechapatologia', 'observaciones');
     }
 
     // Relación con Vacunas (muchos a muchos)
     public function vacunas(): BelongsToMany
     {
         return $this->belongsToMany(Vacuna::class, 'vacunaspacientes', 'id_paciente', 'id_vacuna')
-                    ->withPivot('fechavacunacion')
-                    ->withTimestamps();
+                    ->withPivot('fechavacuna', 'observaciones');
     }
 
     // Relación con Análisis Diarios
@@ -151,8 +149,7 @@ class Paciente extends Model
     public function estudios(): BelongsToMany
     {
         return $this->belongsToMany(Estudio::class, 'estudiospacientes', 'id_paciente', 'id_estudio')
-                    ->withPivot('fechaestudio', 'observaciones')
-                    ->withTimestamps();
+                    ->withPivot('fechaestudio', 'observaciones');
     }
 
     // Relación con Antecedentes Personales

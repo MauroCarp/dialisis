@@ -12,6 +12,7 @@ class VacunaPaciente extends Model
     use HasFactory;
 
     protected $table = 'vacunaspacientes';
+    public $timestamps = false;
 
     protected $fillable = [
         'fechavacuna',
