@@ -11,6 +11,8 @@ class AnalisisDiario extends Model
     use HasFactory;
 
     protected $table = 'analisisdiarios';
+    
+    public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
         'fechaanalisis',

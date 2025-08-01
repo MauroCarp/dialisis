@@ -11,6 +11,8 @@ class Internacion extends Model
     use HasFactory;
 
     protected $table = 'internaciones';
+    
+    public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
         'id_paciente',

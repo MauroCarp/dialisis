@@ -11,6 +11,8 @@ class AnalisisSemestral extends Model
     use HasFactory;
 
     protected $table = 'analisissemestrales';
+    
+    public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
         'protocolo',

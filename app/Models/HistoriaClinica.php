@@ -11,6 +11,8 @@ class HistoriaClinica extends Model
     use HasFactory;
 
     protected $table = 'historiasclinicas';
+    
+    public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
         'id_paciente',

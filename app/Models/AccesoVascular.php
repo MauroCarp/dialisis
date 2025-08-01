@@ -11,6 +11,8 @@ class AccesoVascular extends Model
     use HasFactory;
 
     protected $table = 'accesosvasculares';
+    
+    public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
         'fechaacceso',

@@ -11,6 +11,8 @@ class AnalisisMensual extends Model
     use HasFactory;
 
     protected $table = 'analisismensuales';
+    
+    public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
         'protocolo',
