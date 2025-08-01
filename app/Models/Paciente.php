@@ -52,6 +52,24 @@ class Paciente extends Model
         return $this->belongsTo(Localidad::class, 'id_localidad');
     }
 
+    // Relación con Tipo de Documento
+    public function tipoDocumento(): BelongsTo
+    {
+        return $this->belongsTo(TipoDocumento::class, 'id_tipodocumento');
+    }
+
+    // Relación con Causa de Ingreso
+    public function causaIngreso(): BelongsTo
+    {
+        return $this->belongsTo(CausaIngreso::class, 'id_causaingreso');
+    }
+
+    // Relación con Causa de Egreso
+    public function causaEgreso(): BelongsTo
+    {
+        return $this->belongsTo(CausaEgreso::class, 'id_causaegreso');
+    }
+
     // Relación con Obras Sociales (muchos a muchos a través de tabla pivote)
     public function obrasSociales(): BelongsToMany
     {
@@ -79,5 +97,85 @@ class Paciente extends Model
         return $this->belongsToMany(Vacuna::class, 'vacunaspacientes', 'id_paciente', 'id_vacuna')
                     ->withPivot('fechavacunacion')
                     ->withTimestamps();
+    }
+
+    // Relación con Análisis Diarios
+    public function analisisDiarios(): HasMany
+    {
+        return $this->hasMany(AnalisisDiario::class, 'id_paciente');
+    }
+
+    // Relación con Análisis Mensuales
+    public function analisisMensuales(): HasMany
+    {
+        return $this->hasMany(AnalisisMensual::class, 'id_paciente');
+    }
+
+    // Relación con Análisis Trimestrales
+    public function analisisTrimestrales(): HasMany
+    {
+        return $this->hasMany(AnalisisTrimestral::class, 'id_paciente');
+    }
+
+    // Relación con Análisis Semestrales
+    public function analisisSemestrales(): HasMany
+    {
+        return $this->hasMany(AnalisisSemestral::class, 'id_paciente');
+    }
+
+    // Relación con Historias Clínicas
+    public function historiasClinicas(): HasMany
+    {
+        return $this->hasMany(HistoriaClinica::class, 'id_paciente');
+    }
+
+    // Relación con Historias Clínicas Iniciales
+    public function historiasClinicasIniciales(): HasMany
+    {
+        return $this->hasMany(HistoriaClinicaInicial::class, 'id_paciente');
+    }
+
+    // Relación con Transfusiones
+    public function transfusiones(): HasMany
+    {
+        return $this->hasMany(Transfusion::class, 'id_paciente');
+    }
+
+    // Relación con Internaciones
+    public function internaciones(): HasMany
+    {
+        return $this->hasMany(Internacion::class, 'id_paciente');
+    }
+
+    // Relación muchos a muchos con Estudios
+    public function estudios(): BelongsToMany
+    {
+        return $this->belongsToMany(Estudio::class, 'estudiospacientes', 'id_paciente', 'id_estudio')
+                    ->withPivot('fechaestudio', 'observaciones')
+                    ->withTimestamps();
+    }
+
+    // Relación con Antecedentes Personales
+    public function antecedentesPersonales(): HasMany
+    {
+        return $this->hasMany(AntecedentePersonal::class, 'id_paciente');
+    }
+
+    // Relación con Antecedentes Familiares
+    public function antecedentesFamiliares(): HasMany
+    {
+        return $this->hasMany(AntecedenteFamiliar::class, 'id_paciente');
+    }
+
+    // Relación con Medicaciones a través de tabla pivote
+    public function medicacionesPacientes(): HasMany
+    {
+        return $this->hasMany(MedicacionPaciente::class, 'id_paciente');
+    }
+
+    // Relación con Vacunas a través de tabla pivote
+    public function vacunasPacientes(): HasMany
+    {
+        return $this->hasMany(VacunaPaciente::class, 'id_paciente');
     }
 }

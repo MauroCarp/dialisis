@@ -36,9 +36,9 @@ class AccesoVascular extends Model
         return $this->belongsTo(TipoAccesoVascular::class, 'id_tipoacceso');
     }
 
-    // Relación con Cirujano (Usuario)
+    // Relación con Cirujano
     public function cirujano(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_cirujano');
+        return $this->belongsTo(Cirujano::class, 'id_cirujano');
     }
 }
