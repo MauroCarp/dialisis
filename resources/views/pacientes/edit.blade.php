@@ -20,8 +20,8 @@
                             {{ $paciente->nombre }} {{ $paciente->apellido }}
                         </p>
                     </div>
-                    <a href="/admin" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                        Volver al Admin
+                    <a href="{{ route('pacientes.show', $paciente) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        Volver
                     </a>
                 </div>
             </div>

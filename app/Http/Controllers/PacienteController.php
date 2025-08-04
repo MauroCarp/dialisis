@@ -9,6 +9,25 @@ use Illuminate\View\View;
 class PacienteController extends Controller
 {
     /**
+     * Display the specified paciente.
+     */
+    public function show(Paciente $paciente): View
+    {
+        // Cargar las relaciones necesarias
+        $paciente->load([
+            'localidad.provincia',
+            'tipoDocumento',
+            'obrasSociales',
+            'accesosVasculares.tipoAccesoVascular',
+            'historiasClinicas' => function($query) {
+                $query->orderBy('fechahistoriaclinica', 'desc')->limit(10);
+            }
+        ]);
+
+        return view('pacientes.show', compact('paciente'));
+    }
+
+    /**
      * Show the form for editing the specified paciente.
      */
     public function edit(Paciente $paciente): View

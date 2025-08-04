@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PacienteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +18,7 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 
-Route::get('/pacientes/{paciente}/edit', [\App\Http\Controllers\PacienteController::class, 'edit'])->name('pacientes.edit');
-Route::put('/pacientes/{paciente}', [\App\Http\Controllers\PacienteController::class, 'update'])->name('pacientes.update');
+Route::get('/pacientes/{paciente}', [PacienteController::class, 'show'])->name('pacientes.show');
+Route::get('/pacientes/{paciente}/edit', [PacienteController::class, 'edit'])->name('pacientes.edit');
+Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update');
+Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update');
