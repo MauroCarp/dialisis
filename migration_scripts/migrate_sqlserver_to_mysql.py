@@ -29,7 +29,7 @@ logging.basicConfig(
 
 # Configuración de conexiones
 SQL_SERVER_CONFIG = {
-    'server': 'localhost',  # Cambia por tu servidor SQL Server
+    'server': 'localhost\\SQLEXPRESS',  # Cambiado para SQL Server Express
     'database': 'Hemodialisis',
     'username': '',  # Tu usuario SQL Server (o usa Windows Authentication)
     'password': '',  # Tu contraseña SQL Server
