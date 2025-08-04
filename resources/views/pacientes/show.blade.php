@@ -166,11 +166,11 @@
                             <!-- Obras Sociales integradas en la información médica -->
                             @if($paciente->obrasSociales && $paciente->obrasSociales->count() > 0)
                                 <div class="col-span-3 border-t pt-4">
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Obras Sociales</h3>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Obra Social</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         @foreach($paciente->obrasSociales as $obra)
                                             <div class="border border-gray-200 rounded-lg p-3">
-                                                <h4 class="font-medium text-gray-900">{{ $obra->nombre }}</h4>
+                                                <h4 class="font-medium text-gray-900">{{ $obra->abreviatura }}</h4>
                                                 @if($obra->pivot && $obra->pivot->nroafiliado)
                                                     <p class="text-sm text-gray-600">
                                                         Nro. Afiliado: {{ $obra->pivot->nroafiliado }}
@@ -230,12 +230,20 @@
             
             @if($historias && $historias->count() > 0)
                 <div class="bg-white shadow rounded-lg p-6 mt-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                        Historias Clínicas Recientes
-                        @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
-                            <span class="text-sm text-gray-500">(Consultorio)</span>
-                        @endif
-                    </h2>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            Historias Clínicas Recientes
+                            @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
+                                <span class="text-sm text-gray-500">(Consultorio)</span>
+                            @endif
+                        </h2>
+                        <a href="{{ isset($esPacienteConsultorio) && $esPacienteConsultorio 
+                                    ? route('historias-clinicas-consultorio.create', $paciente->id) 
+                                    : route('historias-clinicas.create', $paciente->id) }}"
+                           style="background-color:#009999" class="hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Nueva Historia Clínica
+                        </a>
+                    </div>
                     <div class="space-y-4">
                         @foreach($historias as $historia)
                             <div class="border border-gray-200 rounded-lg p-4">
