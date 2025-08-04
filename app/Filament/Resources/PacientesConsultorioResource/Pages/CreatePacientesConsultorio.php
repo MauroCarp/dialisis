@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePacientesConsultorio extends CreateRecord
 {
     protected static string $resource = PacientesConsultorioResource::class;
+
+    public function getTitle(): string
+    {
+        return 'Nuevo Paciente Consultorio';
+    }
 }

@@ -13,7 +13,12 @@ class ListPacientesConsultorios extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label('Nuevo Paciente Consultorio'),
         ];
+    }
+    protected function getCreateActionLabel(): string
+    {
+        return 'Nuevo Paciente Consultorio';
     }
 }
