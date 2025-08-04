@@ -98,6 +98,19 @@ class LimpiarDatosCorruptos extends Command
                 $this->error("Debes especificar --columna o usar --todas-las-columnas");
                 return 1;
             }
+        } elseif ($tabla === 'pacientesconsultorioobrassociales') {
+            if ($todasLasColumnas) {
+                $columnas = ['nroafiliado'];
+                foreach ($columnas as $col) {
+                    $this->info("Procesando columna: {$col}");
+                    $this->limpiarTablaGenerica($tabla, $col, $dryRun);
+                }
+            } elseif ($columna) {
+                $this->limpiarTablaGenerica($tabla, $columna, $dryRun);
+            } else {
+                $this->error("Debes especificar --columna o usar --todas-las-columnas");
+                return 1;
+            }
         } else {
             $this->error("Tabla no soportada: {$tabla}");
             return 1;
