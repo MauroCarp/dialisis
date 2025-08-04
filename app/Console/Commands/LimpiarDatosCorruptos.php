@@ -13,14 +13,14 @@ class LimpiarDatosCorruptos extends Command
      *
      * @var string
      */
-    protected $signature = 'datos:limpiar-corruptos {--tabla=pacientes} {--columna=} {--dry-run : Solo mostrar los cambios sin aplicarlos} {--todas-las-columnas : Procesar todas las columnas de texto de la tabla} {--buscar-en-bd : Buscar el patrón TRIAL en toda la base de datos}';
+    protected $signature = 'datos:limpiar-corruptos {--tabla=pacientes} {--columna=} {--dry-run : Solo mostrar los cambios sin aplicarlos} {--todas-las-columnas : Procesar todas las columnas de texto de la tabla} {--buscar-en-bd : Buscar el patrón TRIAL en toda la base de datos} {--solo-alfabeticos : Limpiar caracteres no alfabéticos de nombres y apellidos}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Limpia los datos corruptos de la migración que contienen el patrón TRIAL. Tablas soportadas: pacientes, pacientesconsultorio, historiasclinicas, historiasclinicasconsultorio';
+    protected $description = 'Limpia los datos corruptos de la migración que contienen el patrón TRIAL y caracteres no alfabéticos en nombres y apellidos. Tablas soportadas: pacientes, pacientesconsultorio, historiasclinicas, historiasclinicasconsultorio';
 
     /**
      * Execute the console command.
@@ -32,9 +32,15 @@ class LimpiarDatosCorruptos extends Command
         $dryRun = $this->option('dry-run');
         $todasLasColumnas = $this->option('todas-las-columnas');
         $buscarEnBd = $this->option('buscar-en-bd');
+        $soloAlfabeticos = $this->option('solo-alfabeticos');
 
         if ($buscarEnBd) {
             $this->buscarPatronEnBaseDatos();
+            return 0;
+        }
+
+        if ($soloAlfabeticos) {
+            $this->limpiarCaracteresNoAlfabeticos($tabla, $dryRun);
             return 0;
         }
 
@@ -250,6 +256,93 @@ class LimpiarDatosCorruptos extends Command
                 $this->error("- Errores: {$errores}");
             }
         }
+    }
+
+    private function limpiarCaracteresNoAlfabeticos(string $tabla, bool $dryRun)
+    {
+        if (!in_array($tabla, ['pacientes', 'pacientesconsultorio'])) {
+            $this->error("La opción --solo-alfabeticos solo está disponible para las tablas 'pacientes' y 'pacientesconsultorio'");
+            return;
+        }
+
+        $this->info("Limpiando caracteres no alfabéticos de nombres y apellidos en la tabla: {$tabla}");
+
+        $columnas = ['nombre', 'apellido'];
+        
+        foreach ($columnas as $columna) {
+            $this->info("\nProcesando columna: {$columna}");
+            
+            // Buscar registros que contengan números o caracteres especiales en nombres/apellidos
+            $registrosConNumeros = DB::table($tabla)
+                ->where($columna, 'REGEXP', '[0-9]')
+                ->orWhere($columna, 'REGEXP', '[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]')
+                ->get();
+            
+            $this->info("Encontrados {$registrosConNumeros->count()} registros con caracteres no alfabéticos en {$columna}");
+            
+            if ($registrosConNumeros->isEmpty()) {
+                $this->info("No se encontraron registros con caracteres no alfabéticos en {$columna}.");
+                continue;
+            }
+
+            $actualizados = 0;
+            $errores = 0;
+
+            foreach ($registrosConNumeros as $registro) {
+                $valorOriginal = $registro->{$columna};
+                $valorLimpio = $this->limpiarSoloAlfabeticos($valorOriginal);
+                
+                if ($valorLimpio !== $valorOriginal) {
+                    if ($dryRun) {
+                        $this->line("ID {$registro->id}: '{$valorOriginal}' → '{$valorLimpio}'");
+                    } else {
+                        try {
+                            DB::table($tabla)
+                                ->where('id', $registro->id)
+                                ->update([$columna => $valorLimpio]);
+                            $this->line("✓ ID {$registro->id}: '{$valorOriginal}' → '{$valorLimpio}'");
+                            $actualizados++;
+                        } catch (\Exception $e) {
+                            $this->error("✗ Error actualizando ID {$registro->id}: " . $e->getMessage());
+                            $errores++;
+                        }
+                    }
+                }
+            }
+
+            if ($dryRun) {
+                $this->info("Modo DRY-RUN para {$columna}: Se mostrarían los cambios pero no se aplicaron.");
+            } else {
+                $this->info("Proceso completado para {$columna}:");
+                $this->info("- Registros actualizados: {$actualizados}");
+                if ($errores > 0) {
+                    $this->error("- Errores: {$errores}");
+                }
+            }
+        }
+
+        if ($dryRun) {
+            $this->info("\nPara aplicar todos los cambios, ejecuta el comando sin --dry-run");
+        }
+    }
+
+    private function limpiarSoloAlfabeticos(string $texto): string
+    {
+        if (empty($texto)) {
+            return $texto;
+        }
+
+        // Eliminar números y caracteres especiales, mantener solo letras, acentos y espacios
+        $textoLimpio = preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/', '', $texto);
+        
+        // Limpiar espacios múltiples y espacios al inicio/final
+        $textoLimpio = preg_replace('/\s+/', ' ', $textoLimpio);
+        $textoLimpio = trim($textoLimpio);
+        
+        // Capitalizar correctamente (primera letra de cada palabra en mayúscula)
+        $textoLimpio = mb_convert_case($textoLimpio, MB_CASE_TITLE, 'UTF-8');
+        
+        return $textoLimpio;
     }
 
     private function limpiarTexto(string $texto): string

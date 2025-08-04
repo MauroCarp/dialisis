@@ -65,6 +65,11 @@
                                     - Nro. Alta: {{ $pacienteSeleccionado['nroalta'] ?? 'N/A' }}
                                 </p>
                             </div>
+                            <a href="{{ route('pacientes.edit', $pacienteSeleccionado['id']) }}"
+                               class="ml-2 text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+                               title="Editar datos del paciente">
+                                <x-heroicon-o-pencil-square class="h-6 w-6" />
+                            </a>
                             <button wire:click="limpiarBusqueda" 
                                     class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                 <x-heroicon-o-x-mark class="h-6 w-6" />
@@ -347,6 +352,8 @@
                                     @endif
                                 </div>
                             @else
+
+                            {{-- /******************************************/**/* --}}
                                 <!-- Pestaña: Historias Clínicas de Consultorio -->
                                 <div x-show="activeTab === 'historias'" class="space-y-6">
                                     @if(isset($pacienteSeleccionado['historias_clinicas_consultorio']) && count($pacienteSeleccionado['historias_clinicas_consultorio']) > 0)
