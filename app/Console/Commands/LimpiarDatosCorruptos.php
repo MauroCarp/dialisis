@@ -20,7 +20,7 @@ class LimpiarDatosCorruptos extends Command
      *
      * @var string
      */
-    protected $description = 'Limpia los datos corruptos de la migración que contienen el patrón TRIAL';
+    protected $description = 'Limpia los datos corruptos de la migración que contienen el patrón TRIAL. Tablas soportadas: pacientes, pacientesconsultorio, historiasclinicas, historiasclinicasconsultorio';
 
     /**
      * Execute the console command.
@@ -42,13 +42,52 @@ class LimpiarDatosCorruptos extends Command
 
         if ($tabla === 'pacientes') {
             if ($todasLasColumnas) {
-                $columnas = ['nombre', 'apellido'];
+                $columnas = ['nombre', 'apellido', 'direccion', 'telefono', 'email'];
                 foreach ($columnas as $col) {
                     $this->info("Procesando columna: {$col}");
                     $this->limpiarPacientes($col, $dryRun);
                 }
             } elseif ($columna) {
                 $this->limpiarPacientes($columna, $dryRun);
+            } else {
+                $this->error("Debes especificar --columna o usar --todas-las-columnas");
+                return 1;
+            }
+        } elseif ($tabla === 'pacientesconsultorio') {
+            if ($todasLasColumnas) {
+                $columnas = ['nombre', 'apellido', 'direccion', 'telefono', 'email', 'derivante'];
+                foreach ($columnas as $col) {
+                    $this->info("Procesando columna: {$col}");
+                    $this->limpiarTablaGenerica($tabla, $col, $dryRun);
+                }
+            } elseif ($columna) {
+                $this->limpiarTablaGenerica($tabla, $columna, $dryRun);
+            } else {
+                $this->error("Debes especificar --columna o usar --todas-las-columnas");
+                return 1;
+            }
+        } elseif ($tabla === 'historiasclinicas') {
+            if ($todasLasColumnas) {
+                $columnas = ['observaciones'];
+                foreach ($columnas as $col) {
+                    $this->info("Procesando columna: {$col}");
+                    $this->limpiarTablaGenerica($tabla, $col, $dryRun);
+                }
+            } elseif ($columna) {
+                $this->limpiarTablaGenerica($tabla, $columna, $dryRun);
+            } else {
+                $this->error("Debes especificar --columna o usar --todas-las-columnas");
+                return 1;
+            }
+        } elseif ($tabla === 'historiasclinicasconsultorio') {
+            if ($todasLasColumnas) {
+                $columnas = ['observaciones'];
+                foreach ($columnas as $col) {
+                    $this->info("Procesando columna: {$col}");
+                    $this->limpiarTablaGenerica($tabla, $col, $dryRun);
+                }
+            } elseif ($columna) {
+                $this->limpiarTablaGenerica($tabla, $columna, $dryRun);
             } else {
                 $this->error("Debes especificar --columna o usar --todas-las-columnas");
                 return 1;
@@ -67,7 +106,10 @@ class LimpiarDatosCorruptos extends Command
         
         // Lista de tablas principales que pueden contener datos de texto
         $tablasABuscar = [
-            'pacientes' => ['nombre', 'apellido'],
+            'pacientes' => ['nombre', 'apellido', 'direccion', 'telefono', 'email','dnicuitcuil','nroalta','gruposanguineo'],
+            'pacientesconsultorio' => ['nombre', 'apellido', 'direccion', 'telefono', 'email', 'derivante','dnicuitcuil','nroalta','gruposanguineo'],
+            'historiasclinicas' => ['observaciones'],
+            'historiasclinicasconsultorio' => ['observaciones'],
             'provincias' => ['nombre'],
             'localidades' => ['nombre'],
             'obrassociales' => ['nombre'],
@@ -107,6 +149,57 @@ class LimpiarDatosCorruptos extends Command
             $this->info("\nResumen de datos corruptos encontrados:");
             foreach ($encontrados as $item) {
                 $this->line("- {$item['tabla']}.{$item['columna']}: {$item['registros']} registros");
+            }
+        }
+    }
+
+    private function limpiarTablaGenerica(string $tabla, string $columna, bool $dryRun)
+    {
+        // Buscar registros con el patrón TRIAL
+        $registrosCorruptos = DB::table($tabla)
+            ->whereRaw("{$columna} LIKE '%TRIAL%'")
+            ->get();
+        
+        $this->info("Encontrados {$registrosCorruptos->count()} registros con datos corruptos");
+        
+        if ($registrosCorruptos->isEmpty()) {
+            $this->info('No se encontraron datos corruptos.');
+            return;
+        }
+
+        $actualizados = 0;
+        $errores = 0;
+
+        foreach ($registrosCorruptos as $registro) {
+            $valorOriginal = $registro->{$columna};
+            $valorLimpio = $this->limpiarTexto($valorOriginal);
+            
+            if ($valorLimpio !== $valorOriginal) {
+                if ($dryRun) {
+                    $this->line("ID {$registro->id}: '{$valorOriginal}' → '{$valorLimpio}'");
+                } else {
+                    try {
+                        DB::table($tabla)
+                            ->where('id', $registro->id)
+                            ->update([$columna => $valorLimpio]);
+                        $this->line("✓ ID {$registro->id}: '{$valorOriginal}' → '{$valorLimpio}'");
+                        $actualizados++;
+                    } catch (\Exception $e) {
+                        $this->error("✗ Error actualizando ID {$registro->id}: " . $e->getMessage());
+                        $errores++;
+                    }
+                }
+            }
+        }
+
+        if ($dryRun) {
+            $this->info("Modo DRY-RUN: Se mostrarían los cambios pero no se aplicaron.");
+            $this->info("Para aplicar los cambios, ejecuta el comando sin --dry-run");
+        } else {
+            $this->info("Proceso completado:");
+            $this->info("- Registros actualizados: {$actualizados}");
+            if ($errores > 0) {
+                $this->error("- Errores: {$errores}");
             }
         }
     }
@@ -164,7 +257,7 @@ class LimpiarDatosCorruptos extends Command
         // Patrón: números-TRIAL-texto_original números
         // Ejemplo: "88-TRIAL-RAUL 226" -> "RAUL"
         
-        // Patrón regex para capturar el texto original
+        // Patrón regex principal para capturar el texto original
         // \d+-TRIAL-(.+?)\s+\d+$
         $patron = '/^\d+-TRIAL-(.+?)\s+\d+$/i';
         
@@ -172,12 +265,25 @@ class LimpiarDatosCorruptos extends Command
             return trim($matches[1]);
         }
         
-        // Si no coincide con el patrón exacto, intentar otros patrones similares
+        // Patrón alternativo: texto termina con TRIAL y números (sin texto después)
+        // Ejemplo: "texto original 88-TRIAL-algo 226" -> "texto original"
+        $patronInverso = '/^(.+?)\s+\d+-TRIAL-.+$/i';
+        
+        if (preg_match($patronInverso, $texto, $matches)) {
+            return trim($matches[1]);
+        }
         
         // Patrón más flexible: cualquier cosa antes de TRIAL, luego el texto, luego números
         $patronFlexible = '/.*TRIAL[_\-\s]+(.*?)\s*\d+$/i';
         
         if (preg_match($patronFlexible, $texto, $matches)) {
+            return trim($matches[1]);
+        }
+        
+        // Patrón muy flexible: buscar TRIAL y extraer lo que viene después hasta números
+        $patronMuyFlexible = '/.*TRIAL[_\-\s]+([^0-9]+)/i';
+        
+        if (preg_match($patronMuyFlexible, $texto, $matches)) {
             return trim($matches[1]);
         }
         
