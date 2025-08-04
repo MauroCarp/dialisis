@@ -1,0 +1,5 @@
+# Dependencias Python para la migración SQL Server -> MySQL
+pyodbc>=4.0.35
+pymysql>=1.0.2
+pandas>=1.5.0
+sqlalchemy>=1.4.0
