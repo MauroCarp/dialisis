@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PacienteConsultorio extends Model
@@ -74,5 +75,12 @@ class PacienteConsultorio extends Model
     public function historiasClinicasConsultorio(): HasMany
     {
         return $this->hasMany(HistoriaClinicaConsultorio::class, 'id_paciente');
+    }
+
+    // Relación con Obras Sociales (muchos a muchos)
+    public function obrasSociales(): BelongsToMany
+    {
+        return $this->belongsToMany(ObraSocial::class, 'pacientesconsultorioobrassociales', 'id_paciente', 'id_obrasocial')
+                    ->withPivot('fechavigencia', 'nroafiliado');
     }
 }
