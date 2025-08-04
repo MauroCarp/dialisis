@@ -23,52 +23,111 @@ class PacientesConsultorioResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->label('Nombre')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Información Personal')
+                    ->schema([
+                        Forms\Components\TextInput::make('nroalta')
+                            ->label('Nro. de Alta')
+                            ->maxLength(20),
 
-                Forms\Components\TextInput::make('apellido')
-                    ->label('Apellido')
-                    ->required()
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('dnicuitcuil')
-                    ->label('DNI/CUIT/CUIL')
-                    ->required()
-                    ->maxLength(20),
-
-                Forms\Components\DatePicker::make('fecha_nacimiento')
-                    ->label('Fecha de Nacimiento'),
-
-                Forms\Components\TextInput::make('telefono')
-                    ->label('Teléfono')
-                    ->maxLength(20),
-
-                Forms\Components\TextInput::make('email')
-                    ->label('Email')
-                    ->email()
-                    ->maxLength(255),
-
-                Forms\Components\Textarea::make('direccion')
-                    ->label('Dirección')
-                    ->maxLength(500),
-
-                Forms\Components\Select::make('obras_sociales')
-                    ->label('Obra Social')
-                    ->relationship('obrasSociales', 'abreviatura') // Ensure this matches the relationship method name in your model
-                    ->preload() // This will load all options for the select
-                    ->searchable()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('abreviatura')
-                            ->label('Abreviatura')
-                            ->required()
-                            ->maxLength(50),
-                        Forms\Components\TextInput::make('descripcion')
-                            ->label('Descripción')
+                        Forms\Components\TextInput::make('nombre')
+                            ->label('Nombre')
                             ->required()
                             ->maxLength(255),
-                    ]),
+
+                        Forms\Components\TextInput::make('apellido')
+                            ->label('Apellido')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\DatePicker::make('fechanacimiento')
+                            ->label('Fecha de Nacimiento'),
+                        Forms\Components\Select::make('id_tipodocumento')
+                            ->label('Tipo de Documento')
+                            ->relationship('tipoDocumento', 'descripcion')
+                            ->required()
+                            ->preload()
+                            ->searchable(),
+                        Forms\Components\TextInput::make('dnicuitcuil')
+                            ->label('DNI/CUIT/CUIL')
+                            ->required()
+                            ->maxLength(20),
+                        
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\TextInput::make('telefono')
+                                    ->label('Teléfono')
+                                    ->maxLength(20),
+
+                                Forms\Components\TextInput::make('email')
+                                    ->label('Email')
+                                    ->email()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('direccion')
+                                    ->label('Dirección')
+                                    ->maxLength(100),
+
+                                Forms\Components\Select::make('id_localidad')
+                                    ->label('Localidad')
+                                    ->relationship('localidad', 'nombre')
+                                    ->required()
+                                    ->preload()
+                                    ->searchable(),
+                            ]),
+                    ])->columns(3),
+
+                Forms\Components\Section::make('Información Médica')
+                    ->schema([
+                        Forms\Components\DatePicker::make('fechaingreso')
+                            ->label('Fecha de Ingreso'),
+
+                        Forms\Components\Select::make('id_causaIngreso')
+                            ->label('Causa de Ingreso')
+                            ->relationship('causaIngreso', 'nombre')
+                            ->preload()
+                            ->searchable(),
+                        Forms\Components\TextInput::make('derivante')
+                            ->label('Derivante')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('pesoseco')
+                            ->label('Peso Seco')
+                            ->numeric(),
+                        Forms\Components\TextInput::make('talla')
+                            ->label('Talla')
+                            ->numeric(),
+                            
+                        Forms\Components\Select::make('gruposanguineo')
+                            ->label('Grupo Sanguíneo')
+                            ->options([
+                                'A+' => 'A+',
+                                'A-' => 'A-',
+                                'B+' => 'B+',
+                                'B-' => 'B-',
+                                'AB+' => 'AB+',
+                                'AB-' => 'AB-',
+                                'O+' => 'O+',
+                                'O-' => 'O-',
+                            ])
+                            ->required(),
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\Toggle::make('fumador')
+                                    ->label('Fumador'),
+
+                                Forms\Components\Toggle::make('insulinodependiente')
+                                    ->label('Insulinodependiente'),
+
+                                Forms\Components\DatePicker::make('fechaegreso')
+                                    ->label('Fecha de Egreso'),
+
+                                Forms\Components\Select::make('id_causaegreso')
+                                    ->label('Causa de Egreso')
+                                    ->relationship('causaEgreso', 'nombre')
+                                    ->preload()
+                                    ->searchable(),
+                            ]),
+
+                        
+                    ])->columns(3),
 
                 // Agrega aquí otros campos y relaciones según tu modelo
             ]);
