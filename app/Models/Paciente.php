@@ -13,6 +13,7 @@ class Paciente extends Model
     use HasFactory;
 
     protected $table = 'pacientes';
+    public $timestamps = false;
 
     protected $fillable = [
         'nroalta',
