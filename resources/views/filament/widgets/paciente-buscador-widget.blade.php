@@ -203,13 +203,13 @@
                                 <!-- Pestaña: Información Médica -->
                                 <div x-show="activeTab === 'medica'" class="space-y-6">
                                     <!-- Obras Sociales -->
-                                    @if(isset($pacienteSeleccionado['obras_sociales']) && count($pacienteSeleccionado['obras_sociales']) > 0)
+                                    @if(isset($pacienteSeleccionado['obrasSociales']) && count($pacienteSeleccionado['obrasSociales']) > 0)
                                         <div>
-                                            <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Obras Sociales</h4>
+                                            <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Obra Social</h4>
                                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                @foreach($pacienteSeleccionado['obras_sociales'] as $obra)
+                                                @foreach($pacienteSeleccionado['obrasSociales'] as $obra)
                                                     <div class="border border-gray-200 rounded-lg p-3 dark:border-gray-700">
-                                                        <p class="font-medium">{{ $obra['descripcion'] }}</p>
+                                                        <p class="font-medium">{{ $obra['abreviatura'] }}</p>
                                                         <p class="text-sm text-gray-600 dark:text-gray-400">
                                                             Nro. Afiliado: {{ $obra['pivot']['nroafiliado'] ?? 'N/A' }}
                                                         </p>
@@ -220,15 +220,85 @@
                                     @endif
 
                                     <!-- Accesos Vasculares -->
-                                    @if(isset($pacienteSeleccionado['accesos_vasculares']) && count($pacienteSeleccionado['accesos_vasculares']) > 0)
+                                    @if(isset($pacienteSeleccionado['accesosVasculares']) && count($pacienteSeleccionado['accesosVasculares']) > 0)
                                         <div>
-                                            <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Accesos Vasculares</h4>
+                                            <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center justify-between">
+                                                Accesos Vasculares
+                                                <button 
+                                                    x-data 
+                                                    @click="$dispatch('open-modal', { id: 'nuevoAccesoVascular' })"
+                                                    type="button"
+                                                    class="inline-flex items-center px-3 py-1.5 border border-primary-600 text-primary-600 bg-white dark:bg-gray-900 dark:border-primary-400 dark:text-primary-400 rounded-md text-sm font-medium hover:bg-primary-50 hover:text-primary-800 dark:hover:bg-primary-900/30 transition"
+                                                >
+                                                    <x-heroicon-o-plus class="w-4 h-4 mr-1" /> Nuevo Acceso
+                                                </button>
+                                            </h4>
+
+                                            <!-- Modal para crear nuevo acceso vascular -->
+                                            <div 
+                                                x-data="{ show: false }"
+                                                x-on:open-modal.window="if ($event.detail.id === 'nuevoAccesoVascular') show = true"
+                                                x-on:close-modal.window="show = false"
+                                                x-show="show"
+                                                style="display: none;"
+                                                class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+                                            >
+                                                <div 
+                                                    @click.away="show = false"
+                                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6"
+                                                >
+                                                    <div class="flex justify-between items-center mb-4">
+                                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Nuevo Acceso Vascular</h3>
+                                                        <button @click="show = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                                            <x-heroicon-o-x-mark class="h-5 w-5" />
+                                                        </button>
+                                                    </div>
+                                                    <form wire:submit.prevent="crearAccesoVascular">
+                                                        <div class="space-y-4">
+                                                            <div>
+                                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Acceso</label>
+                                                                <input type="date" wire:model.defer="nuevoAcceso.fechaacceso" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" required>
+                                                                @error('nuevoAcceso.fechaacceso') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                                            </div>
+                                                            <div>
+                                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Acceso</label>
+                                                                <select wire:model.defer="nuevoAcceso.id_tipoacceso" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" required>
+                                                                    <option value="">Seleccione...</option>
+                                                                    @foreach($tiposAccesosVasculares as $tipo)
+                                                                        <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @error('nuevoAcceso.id_tipoacceso') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                                            </div>
+                                                            <div>
+                                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cirujano</label>
+                                                                <select wire:model.defer="nuevoAcceso.id_cirujano" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                                                    <option value="">Seleccione...</option>
+                                                                    @foreach($cirujanos as $cirujano)
+                                                                        <option value="{{ $cirujano->id }}">{{ $cirujano->nombre }} {{ $cirujano->apellido }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @error('nuevoAcceso.id_cirujano') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                                            </div>
+                                                            <div>
+                                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observaciones</label>
+                                                                <textarea wire:model.defer="nuevoAcceso.observaciones" rows="2" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
+                                                                @error('nuevoAcceso.observaciones') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-6 flex justify-end gap-2">
+                                                            <button type="button" @click="show = false" class="px-4 py-2 rounded-md text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Cancelar</button>
+                                                            <button type="submit" class="px-4 py-2 rounded-md text-sm bg-primary-600 text-white hover:bg-primary-700">Guardar</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
                                             <div class="space-y-3">
-                                                @foreach($pacienteSeleccionado['accesos_vasculares'] as $acceso)
+                                                @foreach($pacienteSeleccionado['accesosVasculares'] as $acceso)
                                                     <div class="border border-gray-200 rounded-lg p-3 dark:border-gray-700">
                                                         <div class="flex justify-between items-start">
                                                             <div>
-                                                                <p class="font-medium">{{ $acceso['tipo_acceso_vascular']['nombre'] ?? 'N/A' }}</p>
+                                                                <p class="font-medium">{{ $acceso['tipoAccesoVascular']['nombre'] ?? 'N/A' }}</p>
                                                                 <p class="text-sm text-gray-600 dark:text-gray-400">
                                                                     Fecha: {{ $acceso['fechaacceso'] ? \Carbon\Carbon::parse($acceso['fechaacceso'])->format('d/m/Y') : 'N/A' }}
                                                                 </p>
@@ -251,7 +321,7 @@
 
                                 <!-- Pestaña: Análisis Recientes -->
                                 <div x-show="activeTab === 'analisis'" class="space-y-6">
-                                    @if(isset($pacienteSeleccionado['analisis_diarios']) && count($pacienteSeleccionado['analisis_diarios']) > 0)
+                                    @if(isset($pacienteSeleccionado['analisisDiarios']) && count($pacienteSeleccionado['analisisDiarios']) > 0)
                                         <div>
                                             <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Últimos Análisis Diarios</h4>
                                             <div class="overflow-x-auto">
@@ -266,7 +336,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
-                                                        @foreach($pacienteSeleccionado['analisis_diarios'] as $analisis)
+                                                        @foreach($pacienteSeleccionado['analisisDiarios'] as $analisis)
                                                             <tr>
                                                                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                                                     {{ $analisis['fechaanalisis'] ? \Carbon\Carbon::parse($analisis['fechaanalisis'])->format('d/m/Y') : 'N/A' }}
@@ -291,11 +361,11 @@
                                 <!-- Pestaña: Historial Médico -->
                                 <div x-show="activeTab === 'historial'" class="space-y-6">
                                     <!-- Historias Clínicas -->
-                                    @if(isset($pacienteSeleccionado['historias_clinicas']) && count($pacienteSeleccionado['historias_clinicas']) > 0)
+                                    @if(isset($pacienteSeleccionado['historiasClinicas']) && count($pacienteSeleccionado['historiasClinicas']) > 0)
                                         <div>
                                             <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Historias Clínicas Recientes</h4>
                                             <div class="space-y-3">
-                                                @foreach($pacienteSeleccionado['historias_clinicas'] as $historia)
+                                                @foreach($pacienteSeleccionado['historiasClinicas'] as $historia)
                                                     <div class="border border-gray-200 rounded-lg p-3 dark:border-gray-700">
                                                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                                             {{ $historia['fechahistoriaclinica'] ? \Carbon\Carbon::parse($historia['fechahistoriaclinica'])->format('d/m/Y H:i') : 'N/A' }}
@@ -356,11 +426,11 @@
                             {{-- /******************************************/**/* --}}
                                 <!-- Pestaña: Historias Clínicas de Consultorio -->
                                 <div x-show="activeTab === 'historias'" class="space-y-6">
-                                    @if(isset($pacienteSeleccionado['historias_clinicas_consultorio']) && count($pacienteSeleccionado['historias_clinicas_consultorio']) > 0)
+                                    @if(isset($pacienteSeleccionado['historiasClinicasConsultorio']) && count($pacienteSeleccionado['historiasClinicasConsultorio']) > 0)
                                         <div>
                                             <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Historias Clínicas de Consultorio</h4>
                                             <div class="space-y-3">
-                                                @foreach($pacienteSeleccionado['historias_clinicas_consultorio'] as $historia)
+                                                @foreach($pacienteSeleccionado['historiasClinicasConsultorio'] as $historia)
                                                     <div class="border border-gray-200 rounded-lg p-3 dark:border-gray-700">
                                                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                                             {{ $historia['fechahistoriaclinica'] ? \Carbon\Carbon::parse($historia['fechahistoriaclinica'])->format('d/m/Y H:i') : 'N/A' }}
