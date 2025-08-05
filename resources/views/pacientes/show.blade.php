@@ -196,16 +196,17 @@
             <!-- Accesos Vasculares - Solo para pacientes de diálisis -->
             @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
             <div class="bg-white shadow rounded-lg p-6 mt-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Accesos Vasculares</h2>
-                <!-- Botón para abrir el modal -->
-                <button 
-                    type="button"
-                    onclick="document.getElementById('modal-acceso-vascular').classList.remove('hidden')"
-                    style="background-color:#009999"
-                    class="hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"
-                >
-                    Nuevo Acceso Vascular
-                </button>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900">Accesos Vasculares</h2>
+                    <!-- Botón para abrir el modal -->
+                    <button 
+                        type="button"
+                        onclick="document.getElementById('modal-acceso-vascular').classList.remove('hidden')"
+                        style="background-color:#009999"
+                        class="hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Nuevo Acceso Vascular
+                    </button>
+                </div>
 
                 <!-- Modal -->
                 <div id="modal-acceso-vascular" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
@@ -253,31 +254,49 @@
                         </form>
                     </div>
                 </div>
-                    @if($paciente->accesosVasculares && $paciente->accesosVasculares->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($paciente->accesosVasculares as $acceso)
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h3 class="font-medium text-gray-900">
-                                                {{ $acceso->tipoAccesoVascular->nombre ?? 'Tipo no especificado' }}
-                                            </h3>
-                                            @if($acceso->fechaacceso)
-                                                <p class="text-sm text-gray-600">
-                                                    Fecha: {{ \Carbon\Carbon::parse($acceso->fechaacceso)->format('d/m/Y') }}
-                                                </p>
-                                            @endif
+
+                @if($paciente->accesosVasculares && $paciente->accesosVasculares->count() > 0)
+                        <div x-data="{ open: false }" class="space-y-2">
+                            <button 
+                                @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 focus:outline-none"
+                                type="button"
+                            >
+                                <span>
+                                    <span x-show="!open">Mostrar</span>
+                                    <span x-show="open">Ocultar</span>
+                                    Accesos Vasculares ({{ $paciente->accesosVasculares->count() }})
+                                </span>
+                                <svg x-show="!open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg x-show="open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                            </button>
+                            <div x-show="open" class="space-y-4" x-transition>
+                                @foreach($paciente->accesosVasculares as $acceso)
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h3 class="font-medium text-gray-900">
+                                                    {{ $acceso->tipoAccesoVascular->nombre ?? 'Tipo no especificado' }}
+                                                </h3>
+                                                @if($acceso->fechaacceso)
+                                                    <p class="text-sm text-gray-600">
+                                                        Fecha: {{ \Carbon\Carbon::parse($acceso->fechaacceso)->format('d/m/Y') }}
+                                                    </p>
+                                                @endif
+                                            </div>
                                         </div>
+                                        @if($acceso->observaciones)
+                                            <p class="text-sm text-gray-700 mt-2">{{ $acceso->observaciones }}</p>
+                                        @endif
                                     </div>
-                                    @if($acceso->observaciones)
-                                        <p class="text-sm text-gray-700 mt-2">{{ $acceso->observaciones }}</p>
-                                    @endif
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
+                            <!-- Alpine.js CDN for collapse/expand -->
+                            <script src="//unpkg.com/alpinejs" defer></script>
                         </div>
                         @endif
                     </div>
-            @endif
+                @endif
 
             <!-- Historias Clínicas Recientes -->
             @php
@@ -286,7 +305,6 @@
                     : ($paciente->historiasClinicas ?? collect());
             @endphp
             
-            @if($historias && $historias->count() > 0)
                 <div class="bg-white shadow rounded-lg p-6 mt-6">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-semibold text-gray-900">
@@ -302,22 +320,43 @@
                             Nueva Historia Clínica
                         </a>
                     </div>
+            @if($historias && $historias->count() > 0)
+
                     <div class="space-y-4">
-                        @foreach($historias as $historia)
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="font-medium text-gray-900">Historia Clínica</h3>
-                                    @if($historia->fechahistoriaclinica)
-                                        <span class="text-sm text-gray-500">
-                                            {{ \Carbon\Carbon::parse($historia->fechahistoriaclinica)->format('d/m/Y H:i') }}
-                                        </span>
-                                    @endif
-                                </div>
-                                @if($historia->observaciones)
-                                    <p class="text-gray-700">{{ $historia->observaciones }}</p>
-                                @endif
+                        <div x-data="{ open: false }" class="space-y-2">
+                            <button 
+                                @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 focus:outline-none"
+                                type="button"
+                            >
+                                <span>
+                                    <span x-show="!open">Mostrar</span>
+                                    <span x-show="open">Ocultar</span>
+                                    Historias Clínicas ({{ $historias->count() }})
+                                </span>
+                                <svg x-show="!open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg x-show="open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                            </button>
+                            <div x-show="open" class="space-y-4" x-transition>
+                                @foreach($historias as $historia)
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h3 class="font-medium text-gray-900">Historia Clínica</h3>
+                                            @if($historia->fechahistoriaclinica)
+                                                <span class="text-sm text-gray-500">
+                                                    {{ \Carbon\Carbon::parse($historia->fechahistoriaclinica)->format('d/m/Y H:i') }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        @if($historia->observaciones)
+                                            <p class="text-gray-700">{{ $historia->observaciones }}</p>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
+                        <!-- Alpine.js CDN for collapse/expand -->
+                        <script src="//unpkg.com/alpinejs" defer></script>
                     </div>
                 </div>
             @endif

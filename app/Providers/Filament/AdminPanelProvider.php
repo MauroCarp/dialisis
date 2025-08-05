@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/hemodialisis-logo.png'))
             ->path('admin')
             ->login()
-            ->darkMode(false)
+            // ->darkMode(false)
             ->favicon(asset('images/favicon.png'))
             ->colors([
             'primary' => '#009999',

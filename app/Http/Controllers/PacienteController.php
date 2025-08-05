@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use App\Models\PacienteConsultorio;
+use App\Models\TipoAccesoVascular;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -51,7 +52,17 @@ class PacienteController extends Controller
             ]);
         }
 
-        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio'));
+        // Obtener tipos de acceso vascular para el modal
+        $tiposAccesoVascular = TipoAccesoVascular::all();
+        
+        // Debug: verificar que se obtienen los datos
+        if ($tiposAccesoVascular->isEmpty()) {
+            logger('WARNING: No se encontraron tipos de acceso vascular');
+        } else {
+            logger('INFO: Se encontraron ' . $tiposAccesoVascular->count() . ' tipos de acceso vascular');
+        }
+
+        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular'));
     }
 
     /**
