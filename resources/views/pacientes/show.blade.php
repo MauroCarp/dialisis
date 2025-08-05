@@ -192,6 +192,224 @@
 
             </div>
 
+            <!-- Sección de Análisis - Solo para pacientes de diálisis -->
+            @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
+            <div class="bg-white shadow rounded-lg p-6 mt-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Análisis</h2>
+                
+                <!-- Pestañas de Análisis -->
+                <div x-data="{ activeTab: 'diarios' }" class="w-full">
+                    <!-- Navegación de pestañas -->
+                    <div class="flex border-b border-gray-200 mb-6">
+                        <button 
+                            @click="activeTab = 'diarios'"
+                            :class="activeTab === 'diarios' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none"
+                        >
+                            Análisis Diarios ({{ $analisisData['diarios']->count() ?? 0 }})
+                        </button>
+                        <button 
+                            @click="activeTab = 'mensuales'"
+                            :class="activeTab === 'mensuales' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none"
+                        >
+                            Análisis Mensuales ({{ $analisisData['mensuales']->count() ?? 0 }})
+                        </button>
+                        <button 
+                            @click="activeTab = 'trimestrales'"
+                            :class="activeTab === 'trimestrales' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none"
+                        >
+                            Análisis Trimestrales ({{ $analisisData['trimestrales']->count() ?? 0 }})
+                        </button>
+                        <button 
+                            @click="activeTab = 'semestrales'"
+                            :class="activeTab === 'semestrales' ? 'border-teal-500 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none"
+                        >
+                            Análisis Semestrales ({{ $analisisData['semestrales']->count() ?? 0 }})
+                        </button>
+                    </div>
+
+                    <!-- Contenido de las pestañas -->
+                    
+                    <!-- Análisis Diarios -->
+                    <div x-show="activeTab === 'diarios'" x-transition class="space-y-4">
+                        @if(isset($analisisData['diarios']) && $analisisData['diarios']->count() > 0)
+                            @foreach($analisisData['diarios'] as $analisis)
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="font-medium text-gray-900">Análisis Diario</h3>
+                                        @if($analisis->fechaanalisis)
+                                            <span class="text-sm text-gray-500">
+                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                        @if($analisis->pesopre)
+                                            <div>
+                                                <span class="text-gray-500">Peso Pre:</span>
+                                                <p class="font-medium">{{ $analisis->pesopre }} kg</p>
+                                            </div>
+                                        @endif
+                                        @if($analisis->pesopost)
+                                            <div>
+                                                <span class="text-gray-500">Peso Post:</span>
+                                                <p class="font-medium">{{ $analisis->pesopost }} kg</p>
+                                            </div>
+                                        @endif
+                                        @if($analisis->taspre)
+                                            <div>
+                                                <span class="text-gray-500">TAS Pre:</span>
+                                                <p class="font-medium">{{ $analisis->taspre }}</p>
+                                            </div>
+                                        @endif
+                                        @if($analisis->taspos)
+                                            <div>
+                                                <span class="text-gray-500">TAS Post:</span>
+                                                <p class="font-medium">{{ $analisis->taspos }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No hay análisis diarios registrados</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Análisis Mensuales -->
+                    <div x-show="activeTab === 'mensuales'" x-transition class="space-y-4">
+                        @if(isset($analisisData['mensuales']) && $analisisData['mensuales']->count() > 0)
+                            @foreach($analisisData['mensuales'] as $analisis)
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="font-medium text-gray-900">Análisis Mensual</h3>
+                                        @if($analisis->fechaanalisis)
+                                            <span class="text-sm text-gray-500">
+                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('m/Y') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                                        @if(isset($analisis->urea))
+                                            <div>
+                                                <span class="text-gray-500">Urea:</span>
+                                                <p class="font-medium">{{ $analisis->urea }}</p>
+                                            </div>
+                                        @endif
+                                        @if(isset($analisis->creatinina))
+                                            <div>
+                                                <span class="text-gray-500">Creatinina:</span>
+                                                <p class="font-medium">{{ $analisis->creatinina }}</p>
+                                            </div>
+                                        @endif
+                                        @if(isset($analisis->hemoglobina))
+                                            <div>
+                                                <span class="text-gray-500">Hemoglobina:</span>
+                                                <p class="font-medium">{{ $analisis->hemoglobina }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No hay análisis mensuales registrados</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Análisis Trimestrales -->
+                    <div x-show="activeTab === 'trimestrales'" x-transition class="space-y-4">
+                        @if(isset($analisisData['trimestrales']) && $analisisData['trimestrales']->count() > 0)
+                            @foreach($analisisData['trimestrales'] as $analisis)
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="font-medium text-gray-900">Análisis Trimestral</h3>
+                                        @if($analisis->fechaanalisis)
+                                            <span class="text-sm text-gray-500">
+                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('m/Y') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                                        @if(isset($analisis->hepatitisb))
+                                            <div>
+                                                <span class="text-gray-500">Hepatitis B:</span>
+                                                <p class="font-medium">{{ $analisis->hepatitisb ? 'Positivo' : 'Negativo' }}</p>
+                                            </div>
+                                        @endif
+                                        @if(isset($analisis->hepatitisc))
+                                            <div>
+                                                <span class="text-gray-500">Hepatitis C:</span>
+                                                <p class="font-medium">{{ $analisis->hepatitisc ? 'Positivo' : 'Negativo' }}</p>
+                                            </div>
+                                        @endif
+                                        @if(isset($analisis->hiv))
+                                            <div>
+                                                <span class="text-gray-500">HIV:</span>
+                                                <p class="font-medium">{{ $analisis->hiv ? 'Positivo' : 'Negativo' }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No hay análisis trimestrales registrados</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Análisis Semestrales -->
+                    <div x-show="activeTab === 'semestrales'" x-transition class="space-y-4">
+                        @if(isset($analisisData['semestrales']) && $analisisData['semestrales']->count() > 0)
+                            @foreach($analisisData['semestrales'] as $analisis)
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="font-medium text-gray-900">Análisis Semestral</h3>
+                                        @if($analisis->fechaanalisis)
+                                            <span class="text-sm text-gray-500">
+                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('m/Y') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                                        @if(isset($analisis->calcio))
+                                            <div>
+                                                <span class="text-gray-500">Calcio:</span>
+                                                <p class="font-medium">{{ $analisis->calcio }}</p>
+                                            </div>
+                                        @endif
+                                        @if(isset($analisis->fosforo))
+                                            <div>
+                                                <span class="text-gray-500">Fósforo:</span>
+                                                <p class="font-medium">{{ $analisis->fosforo }}</p>
+                                            </div>
+                                        @endif
+                                        @if(isset($analisis->pth))
+                                            <div>
+                                                <span class="text-gray-500">PTH:</span>
+                                                <p class="font-medium">{{ $analisis->pth }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-8 text-gray-500">
+                                <p>No hay análisis semestrales registrados</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
 
             <!-- Accesos Vasculares - Solo para pacientes de diálisis -->
             @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)

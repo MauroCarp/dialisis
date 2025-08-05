@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Paciente;
 use App\Models\PacienteConsultorio;
 use App\Models\TipoAccesoVascular;
+use App\Models\AnalisisDiario;
+use App\Models\AnalisisMensual;
+use App\Models\AnalisisTrimestral;
+use App\Models\AnalisisSemestral;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -55,6 +59,29 @@ class PacienteController extends Controller
         // Obtener tipos de acceso vascular para el modal
         $tiposAccesoVascular = TipoAccesoVascular::all();
         
+        // Obtener análisis del paciente
+        $analisisData = [];
+        if (!$esPacienteConsultorio) {
+            $analisisData = [
+                'diarios' => AnalisisDiario::where('id_paciente', $paciente->id)
+                    ->orderBy('fechaanalisis', 'desc')
+                    ->limit(10)
+                    ->get(),
+                'mensuales' => AnalisisMensual::where('id_paciente', $paciente->id)
+                    ->orderBy('fechaanalisis', 'desc')
+                    ->limit(10)
+                    ->get(),
+                'trimestrales' => AnalisisTrimestral::where('id_paciente', $paciente->id)
+                    ->orderBy('fechaanalisis', 'desc')
+                    ->limit(10)
+                    ->get(),
+                'semestrales' => AnalisisSemestral::where('id_paciente', $paciente->id)
+                    ->orderBy('fechaanalisis', 'desc')
+                    ->limit(10)
+                    ->get()
+            ];
+        }
+        
         // Debug: verificar que se obtienen los datos
         if ($tiposAccesoVascular->isEmpty()) {
             logger('WARNING: No se encontraron tipos de acceso vascular');
@@ -62,7 +89,7 @@ class PacienteController extends Controller
             logger('INFO: Se encontraron ' . $tiposAccesoVascular->count() . ' tipos de acceso vascular');
         }
 
-        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular'));
+        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular', 'analisisData'));
     }
 
     /**
