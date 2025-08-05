@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\HistoriaClinicaController;
 use App\Http\Controllers\HistoriaClinicaConsultorioController;
+use App\Http\Controllers\AccesoVascularController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +32,7 @@ Route::post('/pacientes/{id}/historias-clinicas', [HistoriaClinicaController::cl
 // Rutas para historias clínicas de consultorio
 Route::get('/pacientes/{id}/historias-clinicas-consultorio/create', [HistoriaClinicaConsultorioController::class, 'create'])->name('historias-clinicas-consultorio.create');
 Route::post('/pacientes/{id}/historias-clinicas-consultorio', [HistoriaClinicaConsultorioController::class, 'store'])->name('historias-clinicas-consultorio.store');
+
+// Ruta para crear accesos vasculares
+Route::post('/pacientes/{paciente}/accesos-vasculares', [AccesoVascularController::class, 'store'])
+    ->name('accesos-vasculares.store');

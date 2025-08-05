@@ -23,8 +23,8 @@
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($resultadosBusqueda as $paciente)
-                            <div class="p-4 hover:bg-gray-50 cursor-pointer dark:hover:bg-gray-800 transition-colors"
-                                 wire:click="seleccionarPaciente({{ $paciente['id'] }})">
+                            <a href="{{ route('pacientes.show', $paciente['id']) }}"
+                               class="block p-4 hover:bg-gray-50 cursor-pointer dark:hover:bg-gray-800 transition-colors">
                                 <div class="flex justify-between items-start">
                                     <div>
                                         <p class="font-semibold text-gray-900 dark:text-gray-100">
@@ -44,7 +44,7 @@
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
@@ -156,9 +156,9 @@
                                     </div>
                                 </div>
 
-                                <div class="space-y-4">
+                                <div class="space-y-3">
                                     <h4 class="font-semibold text-gray-900 dark:text-gray-100">Datos Médicos</h4>
-                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div class="grid grid-cols-3 gap-3 text-sm">
                                         <div>
                                             <span class="font-medium text-gray-700 dark:text-gray-300">Peso Seco:</span>
                                             <p class="text-gray-900 dark:text-gray-100">{{ $pacienteSeleccionado['pesoseco'] ?? 'N/A' }} kg</p>
@@ -183,6 +183,22 @@
                                                 {{ $pacienteSeleccionado['insulinodependiente'] ? 'Sí' : 'No' }}
                                             </p>
                                         </div>
+
+                                        <div class="col-span-3">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Obra Social:</span>
+                                            <ul class="text-gray-900 dark:text-gray-100 list-disc list-inside">
+                                                
+                                                @foreach($pacienteSeleccionado['obrasSociales'] as $obra)
+                                                    <li>
+                                                        {{ $obra['abreviatura'] ?? $obra['nombre'] ?? 'N/A' }}
+                                                        @if(isset($obra['pivot']['nroafiliado']) && $obra['pivot']['nroafiliado'])
+                                                            - Nro. Afiliado: {{ $obra['pivot']['nroafiliado'] }}
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+
                                         <div>
                                             <span class="font-medium text-gray-700 dark:text-gray-300">Fecha Ingreso:</span>
                                             <p class="text-gray-900 dark:text-gray-100">

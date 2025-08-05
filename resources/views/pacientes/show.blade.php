@@ -21,7 +21,7 @@
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-2">
-                                    Diálisis
+                                    Sala
                                 </span>
                             @endif
                         </h1>
@@ -164,10 +164,10 @@
                             </div>
 
                             <!-- Obras Sociales integradas en la información médica -->
-                            @if($paciente->obrasSociales && $paciente->obrasSociales->count() > 0)
-                                <div class="col-span-3 border-t pt-4">
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Obra Social</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="col-span-3 border-t pt-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Obra Social</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @if($paciente->obrasSociales && $paciente->obrasSociales->count() > 0)
                                         @foreach($paciente->obrasSociales as $obra)
                                             <div class="border border-gray-200 rounded-lg p-3">
                                                 <h4 class="font-medium text-gray-900">{{ $obra->abreviatura }}</h4>
@@ -177,10 +177,12 @@
                                                     </p>
                                                 @endif
                                             </div>
-                                        @endforeach
+                                            @endforeach
+                                    @else
+                                        <p class="text-gray-600">No tiene obras sociales registradas.</p>
+                                    @endif
                                     </div>
                                 </div>
-                            @endif
                             
                         </div>
                         
@@ -193,9 +195,65 @@
 
             <!-- Accesos Vasculares - Solo para pacientes de diálisis -->
             @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
-                @if($paciente->accesosVasculares && $paciente->accesosVasculares->count() > 0)
-                    <div class="bg-white shadow rounded-lg p-6 mt-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Accesos Vasculares</h2>
+            <div class="bg-white shadow rounded-lg p-6 mt-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Accesos Vasculares</h2>
+                <!-- Botón para abrir el modal -->
+                <button 
+                    type="button"
+                    onclick="document.getElementById('modal-acceso-vascular').classList.remove('hidden')"
+                    style="background-color:#009999"
+                    class="hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"
+                >
+                    Nuevo Acceso Vascular
+                </button>
+
+                <!-- Modal -->
+                <div id="modal-acceso-vascular" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+                    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+                        <!-- Botón de cerrar -->
+                        <button 
+                            type="button"
+                            onclick="document.getElementById('modal-acceso-vascular').classList.add('hidden')"
+                            class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                        >&times;</button>
+                        <h3 class="text-lg font-semibold mb-4">Nuevo Acceso Vascular</h3>
+                        <form 
+                            method="POST" 
+                            action="{{ route('accesos-vasculares.store', $paciente->id) }}"
+                        >
+                            @csrf
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Tipo de Acceso</label>
+                                <select name="tipo_acceso_vascular_id" required class="w-full border rounded px-3 py-2">
+                                    <option value="">Seleccione...</option>
+                                    @foreach($tiposAccesoVascular as $tipo)
+                                        <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Fecha</label>
+                                <input type="date" name="fechaacceso" class="w-full border rounded px-3 py-2" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Observaciones</label>
+                                <textarea name="observaciones" class="w-full border rounded px-3 py-2"></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button 
+                                    type="button"
+                                    onclick="document.getElementById('modal-acceso-vascular').classList.add('hidden')"
+                                    class="mr-2 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+                                >Cancelar</button>
+                                <button 
+                                    type="submit"
+                                    class="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white font-bold"
+                                >Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                    @if($paciente->accesosVasculares && $paciente->accesosVasculares->count() > 0)
                         <div class="space-y-4">
                             @foreach($paciente->accesosVasculares as $acceso)
                                 <div class="border border-gray-200 rounded-lg p-4">
@@ -217,8 +275,8 @@
                                 </div>
                             @endforeach
                         </div>
+                        @endif
                     </div>
-                @endif
             @endif
 
             <!-- Historias Clínicas Recientes -->

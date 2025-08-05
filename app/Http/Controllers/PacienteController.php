@@ -34,6 +34,7 @@ class PacienteController extends Controller
             $paciente->load([
                 'localidad.provincia',
                 'obrasSociales',
+                'accesosVasculares.tipoAccesoVascular',
                 'historiasClinicasConsultorio' => function($query) {
                     $query->orderBy('fechahistoriaclinica', 'desc')->limit(10);
                 }
