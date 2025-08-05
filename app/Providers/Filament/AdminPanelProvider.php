@@ -45,6 +45,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
+                \App\Filament\Pages\Reportes\PlabaseReport::class,
+                \App\Filament\Pages\Reportes\PlabasePorPacienteReport::class,
             ])
             ->widgets([
                 \App\Filament\Widgets\PacienteBuscadorWidget::class,
@@ -53,11 +55,11 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Gestión de Pacientes')
                     // ->icon('heroicon-o-users')
                     ->collapsed(false),
-                NavigationGroup::make('Administración')
-                    // ->icon('heroicon-o-cog-6-tooth')
-                    ->collapsed(true),
                 NavigationGroup::make('Reportes')
                     // ->icon('heroicon-o-chart-bar')
+                    ->collapsed(true),
+                NavigationGroup::make('Administración')
+                    // ->icon('heroicon-o-cog-6-tooth')
                     ->collapsed(true),
             ])
             ->middleware([
