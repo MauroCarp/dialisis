@@ -2,24 +2,28 @@
 
 return [
 
-    'title' => 'Acceso',
+    'title' => 'Iniciar Sesión',
 
-    'heading' => 'Iniciar Sesión',
+    'heading' => 'Centro de Hemodiálisis - Acceso al Sistema',
 
     'actions' => [
 
         'register' => [
             'before' => 'o',
-            'label' => 'Abrir una cuenta',
+            'label' => 'Crear una cuenta',
         ],
 
         'request_password_reset' => [
-            'label' => '¿Ha olvidado su contraseña?',
+            'label' => '¿Olvidó su contraseña?',
         ],
 
     ],
 
     'form' => [
+
+        'username' => [
+            'label' => 'Nombre de Usuario',
+        ],
 
         'email' => [
             'label' => 'Correo electrónico',
@@ -36,7 +40,7 @@ return [
         'actions' => [
 
             'authenticate' => [
-                'label' => 'Entrar',
+                'label' => 'Iniciar sesión',
             ],
 
         ],
@@ -45,15 +49,15 @@ return [
 
     'messages' => [
 
-        'failed' => 'Estas credenciales no coinciden con nuestros registros.',
+        'failed' => 'Las credenciales no coinciden con nuestros registros.',
 
     ],
 
     'notifications' => [
 
         'throttled' => [
-            'title' => 'Demasiados intentos. Intente de nuevo en :seconds segundos.',
-            'body' => 'Intente de nuevo en :seconds segundos.',
+            'title' => 'Demasiados intentos de acceso',
+            'body' => 'Por favor, intente nuevamente en :seconds segundos.',
         ],
 
     ],

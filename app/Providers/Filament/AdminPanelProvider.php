@@ -31,8 +31,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->brandName('Centro de Hemodialisis')
             ->brandLogo(asset('images/hemodialisis-logo.png'))
+            ->brandLogoHeight('10rem') // Ajusta el valor según el tamaño deseado
             ->path('admin')
-            ->login()
+            ->login(\App\Filament\Pages\Auth\Login::class)
             // ->darkMode(false)
             ->favicon(asset('images/favicon.png'))
             ->colors([
