@@ -67,7 +67,7 @@ class PacienteController extends Controller
         $analisisData = [];
         if (!$esPacienteConsultorio) {
             $analisisData = [
-                'diarios' => AnalisisDiario::where('id_paciente', $paciente->id)
+                'diarios' => AnalisisDiario::with('tipoFiltro')->where('id_paciente', $paciente->id)
                     ->orderBy('fechaanalisis', 'desc')
                     ->limit(10)
                     ->get(),

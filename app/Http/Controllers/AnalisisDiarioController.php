@@ -19,6 +19,8 @@ class AnalisisDiarioController extends Controller
             'taspos' => 'nullable|integer',
             'tadpre' => 'nullable|integer',
             'tadpos' => 'nullable|integer',
+            'relpesosecopesopre' => 'nullable|numeric',
+            'interdialitico' => 'nullable|numeric',
         ]);
 
         $paciente = Paciente::findOrFail($pacienteId);
@@ -33,6 +35,8 @@ class AnalisisDiarioController extends Controller
             'taspos' => $request->taspos,
             'tadpre' => $request->tadpre,
             'tadpos' => $request->tadpos,
+            'relpesosecopesopre' => $request->relpesosecopesopre,
+            'interdialitico' => $request->interdialitico,
         ]);
 
         return redirect()->route('pacientes.show', $paciente->id)
