@@ -17,7 +17,13 @@ class PacientesConsultorioResource extends Resource
 {
     protected static ?string $model = PacienteConsultorio::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+    
+    protected static ?string $navigationGroup = 'Gestión de Pacientes';
+    
+    protected static ?string $navigationLabel = 'Pacientes Consultorio';
+    
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

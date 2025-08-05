@@ -17,7 +17,13 @@ class PacientesResource extends Resource
 {
     protected static ?string $model = Paciente::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-heart';
+    
+    protected static ?string $navigationGroup = 'Gestión de Pacientes';
+    
+    protected static ?string $navigationLabel = 'Pacientes Diálisis';
+    
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

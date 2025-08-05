@@ -20,6 +20,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Contracts\Support\Htmlable;
 use Filament\Enums\ThemeMode;
+use Filament\Navigation\NavigationItem;
+use Illuminate\Support\Facades\Blade;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -47,6 +49,17 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 \App\Filament\Widgets\PacienteBuscadorWidget::class,
             ])
+            ->navigationGroups([
+                NavigationGroup::make('Gestión de Pacientes')
+                    // ->icon('heroicon-o-users')
+                    ->collapsed(false),
+                NavigationGroup::make('Administración')
+                    // ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsed(true),
+                NavigationGroup::make('Reportes')
+                    // ->icon('heroicon-o-chart-bar')
+                    ->collapsed(true),
+            ])
             ->middleware([
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
@@ -62,6 +75,44 @@ class AdminPanelProvider extends PanelProvider
             Authenticate::class,
             ])
             ->topNavigation(true)
+            ->renderHook(
+                'panels::head.end',
+                fn (): string => Blade::render('
+                    <style>
+                        /* Personalización específica del logo SOLO en la barra de navegación */
+                        /* NO afecta al login, que mantiene la configuración de brandLogoHeight */
+                        
+                        /* Para la navegación superior (topbar) - altura específica */
+                        .fi-topbar .fi-logo {
+                            height: 4rem !important;
+                            width: auto !important;
+                            max-width: none !important;
+                        }
+                        
+                        /* Para la navegación lateral (sidebar) - altura específica */
+                        .fi-sidebar-nav .fi-logo {
+                            height: 3rem !important;
+                            width: auto !important;
+                            max-width: none !important;
+                        }
+                        
+                        /* Ajustar el contenedor del topbar si es necesario */
+                        .fi-topbar-item {
+                            height: auto !important;
+                        }
+                        
+                        /* Responsive - ajustar en pantallas pequeñas */
+                        @media (max-width: 768px) {
+                            .fi-topbar .fi-logo {
+                                height: 3rem !important;
+                            }
+                            .fi-sidebar-nav .fi-logo {
+                                height: 2.5rem !important;
+                            }
+                        }
+                    </style>
+                ')
+            )
             ;
 
 
