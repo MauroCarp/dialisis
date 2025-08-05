@@ -5,6 +5,10 @@ use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\HistoriaClinicaController;
 use App\Http\Controllers\HistoriaClinicaConsultorioController;
 use App\Http\Controllers\AccesoVascularController;
+use App\Http\Controllers\AnalisisDiarioController;
+use App\Http\Controllers\AnalisisMensualController;
+use App\Http\Controllers\AnalisisTrimestralController;
+use App\Http\Controllers\AnalisisSemestralController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +40,13 @@ Route::post('/pacientes/{id}/historias-clinicas-consultorio', [HistoriaClinicaCo
 // Ruta para crear accesos vasculares
 Route::post('/pacientes/{paciente}/accesos-vasculares', [AccesoVascularController::class, 'store'])
     ->name('accesos-vasculares.store');
+
+// Rutas para análisis
+Route::post('/pacientes/{paciente}/analisis-diarios', [AnalisisDiarioController::class, 'store'])
+    ->name('analisis-diarios.store');
+Route::post('/pacientes/{paciente}/analisis-mensuales', [AnalisisMensualController::class, 'store'])
+    ->name('analisis-mensuales.store');
+Route::post('/pacientes/{paciente}/analisis-trimestrales', [AnalisisTrimestralController::class, 'store'])
+    ->name('analisis-trimestrales.store');
+Route::post('/pacientes/{paciente}/analisis-semestrales', [AnalisisSemestralController::class, 'store'])
+    ->name('analisis-semestrales.store');

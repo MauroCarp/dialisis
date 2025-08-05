@@ -235,11 +235,71 @@
                     
                     <!-- Análisis Diarios -->
                     <div x-show="activeTab === 'diarios'" x-transition class="space-y-4">
+                        <!-- Formulario para nuevo Análisis Diario (siempre visible arriba de los registros) -->
+                        <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
+                            <h3 class="text-md font-semibold mb-4">Análisis Diario</h3>
+                            <form method="POST" action="{{ route('analisis-diarios.store', $paciente->id) }}">
+                                @csrf
+                                <div class="mb-4 grid grid-cols-5 md:grid-cols-5 gap-4">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Fecha de Análisis</label>
+                                        <input type="date" name="fechaanalisis" class="w-full border rounded px-3 py-2" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Tipo de Filtro</label>
+                                        <select name="id_tipofiltro" required class="w-full border rounded px-3 py-2">
+                                            <option value="">Seleccione...</option>
+                                            @foreach($tiposFiltros as $filtro)
+                                                <option value="{{ $filtro->id }}">{{ $filtro->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Peso Pre (kg)</label>
+                                        <input type="number" step="0.01" name="pesopre" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Peso Post (kg)</label>
+                                        <input type="number" step="0.01" name="pesopost" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Rel. Peso Seco/Peso Pre</label>
+                                        <input type="number" step="0.01" name="relpesosecopesopre" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">TAS Pre</label>
+                                        <input type="number" name="taspre" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">TAS Post</label>
+                                        <input type="number" name="taspos" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">TAD Pre</label>
+                                        <input type="number" name="tadpre" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">TAD Post</label>
+                                        <input type="number" name="tadpos" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Interdiálitico </label>
+                                        <input type="number" step="0.01" name="interdialitico" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    
+                                </div>
+                                <div class="flex justify-end">
+                                    <button 
+                                        type="submit"
+                                        class="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white font-bold"
+                                    >Guardar</button>
+                                </div>
+                            </form>
+                        </div>
                         @if(isset($analisisData['diarios']) && $analisisData['diarios']->count() > 0)
                             @foreach($analisisData['diarios'] as $analisis)
                                 <div class="border border-gray-200 rounded-lg p-4">
                                     <div class="flex justify-between items-start mb-3">
-                                        <h3 class="font-medium text-gray-900">Análisis Diario</h3>
                                         @if($analisis->fechaanalisis)
                                             <span class="text-sm text-gray-500">
                                                 {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
