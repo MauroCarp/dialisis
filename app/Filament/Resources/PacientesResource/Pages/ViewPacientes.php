@@ -4,18 +4,16 @@ namespace App\Filament\Resources\PacientesResource\Pages;
 
 use App\Filament\Resources\PacientesResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListPacientes extends ListRecords
+class ViewPacientes extends ViewRecord
 {
     protected static string $resource = PacientesResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Nuevo Paciente'),
+            Actions\EditAction::make(),
         ];
     }
-
-    
 }

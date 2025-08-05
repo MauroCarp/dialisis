@@ -17,8 +17,5 @@ class ListPacientesConsultorios extends ListRecords
             ->label('Nuevo Paciente Consultorio'),
         ];
     }
-    protected function getCreateActionLabel(): string
-    {
-        return 'Nuevo Paciente Consultorio';
-    }
+
 }

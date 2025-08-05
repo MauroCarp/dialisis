@@ -5,6 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PacientesResource\Pages;
 use App\Filament\Resources\PacientesResource\RelationManagers;
 use App\Models\Paciente;
+use App\Models\Localidad;
+use App\Models\ObraSocial;
+use App\Models\Provincia;
+use App\Models\CausaIngreso;
+use App\Models\CausaEgreso;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,21 +34,304 @@ class PacientesResource extends Resource
     {
         return $form
             ->schema([
-                //
-            ]);
+                Forms\Components\Section::make('Información Personal')
+                    ->schema([
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\TextInput::make('apellido')
+                                    ->label('Apellido')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('nombre')
+                                    ->label('Nombre')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('dnicuitcuil')
+                                    ->label('DNI/CUIT/CUIL')
+                                    ->required()
+                                    ->maxLength(20),
+
+                                Forms\Components\DatePicker::make('fechanacimiento')
+                                    ->label('Fecha de Nacimiento')
+                                    ->displayFormat('d/m/Y'),
+
+                                Forms\Components\TextInput::make('telefono')
+                                    ->label('Teléfono')
+                                    ->maxLength(30),
+
+                                Forms\Components\TextInput::make('email')
+                                    ->label('Email')
+                                    ->email()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('direccion')
+                                    ->label('Dirección')
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('id_localidad')
+                                    ->label('Localidad')
+                                    ->options(function () {
+                                        return Localidad::orderBy('nombre')
+                                            ->pluck('nombre', 'id')
+                                            ->toArray();
+                                    })
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Información Médica')
+                    ->schema([
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\TextInput::make('nroalta')
+                                    ->label('Número de Alta')
+                                    ->numeric()
+                                    ->unique(ignoreRecord: true),
+
+                                Forms\Components\TextInput::make('pesoseco')
+                                    ->label('Peso Seco (kg)')
+                                    ->numeric()
+                                    ->step(0.1),
+
+                                Forms\Components\TextInput::make('talla')
+                                    ->label('Talla (cm)')
+                                    ->numeric()
+                                    ->step(0.1),
+
+                                Forms\Components\Select::make('gruposanguineo')
+                                    ->label('Grupo Sanguíneo')
+                                    ->options([
+                                        'A+' => 'A+',
+                                        'A-' => 'A-',
+                                        'B+' => 'B+',
+                                        'B-' => 'B-',
+                                        'AB+' => 'AB+',
+                                        'AB-' => 'AB-',
+                                        'O+' => 'O+',
+                                        'O-' => 'O-',
+                                    ]),
+
+                                Forms\Components\DatePicker::make('fechaingreso')
+                                    ->label('Fecha de Ingreso')
+                                    ->displayFormat('d/m/Y'),
+
+                                Forms\Components\Select::make('id_causaingreso')
+                                    ->label('Causa de Ingreso')
+                                    ->options(function () {
+                                        return CausaIngreso::orderBy('nombre')
+                                            ->pluck('nombre', 'id')
+                                            ->toArray();
+                                    })
+                                    ->searchable()
+                                    ->preload(),
+
+                                Forms\Components\DatePicker::make('fechaegreso')
+                                    ->label('Fecha de Egreso')
+                                    ->displayFormat('d/m/Y'),
+
+                                Forms\Components\Select::make('id_causaegreso')
+                                    ->label('Causa de Egreso')
+                                    ->options(function () {
+                                        return CausaEgreso::orderBy('nombre')
+                                            ->pluck('nombre', 'id')
+                                            ->toArray();
+                                    })
+                                    ->searchable()
+                                    ->preload(),
+                                
+                                Forms\Components\Toggle::make('fumador')
+                                    ->label('Fumador'),
+
+                                Forms\Components\Toggle::make('insulinodependiente')
+                                    ->label('Insulinodependiente'),
+
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Obras Sociales')
+                    ->schema([
+                        Forms\Components\Repeater::make('obrasSociales')
+                            ->label('Obras Sociales del Paciente')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\Select::make('id')
+                                            ->label('Obra Social')
+                                            ->options(
+                                                ObraSocial::whereNull('fechaBaja')
+                                                    ->orderBy('abreviatura')
+                                                    ->get()
+                                                    ->mapWithKeys(function ($obra) {
+                                                        return [$obra->id => "{$obra->abreviatura} - {$obra->descripcion}"];
+                                                    })
+                                            )
+                                            ->searchable()
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('pivot.nroafiliado')
+                                            ->label('Número de Afiliado')
+                                            ->maxLength(50),
+
+                                        Forms\Components\DatePicker::make('pivot.fechavigencia')
+                                            ->label('Fecha de Vigencia')
+                                            ->displayFormat('d/m/Y'),
+                                    ]),
+                            ])
+                            ->collapsible()
+                            ->itemLabel(function (array $state): ?string {
+                                $obraId = $state['id'] ?? null;
+                                if ($obraId) {
+                                    $obra = ObraSocial::find($obraId);
+                                    return $obra ? $obra->abreviatura : 'Obra Social';
+                                }
+                                return 'Nueva Obra Social';
+                            })
+                            ->addActionLabel('Agregar Obra Social')
+                            ->defaultItems(0),
+                    ]),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['obrasSociales', 'localidad', 'causaIngreso', 'causaEgreso']))
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('nroalta')
+                    ->label('Nro. Alta')
+                    ->sortable()
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('apellido')
+                    ->label('Apellido')
+                    ->searchable()
+                    ->sortable(),
+                    
+                Tables\Columns\TextColumn::make('nombre')
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable(),
+                    
+                Tables\Columns\TextColumn::make('dnicuitcuil')
+                    ->label('DNI')
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('fechanacimiento')
+                    ->label('F. Nacimiento')
+                    ->date('d/m/Y')
+                    ->sortable(),
+                    
+                Tables\Columns\TextColumn::make('telefono')
+                    ->label('Teléfono')
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('localidad.nombre')
+                    ->label('Localidad')
+                    ->sortable()
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('obrasSociales.abreviatura')
+                    ->label('Obra Social')
+                    ->formatStateUsing(function ($record) {
+                        $obrasSociales = $record->obrasSociales;
+                        if ($obrasSociales && $obrasSociales->count() > 0) {
+                            return $obrasSociales->pluck('abreviatura')->join(', ');
+                        }
+                        return 'Sin obra social';
+                    })
+                    ->searchable(),
+                    
+                Tables\Columns\IconColumn::make('fumador')
+                    ->label('Fumador')
+                    ->boolean(),
+                    
+                Tables\Columns\IconColumn::make('insulinodependiente')
+                    ->label('Diabético')
+                    ->boolean(),
+                    
+                Tables\Columns\TextColumn::make('fechaingreso')
+                    ->label('F. Ingreso')
+                    ->date('d/m/Y')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('causaIngreso.nombre')
+                    ->label('Causa Ingreso')
+                    ->sortable()
+                    ->searchable()
+                    ->wrap(),
+
+                Tables\Columns\TextColumn::make('fechaegreso')
+                    ->label('F. Egreso')
+                    ->date('d/m/Y')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('causaEgreso.nombre')
+                    ->label('Causa Egreso')
+                    ->sortable()
+                    ->searchable()
+                    ->wrap(),
             ])
+            ->defaultSort('apellido', 'asc')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('id_localidad')
+                    ->label('Localidad')
+                    ->options(
+                        Localidad::whereNull('fechabaja')
+                            ->orderBy('nombre')
+                            ->pluck('nombre', 'id')
+                    ),
+                    
+                Tables\Filters\Filter::make('con_obra_social')
+                    ->label('Con Obra Social')
+                    ->query(fn (Builder $query): Builder => $query->whereHas('obrasSociales')),
+                    
+                Tables\Filters\Filter::make('sin_obra_social')
+                    ->label('Sin Obra Social')
+                    ->query(fn (Builder $query): Builder => $query->whereDoesntHave('obrasSociales')),
+                    
+                Tables\Filters\TernaryFilter::make('fumador')
+                    ->label('Fumador'),
+                    
+                Tables\Filters\TernaryFilter::make('insulinodependiente')
+                    ->label('Insulinodependiente'),
+                    
+                Tables\Filters\Filter::make('con_numero_alta')
+                    ->label('Con Número de Alta')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('nroalta')),
+
+                Tables\Filters\SelectFilter::make('id_causaingreso')
+                    ->label('Causa de Ingreso')
+                    ->options(
+                        CausaIngreso::whereNull('fechabaja')
+                            ->orderBy('nombre')
+                            ->pluck('nombre', 'id')
+                    ),
+
+                Tables\Filters\SelectFilter::make('id_causaegreso')
+                    ->label('Causa de Egreso')
+                    ->options(
+                        CausaEgreso::whereNull('fechabaja')
+                            ->orderBy('nombre')
+                            ->pluck('nombre', 'id')
+                    ),
+
+                Tables\Filters\Filter::make('pacientes_activos')
+                    ->label('Pacientes Activos')
+                    ->query(fn (Builder $query): Builder => $query->whereNull('fechaegreso')),
+
+                Tables\Filters\Filter::make('pacientes_egresados')
+                    ->label('Pacientes Egresados')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('fechaegreso')),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label('Ver Detalles'),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -64,6 +352,7 @@ class PacientesResource extends Resource
         return [
             'index' => Pages\ListPacientes::route('/'),
             'create' => Pages\CreatePacientes::route('/create'),
+            'view' => Pages\ViewPacientes::route('/{record}'),
             'edit' => Pages\EditPacientes::route('/{record}/edit'),
         ];
     }
