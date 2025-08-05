@@ -18,4 +18,8 @@ class ListPacientesConsultorios extends ListRecords
         ];
     }
 
+        public function getTitle(): string
+    {
+        return ' ';
+    }
 }

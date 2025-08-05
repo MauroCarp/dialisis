@@ -201,10 +201,6 @@ class PacientesResource extends Resource
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['obrasSociales', 'localidad', 'causaIngreso', 'causaEgreso']))
             ->columns([
-                Tables\Columns\TextColumn::make('nroalta')
-                    ->label('Nro. Alta')
-                    ->sortable()
-                    ->searchable(),
                     
                 Tables\Columns\TextColumn::make('apellido')
                     ->label('Apellido')
@@ -219,12 +215,6 @@ class PacientesResource extends Resource
                 Tables\Columns\TextColumn::make('dnicuitcuil')
                     ->label('DNI')
                     ->searchable(),
-                    
-                Tables\Columns\TextColumn::make('fechanacimiento')
-                    ->label('F. Nacimiento')
-                    ->date('d/m/Y')
-                    ->sortable(),
-                    
                 Tables\Columns\TextColumn::make('telefono')
                     ->label('Teléfono')
                     ->searchable(),
@@ -233,103 +223,12 @@ class PacientesResource extends Resource
                     ->label('Localidad')
                     ->sortable()
                     ->searchable(),
-                    
-                Tables\Columns\TextColumn::make('obrasSociales.abreviatura')
-                    ->label('Obra Social')
-                    ->formatStateUsing(function ($record) {
-                        $obrasSociales = $record->obrasSociales;
-                        if ($obrasSociales && $obrasSociales->count() > 0) {
-                            return $obrasSociales->pluck('abreviatura')->join(', ');
-                        }
-                        return 'Sin obra social';
-                    })
-                    ->searchable(),
-                    
-                Tables\Columns\IconColumn::make('fumador')
-                    ->label('Fumador')
-                    ->boolean(),
-                    
-                Tables\Columns\IconColumn::make('insulinodependiente')
-                    ->label('Diabético')
-                    ->boolean(),
-                    
-                Tables\Columns\TextColumn::make('fechaingreso')
-                    ->label('F. Ingreso')
-                    ->date('d/m/Y')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('causaIngreso.nombre')
-                    ->label('Causa Ingreso')
-                    ->sortable()
-                    ->searchable()
-                    ->wrap(),
-
-                Tables\Columns\TextColumn::make('fechaegreso')
-                    ->label('F. Egreso')
-                    ->date('d/m/Y')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('causaEgreso.nombre')
-                    ->label('Causa Egreso')
-                    ->sortable()
-                    ->searchable()
-                    ->wrap(),
             ])
             ->defaultSort('apellido', 'asc')
             ->filters([
-                Tables\Filters\SelectFilter::make('id_localidad')
-                    ->label('Localidad')
-                    ->options(
-                        Localidad::whereNull('fechabaja')
-                            ->orderBy('nombre')
-                            ->pluck('nombre', 'id')
-                    ),
-                    
-                Tables\Filters\Filter::make('con_obra_social')
-                    ->label('Con Obra Social')
-                    ->query(fn (Builder $query): Builder => $query->whereHas('obrasSociales')),
-                    
-                Tables\Filters\Filter::make('sin_obra_social')
-                    ->label('Sin Obra Social')
-                    ->query(fn (Builder $query): Builder => $query->whereDoesntHave('obrasSociales')),
-                    
-                Tables\Filters\TernaryFilter::make('fumador')
-                    ->label('Fumador'),
-                    
-                Tables\Filters\TernaryFilter::make('insulinodependiente')
-                    ->label('Insulinodependiente'),
-                    
-                Tables\Filters\Filter::make('con_numero_alta')
-                    ->label('Con Número de Alta')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('nroalta')),
 
-                Tables\Filters\SelectFilter::make('id_causaingreso')
-                    ->label('Causa de Ingreso')
-                    ->options(
-                        CausaIngreso::whereNull('fechabaja')
-                            ->orderBy('nombre')
-                            ->pluck('nombre', 'id')
-                    ),
-
-                Tables\Filters\SelectFilter::make('id_causaegreso')
-                    ->label('Causa de Egreso')
-                    ->options(
-                        CausaEgreso::whereNull('fechabaja')
-                            ->orderBy('nombre')
-                            ->pluck('nombre', 'id')
-                    ),
-
-                Tables\Filters\Filter::make('pacientes_activos')
-                    ->label('Pacientes Activos')
-                    ->query(fn (Builder $query): Builder => $query->whereNull('fechaegreso')),
-
-                Tables\Filters\Filter::make('pacientes_egresados')
-                    ->label('Pacientes Egresados')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('fechaegreso')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->label('Ver Detalles'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

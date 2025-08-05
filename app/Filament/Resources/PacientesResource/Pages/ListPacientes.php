@@ -17,5 +17,9 @@ class ListPacientes extends ListRecords
         ];
     }
 
+    public function getTitle(): string
+    {
+        return ' ';
+    }
     
 }
