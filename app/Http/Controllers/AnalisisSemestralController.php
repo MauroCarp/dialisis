@@ -12,12 +12,16 @@ class AnalisisSemestralController extends Controller
     {
         $request->validate([
             'fechaanalisis' => 'required|date',
-            'calcio' => 'nullable|numeric',
-            'fosforo' => 'nullable|numeric',
+            'protocolo' => 'nullable|string|max:100',
+            'hbsag' => 'nullable|boolean',
+            'antihbsag' => 'nullable|boolean',
+            'valorantihbsag' => 'nullable|numeric',
+            'antihcv' => 'nullable|boolean',
+            'antihiv' => 'nullable|boolean',
+            'anticore' => 'nullable|boolean',
             'pth' => 'nullable|numeric',
-            'albumina' => 'nullable|numeric',
             'ferritina' => 'nullable|numeric',
-            'saturacion_transferrina' => 'nullable|numeric',
+            'ferremia' => 'nullable|numeric',
         ]);
 
         $paciente = Paciente::findOrFail($pacienteId);
@@ -25,12 +29,16 @@ class AnalisisSemestralController extends Controller
         AnalisisSemestral::create([
             'id_paciente' => $paciente->id,
             'fechaanalisis' => $request->fechaanalisis,
-            'calcio' => $request->calcio,
-            'fosforo' => $request->fosforo,
+            'protocolo' => $request->protocolo,
+            'hbsag' => $request->has('hbsag'),
+            'antihbsag' => $request->has('antihbsag'),
+            'valorantihbsag' => $request->valorantihbsag,
+            'antihcv' => $request->has('antihcv'),
+            'antihiv' => $request->has('antihiv'),
+            'anticore' => $request->has('anticore'),
             'pth' => $request->pth,
-            'albumina' => $request->albumina,
             'ferritina' => $request->ferritina,
-            'saturacion_transferrina' => $request->saturacion_transferrina,
+            'ferremia' => $request->ferremia,
         ]);
 
         return redirect()->route('pacientes.show', $paciente->id)

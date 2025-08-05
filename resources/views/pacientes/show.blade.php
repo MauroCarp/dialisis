@@ -373,128 +373,546 @@
 
                     <!-- Análisis Mensuales -->
                     <div x-show="activeTab === 'mensuales'" x-transition class="space-y-4">
-                        @if(isset($analisisData['mensuales']) && $analisisData['mensuales']->count() > 0)
-                            @foreach($analisisData['mensuales'] as $analisis)
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <h3 class="font-medium text-gray-900">Análisis Mensual</h3>
-                                        @if($analisis->fechaanalisis)
-                                            <span class="text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('m/Y') }}
-                                            </span>
-                                        @endif
+                        <!-- Formulario para nuevo Análisis Mensual -->
+                        <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
+                            <form method="POST" action="{{ route('analisis-mensuales.store', $paciente->id) }}">
+                                @csrf
+                                <div class="mb-4 grid grid-cols-6 md:grid-cols-6 gap-4">
+                                        <input type="hidden" name="fechaanalisis" value="{{ now()->format('Y-m-d H:i:s') }}" class="w-full border rounded px-3 py-2">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Protocolo</label>
+                                        <input type="text" name="protocolo" class="w-full border rounded px-3 py-2">
                                     </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                        @if(isset($analisis->urea))
-                                            <div>
-                                                <span class="text-gray-500">Urea:</span>
-                                                <p class="font-medium">{{ $analisis->urea }}</p>
-                                            </div>
-                                        @endif
-                                        @if(isset($analisis->creatinina))
-                                            <div>
-                                                <span class="text-gray-500">Creatinina:</span>
-                                                <p class="font-medium">{{ $analisis->creatinina }}</p>
-                                            </div>
-                                        @endif
-                                        @if(isset($analisis->hemoglobina))
-                                            <div>
-                                                <span class="text-gray-500">Hemoglobina:</span>
-                                                <p class="font-medium">{{ $analisis->hemoglobina }}</p>
-                                            </div>
-                                        @endif
+                                    <!-- Hematología -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Hemoglobina</label>
+                                        <input type="number" step="0.01" name="hemoglobina" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Hematocrito</label>
+                                        <input type="number" step="0.01" name="hematocrito" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Rto. Blancos</label>
+                                        <input type="number" step="0.01" name="rto_blancos" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Rto. Rojos</label>
+                                        <input type="number" step="0.01" name="rto_rojos" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Rto. Plaquetas</label>
+                                        <input type="number" step="0.01" name="rto_plaquetas" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <!-- Función Renal -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Creatinina</label>
+                                        <input type="number" step="0.01" name="creatinina" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Urea Pre</label>
+                                        <input type="number" step="0.01" name="uremia_pre" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Urea Post</label>
+                                        <input type="number" step="0.01" name="uremia_post" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Urea/Creatinina</label>
+                                        <input type="number" step="0.01" name="urea_creatinina" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <!-- Adecuación de Diálisis -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">URR (RPU)</label>
+                                        <input type="number" step="0.01" name="rpu" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">KT/V Daugiras</label>
+                                        <input type="number" step="0.01" name="ktv_daugiras" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">KT/V Basile</label>
+                                        <input type="number" step="0.01" name="ktv_basile" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">TAC Urea</label>
+                                        <input type="number" step="0.01" name="tac_urea" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <!-- Electrolitos -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Sodio</label>
+                                        <input type="number" step="0.01" name="sodio" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Potasio</label>
+                                        <input type="number" step="0.01" name="potasio" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Calcemia</label>
+                                        <input type="number" step="0.01" name="calcemia" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Fosfatemia</label>
+                                        <input type="number" step="0.01" name="fosfatemia" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <!-- Función Hepática -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">GPT</label>
+                                        <input type="number" step="0.01" name="gpt" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">GOT</label>
+                                        <input type="number" step="0.01" name="got" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Fosfatasa Alcalina</label>
+                                        <input type="number" step="0.01" name="fosfatasa_alcalina" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <!-- Inflamación -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">PCR</label>
+                                        <input type="number" step="0.01" name="pcr" class="w-full border rounded px-3 py-2">
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="text-center py-8 text-gray-500">
-                                <p>No hay análisis mensuales registrados</p>
+                                <div class="flex justify-end">
+                                    <button 
+                                        type="submit"
+                                        class="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white font-bold"
+                                    >Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div x-data="{ open: false }" class="space-y-2">
+                            <button 
+                                @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 focus:outline-none"
+                                type="button"
+                            >
+                                <span>
+                                    <span x-show="!open">Mostrar</span>
+                                    <span x-show="open">Ocultar</span>
+                                    Análisis Mensuales ({{ $analisisData['mensuales']->count() }})
+                                </span>
+                                <svg x-show="!open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg x-show="open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                            </button>
+                            <div x-show="open" class="space-y-4" x-transition>
+                                @if(isset($analisisData['mensuales']) && $analisisData['mensuales']->count() > 0)
+                                    @foreach($analisisData['mensuales'] as $analisis)
+                                        <div class="border border-gray-200 rounded-lg p-4">
+                                            <div class="flex justify-between items-start mb-3">
+                                                @if($analisis->fechaanalisis)
+                                                    <span class="text-sm text-gray-500">
+                                                        {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
+                                                    </span>
+                                                @endif
+                                                @if($analisis->protocolo)
+                                                    <span class="text-sm font-medium text-gray-700">
+                                                        Protocolo: {{ $analisis->protocolo }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            
+                                            <!-- Hematología -->
+                                            <div class="mb-4">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Hematología</h5>
+                                                <div class="grid grid-cols-3 md:grid-cols-5 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">Hemoglobina:</span>
+                                                        <p class="font-medium">{{ $analisis->hemoglobina ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Hematocrito:</span>
+                                                        <p class="font-medium">{{ $analisis->hematocrito ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Rto. Blancos:</span>
+                                                        <p class="font-medium">{{ $analisis->rto_blancos ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Rto. Rojos:</span>
+                                                        <p class="font-medium">{{ $analisis->rto_rojos ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Rto. Plaquetas:</span>
+                                                        <p class="font-medium">{{ $analisis->rto_plaquetas ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Función Renal -->
+                                            <div class="mb-4">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Función Renal</h5>
+                                                <div class="grid grid-cols-3 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">Creatinina:</span>
+                                                        <p class="font-medium">{{ $analisis->creatinina ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Urea Pre:</span>
+                                                        <p class="font-medium">{{ $analisis->uremia_pre ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Urea Post:</span>
+                                                        <p class="font-medium">{{ $analisis->uremia_post ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Urea/Creatinina:</span>
+                                                        <p class="font-medium">{{ $analisis->urea_creatinina ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Adecuación de Diálisis -->
+                                            <div class="mb-4">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Adecuación de Diálisis</h5>
+                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">URR (RPU):</span>
+                                                        <p class="font-medium">{{ $analisis->rpu ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">KT/V Daugiras:</span>
+                                                        <p class="font-medium">{{ $analisis->ktv_daugiras ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">KT/V Basile:</span>
+                                                        <p class="font-medium">{{ $analisis->ktv_basile ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">TAC Urea:</span>
+                                                        <p class="font-medium">{{ $analisis->tac_urea ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Electrolitos -->
+                                            <div class="mb-4">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Electrolitos</h5>
+                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">Sodio:</span>
+                                                        <p class="font-medium">{{ $analisis->sodio ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Potasio:</span>
+                                                        <p class="font-medium">{{ $analisis->potasio ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Calcemia:</span>
+                                                        <p class="font-medium">{{ $analisis->calcemia ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Fosfatemia:</span>
+                                                        <p class="font-medium">{{ $analisis->fosfatemia ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Función Hepática e Inflamación -->
+                                            <div class="mb-2">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Función Hepática e Inflamación</h5>
+                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">GPT:</span>
+                                                        <p class="font-medium">{{ $analisis->gpt ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">GOT:</span>
+                                                        <p class="font-medium">{{ $analisis->got ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Fosfatasa Alcalina:</span>
+                                                        <p class="font-medium">{{ $analisis->fosfatasa_alcalina ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">PCR:</span>
+                                                        <p class="font-medium">{{ $analisis->pcr ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-center py-8 text-gray-500">
+                                        <p>No hay análisis mensuales registrados</p>
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </div>
 
                     <!-- Análisis Trimestrales -->
                     <div x-show="activeTab === 'trimestrales'" x-transition class="space-y-4">
-                        @if(isset($analisisData['trimestrales']) && $analisisData['trimestrales']->count() > 0)
-                            @foreach($analisisData['trimestrales'] as $analisis)
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <h3 class="font-medium text-gray-900">Análisis Trimestral</h3>
-                                        @if($analisis->fechaanalisis)
-                                            <span class="text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('m/Y') }}
-                                            </span>
-                                        @endif
+                        <!-- Formulario para nuevo Análisis Trimestral -->
+                        <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
+                            <form method="POST" action="{{ route('analisis-trimestrales.store', $paciente->id) }}">
+                                @csrf
+                                <div class="mb-4 grid grid-cols-4 md:grid-cols-4 gap-4">
+                                    <input type="hidden" name="fechaanalisis" value="{{ now()->format('Y-m-d H:i:s') }}" class="w-full border rounded px-3 py-2">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Protocolo</label>
+                                        <input type="text" name="protocolo" class="w-full border rounded px-3 py-2">
                                     </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                        @if(isset($analisis->hepatitisb))
-                                            <div>
-                                                <span class="text-gray-500">Hepatitis B:</span>
-                                                <p class="font-medium">{{ $analisis->hepatitisb ? 'Positivo' : 'Negativo' }}</p>
-                                            </div>
-                                        @endif
-                                        @if(isset($analisis->hepatitisc))
-                                            <div>
-                                                <span class="text-gray-500">Hepatitis C:</span>
-                                                <p class="font-medium">{{ $analisis->hepatitisc ? 'Positivo' : 'Negativo' }}</p>
-                                            </div>
-                                        @endif
-                                        @if(isset($analisis->hiv))
-                                            <div>
-                                                <span class="text-gray-500">HIV:</span>
-                                                <p class="font-medium">{{ $analisis->hiv ? 'Positivo' : 'Negativo' }}</p>
-                                            </div>
-                                        @endif
+                                    <!-- Análisis Nutricional -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Albúmina</label>
+                                        <input type="number" step="0.01" name="albumina" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Colesterol</label>
+                                        <input type="number" step="0.01" name="colesterol" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Triglicéridos</label>
+                                        <input type="number" step="0.01" name="trigliseridos" class="w-full border rounded px-3 py-2">
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="text-center py-8 text-gray-500">
-                                <p>No hay análisis trimestrales registrados</p>
+                                <div class="flex justify-end">
+                                    <button 
+                                        type="submit"
+                                        class="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white font-bold"
+                                    >Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div x-data="{ open: false }" class="space-y-2">
+                            <button 
+                                @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 focus:outline-none"
+                                type="button"
+                            >
+                                <span>
+                                    <span x-show="!open">Mostrar</span>
+                                    <span x-show="open">Ocultar</span>
+                                    Análisis Trimestrales ({{ $analisisData['trimestrales']->count() }})
+                                </span>
+                                <svg x-show="!open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg x-show="open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                            </button>
+                            <div x-show="open" class="space-y-4" x-transition>
+                                @if(isset($analisisData['trimestrales']) && $analisisData['trimestrales']->count() > 0)
+                                    @foreach($analisisData['trimestrales'] as $analisis)
+                                        <div class="border border-gray-200 rounded-lg p-4">
+                                            <div class="flex justify-between items-start mb-3">
+                                                @if($analisis->fechaanalisis)
+                                                    <span class="text-sm text-gray-500">
+                                                        {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
+                                                    </span>
+                                                @endif
+                                                @if($analisis->protocolo)
+                                                    <span class="text-sm font-medium text-gray-700">
+                                                        Protocolo: {{ $analisis->protocolo }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            
+                                            <div class="mb-2">
+                                                <div class="grid grid-cols-3 md:grid-cols-3 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">Albúmina:</span>
+                                                        <p class="font-medium">{{ $analisis->albumina ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Colesterol:</span>
+                                                        <p class="font-medium">{{ $analisis->colesterol ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Triglicéridos:</span>
+                                                        <p class="font-medium">{{ $analisis->trigliseridos ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-center py-8 text-gray-500">
+                                        <p>No hay análisis trimestrales registrados</p>
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </div>
 
                     <!-- Análisis Semestrales -->
                     <div x-show="activeTab === 'semestrales'" x-transition class="space-y-4">
-                        @if(isset($analisisData['semestrales']) && $analisisData['semestrales']->count() > 0)
-                            @foreach($analisisData['semestrales'] as $analisis)
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <h3 class="font-medium text-gray-900">Análisis Semestral</h3>
-                                        @if($analisis->fechaanalisis)
-                                            <span class="text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('m/Y') }}
-                                            </span>
-                                        @endif
+                        <!-- Formulario para nuevo Análisis Semestral -->
+                        <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
+                            <form method="POST" action="{{ route('analisis-semestrales.store', $paciente->id) }}">
+                                @csrf
+                                <div class="mb-4 grid grid-cols-5 md:grid-cols-5 gap-4">
+                                    <input type="hidden" name="fechaanalisis" value="{{ now()->format('Y-m-d H:i:s') }}" class="w-full border rounded px-3 py-2">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Protocolo</label>
+                                        <input type="text" name="protocolo" class="w-full border rounded px-3 py-2">
                                     </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                        @if(isset($analisis->calcio))
-                                            <div>
-                                                <span class="text-gray-500">Calcio:</span>
-                                                <p class="font-medium">{{ $analisis->calcio }}</p>
-                                            </div>
-                                        @endif
-                                        @if(isset($analisis->fosforo))
-                                            <div>
-                                                <span class="text-gray-500">Fósforo:</span>
-                                                <p class="font-medium">{{ $analisis->fosforo }}</p>
-                                            </div>
-                                        @endif
-                                        @if(isset($analisis->pth))
-                                            <div>
-                                                <span class="text-gray-500">PTH:</span>
-                                                <p class="font-medium">{{ $analisis->pth }}</p>
-                                            </div>
-                                        @endif
+                                    <!-- Serología Hepatitis B -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">HBsAg</label>
+                                        <select name="hbsag" class="w-full border rounded px-3 py-2">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Positivo</option>
+                                            <option value="0">Negativo</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Anti-HBsAg</label>
+                                        <select name="antihbsag" class="w-full border rounded px-3 py-2">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Positivo</option>
+                                            <option value="0">Negativo</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Valor Anti-HBsAg</label>
+                                        <input type="number" step="0.01" name="valorantihbsag" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Anti-Core</label>
+                                        <select name="anticore" class="w-full border rounded px-3 py-2">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Positivo</option>
+                                            <option value="0">Negativo</option>
+                                        </select>
+                                    </div>
+                                    <!-- Serología Hepatitis C y HIV -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Anti-HCV</label>
+                                        <select name="antihcv" class="w-full border rounded px-3 py-2">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Positivo</option>
+                                            <option value="0">Negativo</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Anti-HIV</label>
+                                        <select name="antihiv" class="w-full border rounded px-3 py-2">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Positivo</option>
+                                            <option value="0">Negativo</option>
+                                        </select>
+                                    </div>
+                                    <!-- Análisis Especializados -->
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">PTH</label>
+                                        <input type="number" step="0.01" name="pth" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Ferritina</label>
+                                        <input type="number" step="0.01" name="ferritina" class="w-full border rounded px-3 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2">Ferremia</label>
+                                        <input type="number" step="0.01" name="ferremia" class="w-full border rounded px-3 py-2">
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="text-center py-8 text-gray-500">
-                                <p>No hay análisis semestrales registrados</p>
+                                <div class="flex justify-end">
+                                    <button 
+                                        type="submit"
+                                        class="px-4 py-2 rounded bg-teal-600 hover:bg-teal-700 text-white font-bold"
+                                    >Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div x-data="{ open: false }" class="space-y-2">
+                            <button 
+                                @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 focus:outline-none"
+                                type="button"
+                            >
+                                <span>
+                                    <span x-show="!open">Mostrar</span>
+                                    <span x-show="open">Ocultar</span>
+                                    Análisis Semestrales ({{ $analisisData['semestrales']->count() }})
+                                </span>
+                                <svg x-show="!open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg x-show="open" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+                            </button>
+                            <div x-show="open" class="space-y-4" x-transition>
+                                @if(isset($analisisData['semestrales']) && $analisisData['semestrales']->count() > 0)
+                                    @foreach($analisisData['semestrales'] as $analisis)
+                                        <div class="border border-gray-200 rounded-lg p-4">
+                                            <div class="flex justify-between items-start mb-3">
+                                                @if($analisis->fechaanalisis)
+                                                    <span class="text-sm text-gray-500">
+                                                        {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
+                                                    </span>
+                                                @endif
+                                                @if($analisis->protocolo)
+                                                    <span class="text-sm font-medium text-gray-700">
+                                                        Protocolo: {{ $analisis->protocolo }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            
+                                            <!-- Serología Hepatitis B -->
+                                            <div class="mb-4">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Serología Hepatitis B</h5>
+                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">HBsAg:</span>
+                                                        <p class="font-medium">{{ $analisis->hbsag ? 'Positivo' : 'Negativo' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Anti-HBsAg:</span>
+                                                        <p class="font-medium">{{ $analisis->antihbsag ? 'Positivo' : 'Negativo' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Valor Anti-HBsAg:</span>
+                                                        <p class="font-medium">{{ $analisis->valorantihbsag ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Anti-Core:</span>
+                                                        <p class="font-medium">{{ $analisis->anticore ? 'Positivo' : 'Negativo' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Serología Hepatitis C y HIV -->
+                                            <div class="mb-4">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Serología Hepatitis C y HIV</h5>
+                                                <div class="grid grid-cols-2 md:grid-cols-2 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">Anti-HCV:</span>
+                                                        <p class="font-medium">{{ $analisis->antihcv ? 'Positivo' : 'Negativo' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Anti-HIV:</span>
+                                                        <p class="font-medium">{{ $analisis->antihiv ? 'Positivo' : 'Negativo' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Análisis Especializados -->
+                                            <div class="mb-2">
+                                                <h5 class="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Análisis Especializados</h5>
+                                                <div class="grid grid-cols-3 md:grid-cols-3 gap-4 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-500">PTH:</span>
+                                                        <p class="font-medium">{{ $analisis->pth ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Ferritina:</span>
+                                                        <p class="font-medium">{{ $analisis->ferritina ?? 'N/A' }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Ferremia:</span>
+                                                        <p class="font-medium">{{ $analisis->ferremia ?? 'N/A' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-center py-8 text-gray-500">
+                                        <p>No hay análisis semestrales registrados</p>
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>

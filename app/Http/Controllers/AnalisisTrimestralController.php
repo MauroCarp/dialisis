@@ -12,10 +12,10 @@ class AnalisisTrimestralController extends Controller
     {
         $request->validate([
             'fechaanalisis' => 'required|date',
-            'hepatitisb' => 'nullable|boolean',
-            'hepatitisc' => 'nullable|boolean',
-            'hiv' => 'nullable|boolean',
-            'vdrl' => 'nullable|boolean',
+            'protocolo' => 'nullable|string|max:100',
+            'albumina' => 'nullable|numeric',
+            'colesterol' => 'nullable|numeric',
+            'trigliseridos' => 'nullable|numeric',
         ]);
 
         $paciente = Paciente::findOrFail($pacienteId);
@@ -23,10 +23,10 @@ class AnalisisTrimestralController extends Controller
         AnalisisTrimestral::create([
             'id_paciente' => $paciente->id,
             'fechaanalisis' => $request->fechaanalisis,
-            'hepatitisb' => $request->has('hepatitisb'),
-            'hepatitisc' => $request->has('hepatitisc'),
-            'hiv' => $request->has('hiv'),
-            'vdrl' => $request->has('vdrl'),
+            'protocolo' => $request->protocolo,
+            'albumina' => $request->albumina,
+            'colesterol' => $request->colesterol,
+            'trigliseridos' => $request->trigliseridos,
         ]);
 
         return redirect()->route('pacientes.show', $paciente->id)
