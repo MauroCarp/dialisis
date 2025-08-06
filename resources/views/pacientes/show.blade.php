@@ -98,6 +98,46 @@
                             Historias Clínicas 
                             <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->historiaClinica ? $paciente->historiaClinica->count() : 0 }}</span>
                         </button>
+                        
+                        <button 
+                            @click="activeMainTab = 'estudios'"
+                            :class="activeMainTab === 'estudios' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                        >
+                            <i class="fas fa-microscope mr-2"></i>
+                            Estudios
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0 }}</span>
+                        </button>
+                        
+                        <button 
+                            @click="activeMainTab = 'internaciones'"
+                            :class="activeMainTab === 'internaciones' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                        >
+                            <i class="fas fa-hospital mr-2"></i>
+                            Internaciones
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->internaciones ? $paciente->internaciones->count() : 0 }}</span>
+                        </button>
+                        
+                        <button 
+                            @click="activeMainTab = 'patologias'"
+                            :class="activeMainTab === 'patologias' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                        >
+                            <i class="fas fa-diagnoses mr-2"></i>
+                            Patologías
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0 }}</span>
+                        </button>
+                        
+                        <button 
+                            @click="activeMainTab = 'transfusiones'"
+                            :class="activeMainTab === 'transfusiones' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                        >
+                            <i class="fas fa-tint mr-2"></i>
+                            Transfusiones
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->transfusiones ? $paciente->transfusiones->count() : 0 }}</span>
+                        </button>
                     </div>
 
                     <!-- Contenido de las pestañas principales -->
@@ -122,6 +162,26 @@
                     <!-- Pestaña: Historias Clínicas -->
                     <div x-show="activeMainTab === 'historias'" x-transition class="space-y-4">
                         @include('pacientes.partials.historias-clinicas')
+                    </div>
+
+                    <!-- Pestaña: Estudios -->
+                    <div x-show="activeMainTab === 'estudios'" x-transition class="space-y-4">
+                        @include('pacientes.partials.estudios-pacientes')
+                    </div>
+
+                    <!-- Pestaña: Internaciones -->
+                    <div x-show="activeMainTab === 'internaciones'" x-transition class="space-y-4">
+                        @include('pacientes.partials.internaciones')
+                    </div>
+
+                    <!-- Pestaña: Patologías -->
+                    <div x-show="activeMainTab === 'patologias'" x-transition class="space-y-4">
+                        @include('pacientes.partials.patologias-pacientes')
+                    </div>
+
+                    <!-- Pestaña: Transfusiones -->
+                    <div x-show="activeMainTab === 'transfusiones'" x-transition class="space-y-4">
+                        @include('pacientes.partials.transfusiones')
                     </div>
                 </div>
             </div>

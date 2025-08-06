@@ -27,10 +27,16 @@ class Internacion extends Model
         'fechafininternacion' => 'datetime'
     ];
 
-    // Relación con Paciente
+    // Relación con Paciente (dialisis)
     public function paciente(): BelongsTo
     {
         return $this->belongsTo(Paciente::class, 'id_paciente');
+    }
+
+    // Relación con Paciente Consultorio
+    public function pacienteConsultorio(): BelongsTo
+    {
+        return $this->belongsTo(PacienteConsultorio::class, 'id_paciente');
     }
 
     // Relación con Motivo de Internación

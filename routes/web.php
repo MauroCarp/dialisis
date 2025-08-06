@@ -6,6 +6,10 @@ use App\Http\Controllers\HistoriaClinicaController;
 use App\Http\Controllers\HistoriaClinicaConsultorioController;
 use App\Http\Controllers\AccesoVascularController;
 use App\Http\Controllers\CirujanoController;
+use App\Http\Controllers\EstudioPacienteController;
+use App\Http\Controllers\InternacionController;
+use App\Http\Controllers\PatologiaPacienteController;
+use App\Http\Controllers\TransfusionController;
 use App\Http\Controllers\AnalisisDiarioController;
 use App\Http\Controllers\AnalisisMensualController;
 use App\Http\Controllers\AnalisisTrimestralController;
@@ -45,6 +49,22 @@ Route::post('/pacientes/{paciente}/accesos-vasculares', [AccesoVascularControlle
 
 // Ruta para crear cirujanos
 Route::post('/cirujanos', [CirujanoController::class, 'store'])->name('cirujanos.store');
+
+// Rutas para estudios de pacientes
+Route::post('/pacientes/{paciente}/estudios-pacientes', [EstudioPacienteController::class, 'store'])
+    ->name('estudios-pacientes.store');
+
+// Rutas para internaciones
+Route::post('/pacientes/{paciente}/internaciones', [InternacionController::class, 'store'])
+    ->name('internaciones.store');
+
+// Rutas para patologías de pacientes
+Route::post('/pacientes/{paciente}/patologias-pacientes', [PatologiaPacienteController::class, 'store'])
+    ->name('patologias-pacientes.store');
+
+// Rutas para transfusiones
+Route::post('/pacientes/{paciente}/transfusiones', [TransfusionController::class, 'store'])
+    ->name('transfusiones.store');
 
 // Rutas para análisis
 Route::post('/pacientes/{paciente}/analisis-diarios', [AnalisisDiarioController::class, 'store'])

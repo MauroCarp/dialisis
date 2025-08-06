@@ -153,6 +153,18 @@ class Paciente extends Model
                     ->withPivot('fechaestudio', 'observaciones');
     }
 
+    // Relación con Estudios de Pacientes (registros individuales)
+    public function estudiosPacientes(): HasMany
+    {
+        return $this->hasMany(EstudioPaciente::class, 'id_paciente');
+    }
+
+    // Relación con Patologías de Pacientes (registros individuales)
+    public function patologiasPacientes(): HasMany
+    {
+        return $this->hasMany(PatologiaPaciente::class, 'id_paciente');
+    }
+
     // Relación con Antecedentes Personales
     public function antecedentesPersonales(): HasMany
     {

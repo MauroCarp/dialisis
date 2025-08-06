@@ -89,4 +89,28 @@ class PacienteConsultorio extends Model
     {
         return $this->hasMany(AccesoVascular::class, 'id_paciente');
     }
+
+    // Relación con Estudios de Pacientes
+    public function estudiosPacientes(): HasMany
+    {
+        return $this->hasMany(EstudioPaciente::class, 'id_paciente');
+    }
+
+    // Relación con Internaciones
+    public function internaciones(): HasMany
+    {
+        return $this->hasMany(Internacion::class, 'id_paciente');
+    }
+
+    // Relación con Patologías de Pacientes
+    public function patologiasPacientes(): HasMany
+    {
+        return $this->hasMany(PatologiaPaciente::class, 'id_paciente');
+    }
+
+    // Relación con Transfusiones
+    public function transfusiones(): HasMany
+    {
+        return $this->hasMany(Transfusion::class, 'id_paciente');
+    }
 }

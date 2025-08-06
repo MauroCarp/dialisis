@@ -30,9 +30,15 @@ class PatologiaPaciente extends Model
         return $this->belongsTo(Patologia::class, 'id_patologia');
     }
 
-    // Relación con Paciente
+    // Relación con Paciente (dialisis)
     public function paciente(): BelongsTo
     {
         return $this->belongsTo(Paciente::class, 'id_paciente');
+    }
+
+    // Relación con Paciente Consultorio
+    public function pacienteConsultorio(): BelongsTo
+    {
+        return $this->belongsTo(PacienteConsultorio::class, 'id_paciente');
     }
 }
