@@ -83,4 +83,10 @@ class PacienteConsultorio extends Model
         return $this->belongsToMany(ObraSocial::class, 'pacientesconsultorioobrassociales', 'id_paciente', 'id_obrasocial')
                     ->withPivot('fechavigencia', 'nroafiliado');
     }
+
+    // Relación con Accesos Vasculares
+    public function accesosVasculares(): HasMany
+    {
+        return $this->hasMany(AccesoVascular::class, 'id_paciente');
+    }
 }

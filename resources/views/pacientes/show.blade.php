@@ -35,7 +35,7 @@
                         @endif
                     </div>
                     <div class="flex space-x-3">
-                        <a href="{{ route('pacientes.edit', $paciente) }}" 
+                        <a href="../admin/{{(isset($esPacienteConsultorio) && $esPacienteConsultorio) ? 'pacientes-consultorios' : 'pacientes'}}/{{ $paciente->id }}/edit" 
                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Editar
                         </a>
