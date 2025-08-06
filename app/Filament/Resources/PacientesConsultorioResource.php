@@ -190,9 +190,53 @@ class PacientesConsultorioResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nombre')->label('Nombre')->sortable(),
-                Tables\Columns\TextColumn::make('apellido')->label('Apellido')->sortable(),
-                Tables\Columns\TextColumn::make('dnicuitcuil')->label('DNI/CUIT/CUIL')->sortable(),
+                Tables\Columns\TextColumn::make('nroalta')
+                    ->label('Nro. Alta')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('apellido')
+                    ->label('Apellido')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nombre')
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('dnicuitcuil')
+                    ->label('DNI/CUIT/CUIL')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('telefono')
+                    ->label('Teléfono')
+                    ->searchable()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
+                Tables\Columns\TextColumn::make('localidad.nombre')
+                    ->label('Localidad')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('fechaingreso')
+                    ->label('Fecha Ingreso')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('fumador')
+                    ->label('Fumador')
+                    ->boolean()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
+                Tables\Columns\IconColumn::make('insulinodependiente')
+                    ->label('Insulino Dep.')
+                    ->boolean()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
                 Tables\Columns\TextColumn::make('obras_sociales')
                     ->label('Obras Sociales')
                     ->formatStateUsing(function ($record) {
@@ -202,13 +246,97 @@ class PacientesConsultorioResource extends Resource
                         }
                         return $obrasSociales->pluck('abreviatura')->join(', ');
                     })
+                    ->searchable(query: function ($query, $search) {
+                        return $query->whereHas('obrasSociales', function ($query) use ($search) {
+                            $query->where('abreviatura', 'like', "%{$search}%")
+                                  ->orWhere('descripcion', 'like', "%{$search}%");
+                        });
+                    })
                     ->default('-'),
+                Tables\Columns\TextColumn::make('causaIngreso.nombre')
+                    ->label('Causa Ingreso')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->wrap(),
+                Tables\Columns\TextColumn::make('causaEgreso.nombre')
+                    ->label('Causa Egreso')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->wrap(),
             ])
-            ->defaultSort('apellido', 'desc')
+            ->defaultSort('apellido', 'asc')
+            ->searchable()
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('id_localidad')
+                    ->label('Localidad')
+                    ->relationship('localidad', 'nombre')
+                    ->searchable()
+                    ->preload(),
+                    
+                Tables\Filters\SelectFilter::make('obras_sociales')
+                    ->label('Obra Social')
+                    ->query(function ($query, array $data) {
+                        if (isset($data['value']) && $data['value'] !== '') {
+                            return $query->whereHas('obrasSociales', function ($query) use ($data) {
+                                $query->where('id', $data['value']);
+                            });
+                        }
+                        return $query;
+                    })
+                    ->options(
+                        ObraSocial::whereNull('fechaBaja')
+                            ->orderBy('abreviatura')
+                            ->get()
+                            ->mapWithKeys(function ($obra) {
+                                return [$obra->id => $obra->abreviatura . ' - ' . $obra->descripcion];
+                            })
+                    )
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\Filter::make('con_obras_sociales')
+                    ->label('Con Obras Sociales')
+                    ->query(fn ($query) => $query->whereHas('obrasSociales')),
+
+                Tables\Filters\Filter::make('sin_obras_sociales')
+                    ->label('Sin Obras Sociales')
+                    ->query(fn ($query) => $query->whereDoesntHave('obrasSociales')),
+
+                Tables\Filters\TernaryFilter::make('fumador')
+                    ->label('Fumador')
+                    ->nullable(),
+
+                Tables\Filters\TernaryFilter::make('insulinodependiente')
+                    ->label('Insulinodependiente')
+                    ->nullable(),
+
+                Tables\Filters\Filter::make('fecha_ingreso')
+                    ->label('Fecha de Ingreso')
+                    ->form([
+                        Forms\Components\DatePicker::make('desde')
+                            ->label('Desde'),
+                        Forms\Components\DatePicker::make('hasta')
+                            ->label('Hasta'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['desde'], fn ($query) => $query->whereDate('fechaingreso', '>=', $data['desde']))
+                            ->when($data['hasta'], fn ($query) => $query->whereDate('fechaingreso', '<=', $data['hasta']));
+                    }),
+
+                Tables\Filters\Filter::make('activos')
+                    ->label('Pacientes Activos')
+                    ->query(fn ($query) => $query->whereNull('fechaegreso')),
+
+                Tables\Filters\Filter::make('egresados')
+                    ->label('Pacientes Egresados')
+                    ->query(fn ($query) => $query->whereNotNull('fechaegreso')),
             ])
             ->actions([
+                Tables\Actions\Action::make('Ver')
+                ->label('Ver')
+                ->icon('heroicon-o-eye')
+                ->url(fn ($record) => route('pacientes.show', ['paciente' => $record->id, 'tipo' => 'consultorio'])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -217,6 +345,12 @@ class PacientesConsultorioResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['localidad', 'obrasSociales', 'causaIngreso', 'causaEgreso']);
     }
 
     public static function getRelations(): array

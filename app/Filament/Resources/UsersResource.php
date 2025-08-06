@@ -30,7 +30,13 @@ class UsersResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Name')
+                    ->label('Nombre')
+                    ->required(),
+                Forms\Components\TextInput::make('surname')
+                    ->label('Apellido')
+                    ->required(),
+                Forms\Components\TextInput::make('username')
+                    ->label('Usuario')
                     ->required(),
                 Forms\Components\TextInput::make('email')
                     ->label('Email')
@@ -39,7 +45,8 @@ class UsersResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->label('Password')
                     ->password()
-                    ->required(),
+                    ->required()
+                    ->dehydrateStateUsing(fn ($state) => \Hash::make($state)),
             ]);
     }
 
@@ -49,6 +56,14 @@ class UsersResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('surname')
+                    ->label('Apellido')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('username')
+                    ->label('Usuario')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
@@ -68,6 +83,7 @@ class UsersResource extends Resource
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

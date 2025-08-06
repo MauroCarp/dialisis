@@ -232,8 +232,14 @@ class PacientesResource extends Resource
 
             ])
             ->actions([
+                // Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('Ver')
+                ->label('Ver')
+                ->icon('heroicon-o-eye')
+                ->url(fn ($record) => route('pacientes.show', $record->id)),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

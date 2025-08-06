@@ -12,14 +12,14 @@
     <div class="container mx-auto px-4 py-6">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
-            <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+            <div class="bg-gradient-to-r from-teal-600 to-teal-800 shadow-lg rounded-lg p-6 mb-6">
                 <div class="flex justify-between items-center">
-                    <div class="text-gray-500">
+                    <div class="text-white">
                         <h1 class="text-3xl font-bold mb-2">
                             <i class="fas fa-user-circle mr-3"></i>
                             {{ $paciente->nombre }} {{ $paciente->apellido }}
                         </h1>
-                        <p class="text-teal-800 text-lg">
+                        <p class="text-teal-100 text-lg">
                             <i class="fas fa-id-card mr-2"></i>
                             DNI: {{ $paciente->dni ?? $paciente->dnicuitcuil ?? 'No especificado' }}
                             @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
@@ -38,7 +38,7 @@
                     
                     <div class="flex space-x-3">
                         <a href="{{ route('pacientes.edit', $paciente->id) }}" 
-                           class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+                           class="bg-white hover:bg-gray-100 text-teal-600 font-bold py-2 px-4 rounded transition-colors duration-200">
                             <i class="fas fa-edit mr-2"></i>
                             Editar
                         </a>
@@ -74,7 +74,7 @@
                             <i class="fas fa-flask mr-2"></i>
                             Análisis
                             <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">
-                                {{ (isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0) }}
+                                {{ ($analisisData['diarios']->count() ?? 0) + ($analisisData['mensuales']->count() ?? 0) + ($analisisData['trimestrales']->count() ?? 0) + ($analisisData['semestrales']->count() ?? 0) }}
                             </span>
                         </button>
                         
@@ -85,7 +85,7 @@
                         >
                             <i class="fas fa-heart mr-2"></i>
                             Accesos Vasculares 
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->accesosVasculares ? $paciente->accesosVasculares->count() : 0 }}</span>
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->accesosVasculares->count() ?? 0 }}</span>
                         </button>
                         @endif
                         
@@ -96,7 +96,7 @@
                         >
                             <i class="fas fa-file-medical mr-2"></i>
                             Historias Clínicas 
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->historiaClinica ? $paciente->historiaClinica->count() : 0 }}</span>
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->historiaClinica->count() ?? 0 }}</span>
                         </button>
                     </div>
 

@@ -6,6 +6,7 @@ use App\Models\Paciente;
 use App\Models\PacienteConsultorio;
 use App\Models\TipoAccesoVascular;
 use App\Models\TipoFiltro;
+use App\Models\Cirujano;
 use App\Models\AnalisisDiario;
 use App\Models\AnalisisMensual;
 use App\Models\AnalisisTrimestral;
@@ -68,6 +69,12 @@ class PacienteController extends Controller
         // Obtener tipos de acceso vascular para el modal
         $tiposAccesoVascular = TipoAccesoVascular::all();
         
+        // Obtener cirujanos para el modal
+        $cirujanos = Cirujano::where(function($query) {
+            $query->whereNull('fechabaja')
+                  ->orWhere('fechabaja', '<=', '1900-01-02'); // Considerar 1900-01-01 como "activo"
+        })->orderBy('nombre')->orderBy('apellido')->get();
+        
         // Obtener tipos de filtro para los análisis diarios
         $tiposFiltros = TipoFiltro::all();
         
@@ -101,7 +108,7 @@ class PacienteController extends Controller
             logger('INFO: Se encontraron ' . $tiposAccesoVascular->count() . ' tipos de acceso vascular');
         }
 
-        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular', 'tiposFiltros', 'analisisData'));
+        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular', 'cirujanos', 'tiposFiltros', 'analisisData'));
     }
 
     /**
