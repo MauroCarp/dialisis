@@ -18,16 +18,24 @@ class PacienteController extends Controller
     /**
      * Display the specified paciente.
      */
-    public function show($id): View
+    public function show($id, Request $request): View
     {
-        // Primero intentar encontrar en la tabla pacientes
-        $paciente = Paciente::find($id);
         $esPacienteConsultorio = false;
+        $paciente = null;
 
-        // Si no se encuentra, buscar en pacientesconsultorio
-        if (!$paciente) {
+        // Si se especifica el tipo en la URL, buscar directamente en esa tabla
+        if ($request->has('tipo') && $request->get('tipo') === 'consultorio') {
             $paciente = PacienteConsultorio::find($id);
             $esPacienteConsultorio = true;
+        } else {
+            // Primero intentar encontrar en la tabla pacientes
+            $paciente = Paciente::find($id);
+            
+            // Si no se encuentra, buscar en pacientesconsultorio
+            if (!$paciente) {
+                $paciente = PacienteConsultorio::find($id);
+                $esPacienteConsultorio = true;
+            }
         }
 
         // Si no se encuentra en ninguna tabla, devolver 404

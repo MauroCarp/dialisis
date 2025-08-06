@@ -2,32 +2,34 @@
 
 namespace App\Http\Controllers;
 
-        $analisis = AnalisisMensual::create([
-            'id_paciente' => $id,
-            'fechaanalisis' => $request->fechaanalisis,
-            'protocolo' => $request->protocolo,
-            'hemoglobina' => $request->hemoglobina,
-            'hematocrito' => $request->hematocrito,
-            'rto_blancos' => $request->rto_blancos,
-            'rto_rojos' => $request->rto_rojos,
-            'rto_plaquetas' => $request->rto_plaquetas,
-            'creatinina' => $request->creatinina,
-            'uremia_pre' => $request->uremia_pre,
-            'uremia_post' => $request->uremia_post,
-            'urea_creatinina' => $request->urea_creatinina,
-            'rpu' => $request->rpu,
-            'ktv_daugiras' => $request->ktv_daugiras,
-            'ktv_basile' => $request->ktv_basile,
-            'tac_urea' => $request->tac_urea,
-            'sodio' => $request->sodio,
-            'potasio' => $request->potasio,
-            'calcemia' => $request->calcemia,
-            'fosfatemia' => $request->fosfatemia,
-            'gpt' => $request->gpt,
-            'got' => $request->got,
-            'fosfatasa_alcalina' => $request->fosfatasa_alcalina,
-            'pcr' => $request->pcr,
-        ]);AnalisisMensual;
+use App\Models\AnalisisMensual;
+
+$analisis = AnalisisMensual::create([
+    'id_paciente' => $id,
+    'fechaanalisis' => $request->fechaanalisis,
+    'protocolo' => $request->protocolo,
+    'hemoglobina' => $request->hemoglobina,
+    'hematocrito' => $request->hematocrito,
+    'rto_blancos' => $request->rto_blancos,
+    'rto_rojos' => $request->rto_rojos,
+    'rto_plaquetas' => $request->rto_plaquetas,
+    'creatinina' => $request->creatinina,
+    'uremia_pre' => $request->uremia_pre,
+    'uremia_post' => $request->uremia_post,
+    'urea_creatinina' => $request->urea_creatinina,
+    'rpu' => $request->rpu,
+    'ktv_daugiras' => $request->ktv_daugiras,
+    'ktv_basile' => $request->ktv_basile,
+    'tac_urea' => $request->tac_urea,
+    'sodio' => $request->sodio,
+    'potasio' => $request->potasio,
+    'calcemia' => $request->calcemia,
+    'fosfatemia' => $request->fosfatemia,
+    'gpt' => $request->gpt,
+    'got' => $request->got,
+    'fosfatasa_alcalina' => $request->fosfatasa_alcalina,
+    'pcr' => $request->pcr,
+]);
 use App\Models\Paciente;
 use Illuminate\Http\Request;
 
@@ -77,6 +79,8 @@ class AnalisisMensualController extends Controller
             'potasio' => $request->potasio,
             'calcemia' => $request->calcemia,
             'pcr' => $request->pcr,
+      'urr' => $request->urr,
+      'urr' => $request->urr,
         ]);
 
         return redirect()->route('pacientes.show', $paciente->id)

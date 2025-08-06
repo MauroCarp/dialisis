@@ -23,7 +23,7 @@
                     </div>
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($resultadosBusqueda as $paciente)
-                            <a href="{{ route('pacientes.show', $paciente['id']) }}"
+                            <a href="{{ $tipoTabla === 'hemodialisis' ? route('pacientes.show', $paciente['id']) : route('pacientes.show', $paciente['id']) . '?tipo=consultorio' }}"
                                class="block p-4 hover:bg-gray-50 cursor-pointer dark:hover:bg-gray-800 transition-colors">
                                 <div class="flex justify-between items-start">
                                     <div>
@@ -65,7 +65,7 @@
                                     - Nro. Alta: {{ $pacienteSeleccionado['nroalta'] ?? 'N/A' }}
                                 </p>
                             </div>
-                            <a href="{{ route('pacientes.edit', $pacienteSeleccionado['id']) }}"
+                            <a href="{{ $tipoTabla === 'hemodialisis' ? route('pacientes.edit', $pacienteSeleccionado['id']) : '/admin/pacientes-consultorios/' . $pacienteSeleccionado['id'] . '/edit' }}"
                                class="ml-2 text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
                                title="Editar datos del paciente">
                                 <x-heroicon-o-pencil-square class="h-6 w-6" />

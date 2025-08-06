@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePacientes extends CreateRecord
 {
     protected static string $resource = PacientesResource::class;
+
+    protected function getCancelFormAction(): Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Volver');
+    }
 }

@@ -16,4 +16,10 @@ class EditPacientes extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getCancelFormAction(): Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Volver');
+    }
 }

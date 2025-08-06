@@ -14,4 +14,10 @@ class CreatePacientesConsultorio extends CreateRecord
     {
         return 'Nuevo Paciente Consultorio';
     }
+
+    protected function getCancelFormAction(): Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Volver');
+    }
 }

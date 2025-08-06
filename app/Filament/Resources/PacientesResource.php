@@ -87,8 +87,7 @@ class PacientesResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('nroalta')
                                     ->label('Número de Alta')
-                                    ->numeric()
-                                    ->unique(ignoreRecord: true),
+                                    ->numeric(),
 
                                 Forms\Components\TextInput::make('pesoseco')
                                     ->label('Peso Seco (kg)')
@@ -96,9 +95,13 @@ class PacientesResource extends Resource
                                     ->step(0.1),
 
                                 Forms\Components\TextInput::make('talla')
-                                    ->label('Talla (cm)')
+                                    ->label('Talla')
                                     ->numeric()
-                                    ->step(0.1),
+                                    ->step(0.01)
+                                    ->inputMode('decimal')
+                                    ->minValue(0)
+                                    ->maxValue(300)
+                                    ->suffix('cm'),
 
                                 Forms\Components\Select::make('gruposanguineo')
                                     ->label('Grupo Sanguíneo')

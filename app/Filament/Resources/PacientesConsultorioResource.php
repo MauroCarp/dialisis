@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PacientesConsultorioResource\Pages;
 use App\Filament\Resources\PacientesConsultorioResource\RelationManagers;
+use App\Models\ObraSocial;
 use App\Models\PacienteConsultorio;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -99,8 +100,12 @@ class PacientesConsultorioResource extends Resource
                             ->numeric(),
                         Forms\Components\TextInput::make('talla')
                             ->label('Talla')
-                            ->numeric(),
-                            
+                            ->numeric()
+                            ->step(0.01)
+                            ->inputMode('decimal')
+                            ->minValue(0)
+                            ->maxValue(300)
+                            ->suffix('cm'),
                         Forms\Components\Select::make('gruposanguineo')
                             ->label('Grupo Sanguíneo')
                             ->options([
@@ -135,7 +140,49 @@ class PacientesConsultorioResource extends Resource
                         
                     ])->columns(3),
 
-                // Agrega aquí otros campos y relaciones según tu modelo
+                
+                    Forms\Components\Section::make('Obras Sociales')
+                    ->schema([
+                        Forms\Components\Repeater::make('obrasSociales')
+                            ->label('Obras Sociales del Paciente')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\Select::make('id')
+                                            ->label('Obra Social')
+                                            ->options(
+                                                ObraSocial::whereNull('fechaBaja')
+                                                    ->orderBy('abreviatura')
+                                                    ->get()
+                                                    ->mapWithKeys(function ($obra) {
+                                                        return [$obra->id => "{$obra->abreviatura} - {$obra->descripcion}"];
+                                                    })
+                                            )
+                                            ->searchable()
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('pivot.nroafiliado')
+                                            ->label('Número de Afiliado')
+                                            ->maxLength(50),
+
+                                        Forms\Components\DatePicker::make('pivot.fechavigencia')
+                                            ->label('Fecha de Vigencia')
+                                            ->displayFormat('d/m/Y'),
+                                    ]),
+                            ])
+                            ->collapsible()
+                            ->itemLabel(function (array $state): ?string {
+                                $obraId = $state['id'] ?? null;
+                                if ($obraId) {
+                                    $obra = ObraSocial::find($obraId);
+                                    return $obra ? $obra->abreviatura : 'Obra Social';
+                                }
+                                return 'Nueva Obra Social';
+                            })
+                            ->addActionLabel('Agregar Obra Social')
+                            ->defaultItems(0),
+                    ]),
             ]);
     }
 
