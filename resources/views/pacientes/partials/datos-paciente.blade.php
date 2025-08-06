@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Información Personal Extendida -->
         <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Personal Completa</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Personal</h3>
             <div class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -59,7 +59,7 @@
 
         <!-- Información Médica Extendida -->
         <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Médica</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Médica Básica</h3>
             <div class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @if($paciente->fechaingreso)

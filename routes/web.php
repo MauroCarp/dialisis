@@ -63,8 +63,20 @@ Route::post('/pacientes/{paciente}/patologias-pacientes', [PatologiaPacienteCont
     ->name('patologias-pacientes.store');
 
 // Rutas para transfusiones
-Route::post('/pacientes/{paciente}/transfusiones', [TransfusionController::class, 'store'])
+Route::post('/pacientes/{pacienteId}/transfusiones', [App\Http\Controllers\TransfusionController::class, 'store'])
     ->name('transfusiones.store');
+
+// Rutas para medicaciones de pacientes
+Route::post('/pacientes/{pacienteId}/medicaciones', [App\Http\Controllers\MedicacionPacienteController::class, 'store'])
+    ->name('medicaciones-pacientes.store');
+
+// Rutas para vacunas de pacientes
+Route::post('/pacientes/{pacienteId}/vacunas', [App\Http\Controllers\VacunaPacienteController::class, 'store'])
+    ->name('vacunas-pacientes.store');
+
+// Rutas para dosis de vacunas
+Route::post('/vacunas-pacientes/{vacunaPacienteId}/dosis', [App\Http\Controllers\DosisController::class, 'store'])
+    ->name('dosis.store');
 
 // Rutas para análisis
 Route::post('/pacientes/{paciente}/analisis-diarios', [AnalisisDiarioController::class, 'store'])

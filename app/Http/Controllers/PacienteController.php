@@ -10,6 +10,8 @@ use App\Models\Cirujano;
 use App\Models\Estudio;
 use App\Models\MotivoInternacion;
 use App\Models\Patologia;
+use App\Models\Medicacion;
+use App\Models\Vacuna;
 use App\Models\AnalisisDiario;
 use App\Models\AnalisisMensual;
 use App\Models\AnalisisTrimestral;
@@ -67,6 +69,15 @@ class PacienteController extends Controller
                 },
                 'transfusiones' => function($query) {
                     $query->orderBy('fechatransfusion', 'desc')->limit(10);
+                },
+                'medicacionesPacientes.medicacion.tipoMedicacion' => function($query) {
+                    $query->orderBy('fechamedicacion', 'desc')->limit(10);
+                },
+                'vacunasPacientes.vacuna' => function($query) {
+                    $query->orderBy('fechavacuna', 'desc')->limit(10);
+                },
+                'vacunasPacientes.dosis' => function($query) {
+                    $query->orderBy('fechadosis', 'desc');
                 }
             ]);
         } else {
@@ -78,17 +89,20 @@ class PacienteController extends Controller
                 'historiasClinicas' => function($query) {
                     $query->orderBy('fechahistoriaclinica', 'desc')->limit(10);
                 },
-                'estudiosPacientes.estudio' => function($query) {
-                    $query->orderBy('fechaestudio', 'desc')->limit(10);
-                },
-                'internaciones.motivoInternacion' => function($query) {
-                    $query->orderBy('nombre', 'desc')->limit(10);
-                },
                 'patologiasPacientes.patologia' => function($query) {
                     $query->orderBy('fechapatologia', 'desc')->limit(10);
                 },
                 'transfusiones' => function($query) {
                     $query->orderBy('fechatransfusion', 'desc')->limit(10);
+                },
+                'medicacionesPacientes.medicacion.tipoMedicacion' => function($query) {
+                    $query->orderBy('nombre', 'desc')->limit(10);
+                },
+                'vacunasPacientes.vacuna' => function($query) {
+                    $query->orderBy('nombre', 'desc')->limit(10);
+                },
+                'vacunasPacientes.dosis' => function($query) {
+                    $query->orderBy('fechadosis', 'desc');
                 }
             ]);
         }
@@ -114,6 +128,17 @@ class PacienteController extends Controller
         })->orderBy('nombre')->get();
         
         $patologias = Patologia::where(function($query) {
+            $query->whereNull('fechabaja')
+                  ->orWhere('fechabaja', '<=', '1900-01-02');
+        })->orderBy('nombre')->get();
+        
+        // Obtener medicaciones y vacunas para los nuevos módulos
+        $medicaciones = \App\Models\Medicacion::where(function($query) {
+            $query->whereNull('fechabaja')
+                  ->orWhere('fechabaja', '<=', '1900-01-02');
+        })->with('tipoMedicacion')->orderBy('nombre')->get();
+        
+        $vacunas = \App\Models\Vacuna::where(function($query) {
             $query->whereNull('fechabaja')
                   ->orWhere('fechabaja', '<=', '1900-01-02');
         })->orderBy('nombre')->get();
@@ -151,7 +176,7 @@ class PacienteController extends Controller
             logger('INFO: Se encontraron ' . $tiposAccesoVascular->count() . ' tipos de acceso vascular');
         }
 
-        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular', 'cirujanos', 'estudios', 'motivosInternacion', 'patologias', 'tiposFiltros', 'analisisData'));
+        return view('pacientes.show', compact('paciente', 'esPacienteConsultorio', 'tiposAccesoVascular', 'cirujanos', 'estudios', 'motivosInternacion', 'patologias', 'medicaciones', 'vacunas', 'tiposFiltros', 'analisisData'));
     }
 
     /**

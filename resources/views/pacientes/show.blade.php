@@ -77,7 +77,7 @@
                             <i class="fas fa-user-md mr-2"></i>
                             Información Médica
                             <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-2">
-                                {{ ($paciente->historiaClinica ? $paciente->historiaClinica->count() : 0) + ($paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0) + ($paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0) + ((isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0)) }}
+                                {{ ($paciente->historiaClinica ? $paciente->historiaClinica->count() : 0) + ($paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0) + ($paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0) + ($paciente->medicacionesPacientes ? $paciente->medicacionesPacientes->count() : 0) + ($paciente->vacunasPacientes ? $paciente->vacunasPacientes->count() : 0) + ((isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0)) }}
                             </span>
                         </button>
                         
@@ -149,6 +149,26 @@
                                     Estudios
                                     <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0 }}</span>
                                 </button>
+
+                                <button 
+                                    @click="activeMedicalTab = 'medicaciones'"
+                                    :class="activeMedicalTab === 'medicaciones' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-pills mr-1"></i>
+                                    Medicaciones
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->medicacionesPacientes ? $paciente->medicacionesPacientes->count() : 0 }}</span>
+                                </button>
+                                
+                                <button 
+                                    @click="activeMedicalTab = 'vacunas'"
+                                    :class="activeMedicalTab === 'vacunas' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-syringe mr-1"></i>
+                                    Vacunas
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->vacunasPacientes ? $paciente->vacunasPacientes->count() : 0 }}</span>
+                                </button>
                             </div>
                         </div>
 
@@ -169,6 +189,14 @@
                         
                         <div x-show="activeMedicalTab === 'estudios'" x-transition class="space-y-4">
                             @include('pacientes.partials.estudios-pacientes')
+                        </div>
+                        
+                        <div x-show="activeMedicalTab === 'medicaciones'" x-transition class="space-y-4">
+                            @include('pacientes.partials.medicaciones-pacientes')
+                        </div>
+                        
+                        <div x-show="activeMedicalTab === 'vacunas'" x-transition class="space-y-4">
+                            @include('pacientes.partials.vacunas-pacientes')
                         </div>
                     </div>
 

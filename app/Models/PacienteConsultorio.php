@@ -113,4 +113,16 @@ class PacienteConsultorio extends Model
     {
         return $this->hasMany(Transfusion::class, 'id_paciente');
     }
+    
+    // Relación con Medicaciones a través de tabla pivote
+    public function medicacionesPacientes(): HasMany
+    {
+        return $this->hasMany(MedicacionPaciente::class, 'id_paciente');
+    }
+
+    // Relación con Vacunas a través de tabla pivote
+    public function vacunasPacientes(): HasMany
+    {
+        return $this->hasMany(VacunaPaciente::class, 'id_paciente');
+    }
 }
