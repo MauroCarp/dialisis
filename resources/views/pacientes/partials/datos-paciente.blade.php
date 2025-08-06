@@ -1,5 +1,5 @@
-<!-- Pestaña: Datos del Paciente -->
-<div x-show="activeMainTab === 'datos'" x-transition class="space-y-6">
+<!-- Datos del Paciente -->
+<div class="space-y-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Información Personal Extendida -->
         <div class="bg-gray-50 rounded-lg p-6">

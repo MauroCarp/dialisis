@@ -1,6 +1,6 @@
-<!-- Pestaña: Análisis (solo para pacientes de diálisis) -->
+<!-- Análisis (solo para pacientes de diálisis) -->
 @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
-<div x-show="activeMainTab === 'analisis'" x-transition class="space-y-4">
+<div class="space-y-4">
     <!-- Pestañas de Análisis -->
     <div x-data="{ activeTab: 'diarios' }" class="w-full">
         <!-- Navegación de pestañas -->

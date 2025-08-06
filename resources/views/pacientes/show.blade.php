@@ -53,135 +53,178 @@
             
             <!-- Sistema de Pestañas Principal -->
             <div class="bg-white shadow rounded-lg p-6">
-                <div x-data="{ activeMainTab: 'datos' }" class="w-full">
-                    <!-- Navegación de pestañas principales -->
+                <div x-data="{ 
+                    activeMainTab: 'grupo1', 
+                    activeMedicalTab: 'historias',
+                    activeEventTab: 'accesos'
+                }" class="w-full">
+                    <!-- Navegación de pestañas principales (3 grupos) -->
                     <div class="flex border-b border-gray-200 mb-6">
                         <button 
-                            @click="activeMainTab = 'datos'"
-                            :class="activeMainTab === 'datos' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                            @click="activeMainTab = 'grupo1'"
+                            :class="activeMainTab === 'grupo1' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-8 border-b-2 font-medium text-lg focus:outline-none transition-colors duration-200"
                         >
                             <i class="fas fa-user mr-2"></i>
                             Datos del Paciente
                         </button>
                         
-                        @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
                         <button 
-                            @click="activeMainTab = 'analisis'"
-                            :class="activeMainTab === 'analisis' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                            @click="activeMainTab = 'grupo2'"
+                            :class="activeMainTab === 'grupo2' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-8 border-b-2 font-medium text-lg focus:outline-none transition-colors duration-200"
                         >
-                            <i class="fas fa-flask mr-2"></i>
-                            Análisis
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">
-                                {{ (isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0) }}
+                            <i class="fas fa-user-md mr-2"></i>
+                            Información Médica
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-2">
+                                {{ ($paciente->historiaClinica ? $paciente->historiaClinica->count() : 0) + ($paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0) + ($paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0) + ((isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0)) }}
                             </span>
                         </button>
                         
                         <button 
-                            @click="activeMainTab = 'accesos'"
-                            :class="activeMainTab === 'accesos' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                            @click="activeMainTab = 'grupo3'"
+                            :class="activeMainTab === 'grupo3' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            class="whitespace-nowrap py-3 px-8 border-b-2 font-medium text-lg focus:outline-none transition-colors duration-200"
                         >
-                            <i class="fas fa-heart mr-2"></i>
-                            Accesos Vasculares 
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->accesosVasculares ? $paciente->accesosVasculares->count() : 0 }}</span>
-                        </button>
-                        @endif
-                        
-                        <button 
-                            @click="activeMainTab = 'historias'"
-                            :class="activeMainTab === 'historias' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
-                        >
-                            <i class="fas fa-file-medical mr-2"></i>
-                            Historias Clínicas 
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->historiaClinica ? $paciente->historiaClinica->count() : 0 }}</span>
-                        </button>
-                        
-                        <button 
-                            @click="activeMainTab = 'estudios'"
-                            :class="activeMainTab === 'estudios' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
-                        >
-                            <i class="fas fa-microscope mr-2"></i>
-                            Estudios
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0 }}</span>
-                        </button>
-                        
-                        <button 
-                            @click="activeMainTab = 'internaciones'"
-                            :class="activeMainTab === 'internaciones' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
-                        >
-                            <i class="fas fa-hospital mr-2"></i>
-                            Internaciones
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->internaciones ? $paciente->internaciones->count() : 0 }}</span>
-                        </button>
-                        
-                        <button 
-                            @click="activeMainTab = 'patologias'"
-                            :class="activeMainTab === 'patologias' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
-                        >
-                            <i class="fas fa-diagnoses mr-2"></i>
-                            Patologías
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0 }}</span>
-                        </button>
-                        
-                        <button 
-                            @click="activeMainTab = 'transfusiones'"
-                            :class="activeMainTab === 'transfusiones' ? 'border-teal-500 text-teal-600 bg-teal-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            class="whitespace-nowrap py-3 px-6 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
-                        >
-                            <i class="fas fa-tint mr-2"></i>
-                            Transfusiones
-                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-1">{{ $paciente->transfusiones ? $paciente->transfusiones->count() : 0 }}</span>
+                            <i class="fas fa-procedures mr-2"></i>
+                            Eventos Médicos
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-2">
+                                {{ ($paciente->accesosVasculares ? $paciente->accesosVasculares->count() : 0) + ($paciente->internaciones ? $paciente->internaciones->count() : 0) + ($paciente->transfusiones ? $paciente->transfusiones->count() : 0) }}
+                            </span>
                         </button>
                     </div>
 
-                    <!-- Contenido de las pestañas principales -->
+                    <!-- Contenido de los grupos -->
                     
-                    <!-- Pestaña: Datos del Paciente -->
-                    <div x-show="activeMainTab === 'datos'" x-transition class="space-y-6">
+                    <!-- GRUPO 1: Datos del Paciente -->
+                    <div x-show="activeMainTab === 'grupo1'" x-transition class="space-y-6">
                         @include('pacientes.partials.datos-paciente')
                     </div>
 
-                    <!-- Pestaña: Análisis (solo para pacientes de diálisis) -->
-                    @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
-                    <div x-show="activeMainTab === 'analisis'" x-transition class="space-y-4">
-                        @include('pacientes.partials.analisis')
-                    </div>
-                    
-                    <!-- Pestaña: Accesos Vasculares (solo para pacientes de diálisis) -->
-                    <div x-show="activeMainTab === 'accesos'" x-transition class="space-y-4">
-                        @include('pacientes.partials.accesos-vasculares')
-                    </div>
-                    @endif
+                    <!-- GRUPO 2: Información Médica -->
+                    <div x-show="activeMainTab === 'grupo2'" x-transition class="space-y-4">
+                        <!-- Sub-pestañas para Información Médica -->
+                        <div class="border-b border-gray-100 mb-4">
+                            <div class="flex space-x-4">
+                                <button 
+                                    @click="activeMedicalTab = 'historias'"
+                                    :class="activeMedicalTab === 'historias' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-file-medical mr-1"></i>
+                                    Historias Clínicas
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->historiaClinica ? $paciente->historiaClinica->count() : 0 }}</span>
+                                </button>
+                                
+                                @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
+                                <button 
+                                    @click="activeMedicalTab = 'analisis'"
+                                    :class="activeMedicalTab === 'analisis' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-flask mr-1"></i>
+                                    Análisis
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">
+                                        {{ (isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0) }}
+                                    </span>
+                                </button>
+                                @endif
+                                
+                                <button 
+                                    @click="activeMedicalTab = 'patologias'"
+                                    :class="activeMedicalTab === 'patologias' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-diagnoses mr-1"></i>
+                                    Patologías
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0 }}</span>
+                                </button>
+                                
+                                <button 
+                                    @click="activeMedicalTab = 'estudios'"
+                                    :class="activeMedicalTab === 'estudios' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-microscope mr-1"></i>
+                                    Estudios
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0 }}</span>
+                                </button>
+                            </div>
+                        </div>
 
-                    <!-- Pestaña: Historias Clínicas -->
-                    <div x-show="activeMainTab === 'historias'" x-transition class="space-y-4">
-                        @include('pacientes.partials.historias-clinicas')
+                        <!-- Contenido de las sub-pestañas médicas -->
+                        <div x-show="activeMedicalTab === 'historias'" x-transition class="space-y-4">
+                            @include('pacientes.partials.historias-clinicas')
+                        </div>
+                        
+                        @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
+                        <div x-show="activeMedicalTab === 'analisis'" x-transition class="space-y-4">
+                            @include('pacientes.partials.analisis')
+                        </div>
+                        @endif
+                        
+                        <div x-show="activeMedicalTab === 'patologias'" x-transition class="space-y-4">
+                            @include('pacientes.partials.patologias-pacientes')
+                        </div>
+                        
+                        <div x-show="activeMedicalTab === 'estudios'" x-transition class="space-y-4">
+                            @include('pacientes.partials.estudios-pacientes')
+                        </div>
                     </div>
 
-                    <!-- Pestaña: Estudios -->
-                    <div x-show="activeMainTab === 'estudios'" x-transition class="space-y-4">
-                        @include('pacientes.partials.estudios-pacientes')
-                    </div>
+                    <!-- GRUPO 3: Eventos Médicos -->
+                    <div x-show="activeMainTab === 'grupo3'" x-transition class="space-y-4">
+                        <!-- Sub-pestañas para Eventos Médicos -->
+                        <div class="border-b border-gray-100 mb-4">
+                            <div class="flex space-x-4">
+                                @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
+                                <button 
+                                    @click="activeEventTab = 'accesos'"
+                                    :class="activeEventTab === 'accesos' ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-heart mr-1"></i>
+                                    Accesos Vasculares
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->accesosVasculares ? $paciente->accesosVasculares->count() : 0 }}</span>
+                                </button>
+                                @endif
+                                
+                                <button 
+                                    @click="activeEventTab = 'internaciones'"
+                                    :class="activeEventTab === 'internaciones' ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-hospital mr-1"></i>
+                                    Internaciones
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->internaciones ? $paciente->internaciones->count() : 0 }}</span>
+                                </button>
+                                
+                                <button 
+                                    @click="activeEventTab = 'transfusiones'"
+                                    :class="activeEventTab === 'transfusiones' ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                    class="whitespace-nowrap py-2 px-4 border-b-2 font-medium text-sm focus:outline-none transition-colors duration-200"
+                                >
+                                    <i class="fas fa-tint mr-1"></i>
+                                    Transfusiones
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->transfusiones ? $paciente->transfusiones->count() : 0 }}</span>
+                                </button>
+                            </div>
+                        </div>
 
-                    <!-- Pestaña: Internaciones -->
-                    <div x-show="activeMainTab === 'internaciones'" x-transition class="space-y-4">
-                        @include('pacientes.partials.internaciones')
-                    </div>
-
-                    <!-- Pestaña: Patologías -->
-                    <div x-show="activeMainTab === 'patologias'" x-transition class="space-y-4">
-                        @include('pacientes.partials.patologias-pacientes')
-                    </div>
-
-                    <!-- Pestaña: Transfusiones -->
-                    <div x-show="activeMainTab === 'transfusiones'" x-transition class="space-y-4">
-                        @include('pacientes.partials.transfusiones')
+                        <!-- Contenido de las sub-pestañas de eventos -->
+                        @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
+                        <div x-show="activeEventTab === 'accesos'" x-transition class="space-y-4">
+                            @include('pacientes.partials.accesos-vasculares')
+                        </div>
+                        @endif
+                        
+                        <div x-show="activeEventTab === 'internaciones'" x-transition class="space-y-4">
+                            @include('pacientes.partials.internaciones')
+                        </div>
+                        
+                        <div x-show="activeEventTab === 'transfusiones'" x-transition class="space-y-4">
+                            @include('pacientes.partials.transfusiones')
+                        </div>
                     </div>
                 </div>
             </div>
