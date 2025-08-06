@@ -79,22 +79,12 @@
                                 <div class="flex items-center space-x-3">
                                     @if($internacion->motivoInternacion)
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                                            <i class="fas fa-stethoscope mr-1"></i>
+                                            Motivo de Internación:
                                             {{ $internacion->motivoInternacion->nombre }}
                                         </span>
                                     @endif
                                     
-                                    @if($internacion->fechafininternacion)
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>
-                                            Finalizada
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            <i class="fas fa-clock mr-1"></i>
-                                            En curso
-                                        </span>
-                                    @endif
+                                  
                                 </div>
                                 
                                 <div class="text-sm text-gray-500">
@@ -116,15 +106,13 @@
                                 </div>
                             @endif
                             
-                            @if($internacion->observaciones)
-                                <div class="mt-3 pt-3 border-t border-gray-200">
-                                    <span class="text-gray-500 font-medium text-sm">
-                                        <i class="fas fa-file-medical mr-1"></i>
-                                        Observaciones:
-                                    </span>
-                                    <p class="text-sm text-gray-700 mt-1">{{ $internacion->observaciones }}</p>
-                                </div>
-                            @endif
+                            <div class="mt-3 pt-3 border-t border-gray-200">
+                                <span class="text-gray-500 font-medium text-sm">
+                                    <i class="fas fa-file-medical mr-1"></i>
+                                    Observaciones:
+                                </span>
+                                <p class="text-sm text-gray-700 mt-1">{{ $internacion->observaciones ?? '-' }}</p>
+                            </div>
                         </div>
                     @endforeach
                 </div>
