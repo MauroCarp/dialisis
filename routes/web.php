@@ -42,6 +42,7 @@ Route::get('/historias-clinicas/{id}/download', [HistoriaClinicaController::clas
 // Rutas para historias clínicas de consultorio
 Route::get('/pacientes/{id}/historias-clinicas-consultorio/create', [HistoriaClinicaConsultorioController::class, 'create'])->name('historias-clinicas-consultorio.create');
 Route::post('/pacientes/{id}/historias-clinicas-consultorio', [HistoriaClinicaConsultorioController::class, 'store'])->name('historias-clinicas-consultorio.store');
+Route::get('/historias-clinicas-consultorio/{id}/download', [HistoriaClinicaConsultorioController::class, 'download'])->name('historia-clinica-consultorio.download');
 
 // Ruta para crear accesos vasculares
 Route::post('/pacientes/{paciente}/accesos-vasculares', [AccesoVascularController::class, 'store'])

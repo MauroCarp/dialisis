@@ -6,7 +6,7 @@
             <i class="fas fa-notes-medical mr-2 text-green-600"></i>
             Nueva Historia Clínica
         </h4>
-        <form method="POST" action="{{ route('historias-clinicas.store', $paciente->id) }}">
+        <form method="POST" action="{{ isset($esPacienteConsultorio) && $esPacienteConsultorio ? route('historias-clinicas-consultorio.store', $paciente->id) : route('historias-clinicas.store', $paciente->id) }}">
             @csrf
 
             <input type="hidden" name="fechahistoriaclinica" value="{{ now()->format('Y-m-d H:i:s') }}">
@@ -37,15 +37,28 @@
                 <i class="fas fa-history mr-2 text-gray-600"></i>
                 Historial de Consultas Médicas
                 <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {{ $paciente->historiaClinica ? $paciente->historiaClinica->count() : 0 }} registros
+                    @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
+                        {{ $paciente->historiasClinicasConsultorio ? $paciente->historiasClinicasConsultorio->count() : 0 }} registros
+                    @else
+                        {{ $paciente->historiasClinicas ? $paciente->historiasClinicas->count() : 0 }} registros
+                    @endif
                 </span>
             </h4>
         </div>
         
         <div class="p-6">
-            @if(isset($paciente->historiaClinica) && $paciente->historiaClinica->count() > 0)
+            @php
+                $historias = null;
+                if(isset($esPacienteConsultorio) && $esPacienteConsultorio) {
+                    $historias = $paciente->historiasClinicasConsultorio;
+                } else {
+                    $historias = $paciente->historiasClinicas;
+                }
+            @endphp
+            
+            @if($historias && $historias->count() > 0)
                 <div class="space-y-6">
-                    @foreach($paciente->historiaClinica as $historia)
+                    @foreach($historias as $historia)
                         <div class="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow duration-200">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="flex items-center space-x-3">
@@ -55,7 +68,26 @@
                                             {{ \Carbon\Carbon::parse($historia->fechahistoriaclinica)->format('d/m/Y') }}
                                         </span>
                                     @endif
-                                  
+                                </div>
+                                
+                                <!-- Botón de descarga individual para cada historia -->
+                                <div class="flex items-center space-x-2">
+                                    @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
+                                        <a href="{{ route('historia-clinica-consultorio.download', ['id' => $historia->id]) }}" 
+                                           class="inline-flex items-center px-3 py-1 rounded text-sm bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200"
+                                           title="Descargar Historia Clínica PDF">
+                                            <i class="fas fa-download mr-1"></i>
+                                            PDF
+                                        </a>
+                                    @else
+                                        <a href="{{ route('historias-clinicas.download', ['id' => $historia->id]) }}" 
+                                           class="inline-flex items-center px-3 py-1 rounded text-sm bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200"
+                                           title="Descargar Historia Clínica PDF">
+                                            <i class="fas fa-download mr-1"></i>
+                                            PDF
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                             
                             @if($historia->observaciones)

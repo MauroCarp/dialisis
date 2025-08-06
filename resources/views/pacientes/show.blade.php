@@ -77,7 +77,15 @@
                             <i class="fas fa-user-md mr-2"></i>
                             Información Médica
                             <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full ml-2">
-                                {{ ($paciente->historiaClinica ? $paciente->historiaClinica->count() : 0) + ($paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0) + ($paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0) + ($paciente->medicacionesPacientes ? $paciente->medicacionesPacientes->count() : 0) + ($paciente->vacunasPacientes ? $paciente->vacunasPacientes->count() : 0) + ((isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0)) }}
+                                @php
+                                    $historiasCount = 0;
+                                    if(isset($esPacienteConsultorio) && $esPacienteConsultorio) {
+                                        $historiasCount = $paciente->historiasClinicasConsultorio ? $paciente->historiasClinicasConsultorio->count() : 0;
+                                    } else {
+                                        $historiasCount = $paciente->historiasClinicas ? $paciente->historiasClinicas->count() : 0;
+                                    }
+                                @endphp
+                                {{ $historiasCount + ($paciente->estudiosPacientes ? $paciente->estudiosPacientes->count() : 0) + ($paciente->patologiasPacientes ? $paciente->patologiasPacientes->count() : 0) + ($paciente->medicacionesPacientes ? $paciente->medicacionesPacientes->count() : 0) + ($paciente->vacunasPacientes ? $paciente->vacunasPacientes->count() : 0) + ((isset($analisisData['diarios']) ? $analisisData['diarios']->count() : 0) + (isset($analisisData['mensuales']) ? $analisisData['mensuales']->count() : 0) + (isset($analisisData['trimestrales']) ? $analisisData['trimestrales']->count() : 0) + (isset($analisisData['semestrales']) ? $analisisData['semestrales']->count() : 0)) }}
                             </span>
                         </button>
                         
@@ -113,7 +121,13 @@
                                 >
                                     <i class="fas fa-file-medical mr-1"></i>
                                     Historias Clínicas
-                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">{{ $paciente->historiaClinica ? $paciente->historiaClinica->count() : 0 }}</span>
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full ml-1">
+                                        @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
+                                            {{ $paciente->historiasClinicasConsultorio ? $paciente->historiasClinicasConsultorio->count() : 0 }}
+                                        @else
+                                            {{ $paciente->historiasClinicas ? $paciente->historiasClinicas->count() : 0 }}
+                                        @endif
+                                    </span>
                                 </button>
                                 
                                 @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)

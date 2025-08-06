@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HistoriaClinicaConsultorio;
 use App\Models\PacienteConsultorio;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HistoriaClinicaConsultorioController extends Controller
 {
@@ -30,5 +31,20 @@ class HistoriaClinicaConsultorioController extends Controller
         return redirect()
             ->route('pacientes.show', $paciente->id)
             ->with('success', 'Historia clínica de consultorio creada exitosamente.');
+    }
+
+    public function download($id)
+    {
+        $historia = HistoriaClinicaConsultorio::with('pacienteConsultorio')->findOrFail($id);
+        $paciente = $historia->pacienteConsultorio;
+
+        // Generar PDF
+        $pdf = Pdf::loadView('historias-clinicas.pdf', compact('historia', 'paciente'))
+            ->setPaper('a4', 'portrait');
+
+        $filename = 'Historia_Clinica_Consultorio_' . $paciente->apellido . '_' . $paciente->nombre . '_' . 
+                   $historia->fechahistoriaclinica->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }
