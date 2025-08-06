@@ -1046,15 +1046,14 @@
                             Nueva Historia Clínica
                         </a>
                     </div>
-            @if($historias && $historias->count() > 0)
+                    @if($historias && $historias->count() > 0)
 
                     <div class="space-y-4">
                         <div x-data="{ open: false }" class="space-y-2">
                             <button 
                                 @click="open = !open"
                                 class="w-full flex items-center justify-between px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 focus:outline-none"
-                                type="button"
-                            >
+                                type="button">
                                 <span>
                                     <span x-show="!open">Mostrar</span>
                                     <span x-show="open">Ocultar</span>
@@ -1067,7 +1066,16 @@
                                 @foreach($historias as $historia)
                                     <div class="border border-gray-200 rounded-lg p-4">
                                         <div class="flex justify-between items-start mb-2">
-                                            <h3 class="font-medium text-gray-900">Historia Clínica</h3>
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="font-medium text-gray-900">Historia Clínica</h3>
+                                                <a href="{{ route('historias-clinicas.download', $historia->id) }}" 
+                                                   title="Descargar Historia Clínica"
+                                                   class="inline-flex items-center justify-center w-8 h-8 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors duration-200">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                </a>
+                                            </div>
                                             @if($historia->fechahistoriaclinica)
                                                 <span class="text-sm text-gray-500">
                                                     {{ \Carbon\Carbon::parse($historia->fechahistoriaclinica)->format('d/m/Y H:i') }}

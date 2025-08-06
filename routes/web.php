@@ -32,6 +32,7 @@ Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name
 // Rutas para historias clínicas de diálisis
 Route::get('/pacientes/{id}/historias-clinicas/create', [HistoriaClinicaController::class, 'create'])->name('historias-clinicas.create');
 Route::post('/pacientes/{id}/historias-clinicas', [HistoriaClinicaController::class, 'store'])->name('historias-clinicas.store');
+Route::get('/historias-clinicas/{id}/download', [HistoriaClinicaController::class, 'download'])->name('historias-clinicas.download');
 
 // Rutas para historias clínicas de consultorio
 Route::get('/pacientes/{id}/historias-clinicas-consultorio/create', [HistoriaClinicaConsultorioController::class, 'create'])->name('historias-clinicas-consultorio.create');
