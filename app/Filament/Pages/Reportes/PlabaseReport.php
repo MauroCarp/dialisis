@@ -85,26 +85,38 @@ class PlabaseReport extends Page
     private function generarReportePlabase($mes, $anio)
     {
         try {
-            // Obtener todos los pacientes de dialisis (que tengan numero de alta)
-            $pacientes = Paciente::whereNotNull('nroalta')
+            \Log::info("PLABASE: Iniciando generación de reporte", ['mes' => $mes, 'anio' => $anio]);
+            
+            // Obtener solo pacientes de hemodialisis activos (fechaegreso null)
+            $pacientes = Paciente::whereNull('fechaegreso')
                 ->orderBy('apellido')
                 ->orderBy('nombre')
                 ->get();
+            
+            \Log::info("PLABASE: Pacientes de hemodiálisis activos encontrados", ['cantidad' => $pacientes->count()]);
 
             // Crear nuevo spreadsheet
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle("PLABASE {$mes}-{$anio}");
+            
+            \Log::info("PLABASE: Spreadsheet creado");
 
             // Configurar encabezados
             $this->configurarEncabezados($sheet, $mes, $anio, $pacientes);
+            \Log::info("PLABASE: Encabezados configurados");
 
             // Definir estructura de campos segun el CSV
             $campos = $this->obtenerEstructuraCampos();
+            \Log::info("PLABASE: Estructura de campos obtenida");
 
             $fila = 2; // Comenzamos en la fila 2 despues de los nombres
+            $totalCampos = 0;
+            $camposConError = [];
 
             foreach ($campos as $seccion => $camposSeccion) {
+                \Log::info("PLABASE: Procesando sección", ['seccion' => $seccion]);
+                
                 if ($seccion === 'separador_trimestral') {
                     // Fila separadora para analisis trimestral
                     $sheet->setCellValue("A{$fila}", '----- Trimestral -----');
@@ -118,48 +130,87 @@ class PlabaseReport extends Page
                 }
 
                 foreach ($camposSeccion as $campo => $etiqueta) {
-                    // Escribir etiqueta del campo en la primera columna
-                    $sheet->setCellValue("A{$fila}", $etiqueta);
+                    try {
+                        $totalCampos++;
+                        \Log::info("PLABASE: Procesando campo", ['campo' => $campo, 'fila' => $fila]);
+                        
+                        // Escribir etiqueta del campo en la primera columna
+                        $etiquetaLimpia = $this->limpiarUTF8($etiqueta);
+                        $sheet->setCellValue("A{$fila}", $etiquetaLimpia);
 
-                    // Escribir datos de cada paciente
-                    $columna = 2;
-                    foreach ($pacientes as $paciente) {
-                        // Obtener analisis segun la seccion
-                        $analisisMensual = null;
-                        $analisisTrimestral = null;
-                        $analisisSemestral = null;
+                        // Escribir datos de cada paciente
+                        $columna = 2;
+                        foreach ($pacientes as $paciente) {
+                            try {
+                                // Obtener analisis segun la seccion
+                                $analisisMensual = null;
+                                $analisisTrimestral = null;
+                                $analisisSemestral = null;
 
-                        if ($seccion === 'mensual') {
-                            $analisisMensual = $this->obtenerAnalisisMensual($paciente, $mes, $anio);
-                        } elseif ($seccion === 'trimestral') {
-                            $analisisTrimestral = $this->obtenerUltimoAnalisisTrimestral($paciente, $mes, $anio);
-                        } elseif ($seccion === 'semestral') {
-                            $analisisSemestral = $this->obtenerUltimoAnalisisSemestral($paciente, $mes, $anio);
+                                if ($seccion === 'mensual') {
+                                    $analisisMensual = $this->obtenerAnalisisMensual($paciente, $mes, $anio);
+                                } elseif ($seccion === 'trimestral') {
+                                    $analisisTrimestral = $this->obtenerUltimoAnalisisTrimestral($paciente, $mes, $anio);
+                                } elseif ($seccion === 'semestral') {
+                                    $analisisSemestral = $this->obtenerUltimoAnalisisSemestral($paciente, $mes, $anio);
+                                }
+
+                                // Escribir valor del campo
+                                $valor = $this->obtenerValorCampo($campo, $paciente, $analisisMensual, $analisisTrimestral, $analisisSemestral);
+                                
+                                // Limpiar y validar UTF-8
+                                $valor = $this->limpiarUTF8($valor);
+                                
+                                $columnLetter = Coordinate::stringFromColumnIndex($columna);
+                                $sheet->setCellValue("{$columnLetter}{$fila}", $valor);
+                                $columna++;
+                                
+                            } catch (\Exception $e) {
+                                \Log::error("PLABASE: Error procesando paciente", [
+                                    'paciente_id' => $paciente->id,
+                                    'campo' => $campo,
+                                    'error' => $e->getMessage(),
+                                    'trace' => $e->getTraceAsString()
+                                ]);
+                                $camposConError[] = "{$campo} - Paciente {$paciente->id}";
+                                // Continuar con el siguiente paciente
+                                $columna++;
+                            }
                         }
-
-                        // Escribir valor del campo
-                        $valor = $this->obtenerValorCampo($campo, $paciente, $analisisMensual, $analisisTrimestral, $analisisSemestral);
+                        $fila++;
                         
-                        // Limpiar y validar UTF-8
-                        $valor = $this->limpiarUTF8($valor);
-                        
-                        $columnLetter = Coordinate::stringFromColumnIndex($columna);
-                        $sheet->setCellValue("{$columnLetter}{$fila}", $valor);
-                        $columna++;
+                    } catch (\Exception $e) {
+                        \Log::error("PLABASE: Error procesando campo", [
+                            'campo' => $campo,
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString()
+                        ]);
+                        $camposConError[] = $campo;
+                        $fila++;
                     }
-                    $fila++;
                 }
             }
+            
+            \Log::info("PLABASE: Datos procesados", [
+                'total_campos' => $totalCampos,
+                'campos_con_error' => count($camposConError),
+                'errores' => $camposConError
+            ]);
 
             // Aplicar estilos y formato
+            \Log::info("PLABASE: Aplicando estilos");
             $this->aplicarEstilos($sheet, $fila - 1, count($pacientes));
 
             // Generar archivo y descargar
             $nombreArchivo = "PLABASE_{$mes}_{$anio}_" . date('YmdHis') . ".xlsx";
             $rutaArchivo = storage_path("app/public/{$nombreArchivo}");
+            
+            \Log::info("PLABASE: Guardando archivo", ['ruta' => $rutaArchivo]);
 
             $writer = new Xlsx($spreadsheet);
             $writer->save($rutaArchivo);
+            
+            \Log::info("PLABASE: Archivo guardado exitosamente");
 
             // Notificación de éxito y descarga
             Notification::make()
@@ -175,9 +226,16 @@ class PlabaseReport extends Page
                 ->send();
 
         } catch (\Exception $e) {
+            \Log::error("PLABASE: Error general", [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             Notification::make()
                 ->title('Error al generar el reporte')
-                ->body($e->getMessage())
+                ->body("Error: " . $e->getMessage() . " (Línea: " . $e->getLine() . ")")
                 ->danger()
                 ->send();
         }
@@ -468,19 +526,39 @@ class PlabaseReport extends Page
             return '';
         }
 
-        // Convertir a string y limpiar
-        $numero = (string) $numero;
-        
-        // Reemplazar coma decimal por punto
-        $numero = str_replace(',', '.', $numero);
-        
-        // Validar que sea un número válido
-        if (!is_numeric($numero)) {
+        try {
+            // Convertir a string y limpiar
+            $numero = (string) $numero;
+            
+            // Reemplazar coma decimal por punto
+            $numero = str_replace(',', '.', $numero);
+            
+            // Remover espacios y caracteres no numéricos (excepto punto y signo menos)
+            $numero = preg_replace('/[^\d.-]/', '', $numero);
+            
+            // Validar que sea un número válido
+            if (!is_numeric($numero)) {
+                \Log::warning("PLABASE: Valor no numérico", ['valor' => $numero]);
+                return '';
+            }
+
+            // Formatear como número con máximo 2 decimales
+            $resultado = number_format((float) $numero, 2, '.', '');
+            
+            // Si el resultado es .00, mostrar solo el entero
+            if (substr($resultado, -3) === '.00') {
+                $resultado = substr($resultado, 0, -3);
+            }
+            
+            return $resultado;
+            
+        } catch (\Exception $e) {
+            \Log::error("PLABASE: Error en formatearNumero", [
+                'numero' => $numero,
+                'error' => $e->getMessage()
+            ]);
             return '';
         }
-
-        // Formatear como número con máximo 2 decimales
-        return number_format((float) $numero, 2, '.', '');
     }
 
     /**
@@ -492,31 +570,58 @@ class PlabaseReport extends Page
             return '';
         }
 
-        // Convertir a string si no lo es
-        $valor = (string) $valor;
+        try {
+            // Convertir a string si no lo es
+            $valorOriginal = $valor;
+            $valor = (string) $valor;
 
-        // Remover caracteres de control y limpiar UTF-8
-        $valor = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $valor);
-        
-        // Verificar y limpiar UTF-8
-        if (!mb_check_encoding($valor, 'UTF-8')) {
-            $valor = mb_convert_encoding($valor, 'UTF-8', 'UTF-8');
+            // Log valores problemáticos
+            if (!mb_check_encoding($valor, 'UTF-8')) {
+                \Log::warning("PLABASE: Valor con codificación problemática", [
+                    'valor_original' => $valorOriginal,
+                    'valor_string' => $valor,
+                    'encoding' => mb_detect_encoding($valor)
+                ]);
+            }
+
+            // Remover caracteres de control y limpiar UTF-8
+            $valor = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $valor);
+            
+            // Verificar y limpiar UTF-8
+            if (!mb_check_encoding($valor, 'UTF-8')) {
+                $valor = mb_convert_encoding($valor, 'UTF-8', 'UTF-8');
+            }
+
+            // Reemplazar caracteres problemáticos comunes
+            $replacements = [
+                'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
+                'ñ' => 'n', 'Ñ' => 'N',
+                'ü' => 'u', 'Ü' => 'U',
+                '°' => 'o'
+            ];
+
+            $valor = strtr($valor, $replacements);
+
+            // Asegurar que solo contenga caracteres ASCII seguros
+            $valorFinal = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $valor);
+            
+            if ($valorFinal === false) {
+                \Log::error("PLABASE: Error en iconv", [
+                    'valor_original' => $valorOriginal,
+                    'valor_procesado' => $valor
+                ]);
+                return ''; // Retornar cadena vacía si falla iconv
+            }
+
+            return trim($valorFinal);
+            
+        } catch (\Exception $e) {
+            \Log::error("PLABASE: Error en limpiarUTF8", [
+                'valor' => $valor,
+                'error' => $e->getMessage()
+            ]);
+            return ''; // Retornar cadena vacía en caso de error
         }
-
-        // Reemplazar caracteres problemáticos comunes
-        $replacements = [
-            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
-            'ñ' => 'n', 'Ñ' => 'N',
-            'ü' => 'u', 'Ü' => 'U',
-            '°' => 'o'
-        ];
-
-        $valor = strtr($valor, $replacements);
-
-        // Asegurar que solo contenga caracteres ASCII seguros
-        $valor = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $valor);
-
-        return trim($valor);
     }
 }
