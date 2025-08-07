@@ -41,33 +41,12 @@
                     <input type="number" step="0.01" name="creatinina" class="w-full border rounded px-3 py-2">
                 </div>
                 <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">Urea Pre</label>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Uremia Pre</label>
                     <input type="number" step="0.01" name="uremia_pre" class="w-full border rounded px-3 py-2">
                 </div>
                 <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">Urea Post</label>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Uremia Post</label>
                     <input type="number" step="0.01" name="uremia_post" class="w-full border rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">Urea/Creatinina</label>
-                    <input type="number" step="0.01" name="urea_creatinina" class="w-full border rounded px-3 py-2">
-                </div>
-                <!-- Adecuación de Diálisis -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">URR (RPU)</label>
-                    <input type="number" step="0.01" name="rpu" class="w-full border rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">KT/V Daugiras</label>
-                    <input type="number" step="0.01" name="ktv_daugiras" class="w-full border rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">KT/V Basile</label>
-                    <input type="number" step="0.01" name="ktv_basile" class="w-full border rounded px-3 py-2">
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">TAC Urea</label>
-                    <input type="number" step="0.01" name="tac_urea" class="w-full border rounded px-3 py-2">
                 </div>
                 <!-- Electrolitos -->
                 <div>
@@ -98,11 +77,6 @@
                 <div>
                     <label class="block text-gray-700 text-sm font-semibold mb-2">Fosfatasa Alcalina</label>
                     <input type="number" step="0.01" name="fosfatasa_alcalina" class="w-full border rounded px-3 py-2">
-                </div>
-                <!-- Inflamación -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">PCR</label>
-                    <input type="number" step="0.01" name="pcr" class="w-full border rounded px-3 py-2">
                 </div>
             </div>
             <div class="flex justify-end">

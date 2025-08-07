@@ -104,6 +104,7 @@ class PacienteBuscadorWidget extends Widget implements HasForms
                           ->orWhereRaw('LOWER(CONCAT(apellido, " ", nombre)) LIKE ?', ["%{$terminoLower}%"]);
                 }
             })
+            ->whereNull('fechaegreso')
             ->with(['localidad.provincia', 'tipoDocumento', 'causaIngreso', 'causaEgreso'])
             ->limit(10)
             ->get()
