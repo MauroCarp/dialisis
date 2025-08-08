@@ -165,23 +165,49 @@ class PlabaseReport extends Page
                                 
                                 $columnLetter = Coordinate::stringFromColumnIndex($columna);
                                 
+                                $filaEpoMensual = 9;
+                                $filaCreatinina = 11;
+                                $filaUremaPre = 12;
+                                $filaUremiaPost = 14;
+                                $filaRpu = 15;
+                                $filaPromPesoPre= 20;
+                                $filaPromPesoPos = 21;
+                                $filaCalcemia= 24;
+                                $filaFosfatemia = 25;
+
                                 switch ($campo) {
                                     case 'urea_creat':
-                                        $filaUremaPre = 12;
-                                        $filaCreatinina = 11;
-                                        // Usamos la función ROUND para dejar 2 decimales
-                                        $formula = "=ROUND({$columnLetter}{$filaUremaPre}/{$columnLetter}{$filaCreatinina}*10,2)";
-                                        $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                            $formula = "=ROUND({$columnLetter}{$filaUremaPre}/{$columnLetter}{$filaCreatinina}*10,2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
                                         break;
                                     case 'rpu':
-                                        $filaUremaPre = 12;
-                                        $filaCreatinina = 11;
-                                        // Usamos la función ROUND para dejar 2 decimales
-                                        $formula = "=ROUND({$columnLetter}{$filaUremaPre}/{$columnLetter}{$filaCreatinina}*10,2)";
+                                            $formula = "=ROUND(({$columnLetter}{$filaUremaPre}-{$columnLetter}{$filaUremiaPost}) / {$columnLetter}{$filaUremaPre} * 100,2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+                                    case 'ktv_daug':
+                                            $formula = "=ROUND((-LN({$columnLetter}{$filaUremiaPost} / {$columnLetter}{$filaUremaPre} - 0.008 * 4) + (4 - 3.5 * {$columnLetter}{$filaUremiaPost} / {$columnLetter}{$filaUremaPre}) * ({$columnLetter}{$filaPromPesoPre} - {$columnLetter}{$filaPromPesoPos}) / {$columnLetter}{$filaPromPesoPos}),2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+                                    case 'ktv_basile':
+                                        $formula = "=ROUND(({$columnLetter}{$filaRpu} * 0.023) - 0.284,2)";
                                         $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
                                         break;
-
-
+                                    case 'tac_urea':
+                                            $formula = "=ROUND(({$columnLetter}{$filaUremaPre} + {$columnLetter}{$filaUremiaPost}) / 2,2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+                                    case 'pcr':
+                                            $formula = "=ROUND((({$columnLetter}{$filaUremaPre} / 0.02143)/(25.8 + 1.15 * (-LN({$columnLetter}{$filaUremiaPost}/{$columnLetter}{$filaUremaPre} - 0.008 * 4)+(4 - 3.5 * {$columnLetter}{$filaUremiaPost}/{$columnLetter}{$filaUremaPre})*({$columnLetter}{$filaPromPesoPre}-{$columnLetter}{$filaPromPesoPos})/{$columnLetter}{$filaPromPesoPos})+56.4/(-LN({$columnLetter}{$filaUremiaPost}/{$columnLetter}{$filaUremaPre} - 0.008 * 4)+(4-3.5*{$columnLetter}{$filaUremiaPost}/{$columnLetter}{$filaUremaPre})*({$columnLetter}{$filaPromPesoPre}-{$columnLetter}{$filaPromPesoPos})/{$columnLetter}{$filaPromPesoPos})))+0.168,2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+                                    case 'prod_k_p':
+                                            $formula = "=ROUND({$columnLetter}{$filaFosfatemia} * {$columnLetter}{$filaCalcemia},2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+                                    case 'epo_mensual_kg':
+                                            $formula = "=ROUND({$columnLetter}{$filaEpoMensual}/{$columnLetter}{$filaPromPesoPos},2)";
+                                            $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
                                     default:
                                         $sheet->setCellValue("{$columnLetter}{$fila}", $valor);
                                         break;
@@ -410,16 +436,6 @@ class PlabaseReport extends Page
                     return $this->formatearNumero($analisisMensual->uremia_pre);
                 case 'uremia_pos':
                     return $this->formatearNumero($analisisMensual->uremia_post);
-                case 'rpu':
-                    return $this->formatearNumero($analisisMensual->rpu);
-                case 'ktv_daug':
-                    return $this->formatearNumero($analisisMensual->ktv_daugiras);
-                case 'ktv_basile':
-                    return $this->formatearNumero($analisisMensual->ktv_basile);
-                case 'tac_urea':
-                    return $this->formatearNumero($analisisMensual->tac_urea);
-                case 'pcr':
-                    return $this->formatearNumero($analisisMensual->pcr);
                 case 'sodio':
                     return $this->formatearNumero($analisisMensual->sodio);
                 case 'potasio':
@@ -439,9 +455,15 @@ class PlabaseReport extends Page
                 case 'prom_peso_pos':
                     return $this->calcularPromedioPeso($paciente->id, $mes, $anio, 'pesopost');
                 case 'epo_mensual':
+
+                case 'tac_urea':
+                case 'rpu':
+                case 'ktv_daug':
+                case 'ktv_basile':
+                case 'pcr':
                 case 'epo_mensual_kg':
                 case 'prod_k_p':
-                    return 'N/D'; // Campos que no tenemos en el modelo actual
+                    return ''; // Campos que no tenemos en el modelo actual
             }
         }
 
