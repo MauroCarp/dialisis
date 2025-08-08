@@ -11,6 +11,7 @@ use App\Models\Paciente;
 use App\Models\AnalisisMensual;
 use App\Models\AnalisisTrimestral;
 use App\Models\AnalisisSemestral;
+use App\Models\AnalisisDiario;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -18,6 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PlabaseReport extends Page
 {
@@ -85,7 +87,7 @@ class PlabaseReport extends Page
     private function generarReportePlabase($mes, $anio)
     {
         try {
-            \Log::info("PLABASE: Iniciando generación de reporte", ['mes' => $mes, 'anio' => $anio]);
+            Log::info("PLABASE: Iniciando generación de reporte", ['mes' => $mes, 'anio' => $anio]);
             
             // Obtener solo pacientes de hemodialisis activos (fechaegreso null)
             $pacientes = Paciente::whereNull('fechaegreso')
@@ -93,29 +95,29 @@ class PlabaseReport extends Page
                 ->orderBy('nombre')
                 ->get();
             
-            \Log::info("PLABASE: Pacientes de hemodiálisis activos encontrados", ['cantidad' => $pacientes->count()]);
+            Log::info("PLABASE: Pacientes de hemodiálisis activos encontrados", ['cantidad' => $pacientes->count()]);
 
             // Crear nuevo spreadsheet
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle("PLABASE {$mes}-{$anio}");
             
-            \Log::info("PLABASE: Spreadsheet creado");
+            Log::info("PLABASE: Spreadsheet creado");
 
             // Configurar encabezados
             $this->configurarEncabezados($sheet, $mes, $anio, $pacientes);
-            \Log::info("PLABASE: Encabezados configurados");
+            Log::info("PLABASE: Encabezados configurados");
 
             // Definir estructura de campos segun el CSV
             $campos = $this->obtenerEstructuraCampos();
-            \Log::info("PLABASE: Estructura de campos obtenida");
+            Log::info("PLABASE: Estructura de campos obtenida");
 
             $fila = 2; // Comenzamos en la fila 2 despues de los nombres
             $totalCampos = 0;
             $camposConError = [];
 
             foreach ($campos as $seccion => $camposSeccion) {
-                \Log::info("PLABASE: Procesando sección", ['seccion' => $seccion]);
+                Log::info("PLABASE: Procesando sección", ['seccion' => $seccion]);
                 
                 if ($seccion === 'separador_trimestral') {
                     // Fila separadora para analisis trimestral
@@ -132,7 +134,7 @@ class PlabaseReport extends Page
                 foreach ($camposSeccion as $campo => $etiqueta) {
                     try {
                         $totalCampos++;
-                        \Log::info("PLABASE: Procesando campo", ['campo' => $campo, 'fila' => $fila]);
+                        Log::info("PLABASE: Procesando campo", ['campo' => $campo, 'fila' => $fila]);
                         
                         // Escribir etiqueta del campo en la primera columna
                         $etiquetaLimpia = $this->limpiarUTF8($etiqueta);
@@ -156,17 +158,39 @@ class PlabaseReport extends Page
                                 }
 
                                 // Escribir valor del campo
-                                $valor = $this->obtenerValorCampo($campo, $paciente, $analisisMensual, $analisisTrimestral, $analisisSemestral);
+                                $valor = $this->obtenerValorCampo($campo, $paciente, $analisisMensual, $analisisTrimestral, $analisisSemestral, $mes, $anio);
                                 
                                 // Limpiar y validar UTF-8
                                 $valor = $this->limpiarUTF8($valor);
                                 
                                 $columnLetter = Coordinate::stringFromColumnIndex($columna);
-                                $sheet->setCellValue("{$columnLetter}{$fila}", $valor);
+                                
+                                switch ($campo) {
+                                    case 'urea_creat':
+                                        $filaUremaPre = 12;
+                                        $filaCreatinina = 11;
+                                        // Usamos la función ROUND para dejar 2 decimales
+                                        $formula = "=ROUND({$columnLetter}{$filaUremaPre}/{$columnLetter}{$filaCreatinina}*10,2)";
+                                        $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+                                    case 'rpu':
+                                        $filaUremaPre = 12;
+                                        $filaCreatinina = 11;
+                                        // Usamos la función ROUND para dejar 2 decimales
+                                        $formula = "=ROUND({$columnLetter}{$filaUremaPre}/{$columnLetter}{$filaCreatinina}*10,2)";
+                                        $sheet->setCellValue("{$columnLetter}{$fila}", $formula);
+                                        break;
+
+
+                                    default:
+                                        $sheet->setCellValue("{$columnLetter}{$fila}", $valor);
+                                        break;
+                                }
+
                                 $columna++;
                                 
                             } catch (\Exception $e) {
-                                \Log::error("PLABASE: Error procesando paciente", [
+                                Log::error("PLABASE: Error procesando paciente", [
                                     'paciente_id' => $paciente->id,
                                     'campo' => $campo,
                                     'error' => $e->getMessage(),
@@ -180,7 +204,7 @@ class PlabaseReport extends Page
                         $fila++;
                         
                     } catch (\Exception $e) {
-                        \Log::error("PLABASE: Error procesando campo", [
+                        Log::error("PLABASE: Error procesando campo", [
                             'campo' => $campo,
                             'error' => $e->getMessage(),
                             'trace' => $e->getTraceAsString()
@@ -191,26 +215,26 @@ class PlabaseReport extends Page
                 }
             }
             
-            \Log::info("PLABASE: Datos procesados", [
+            Log::info("PLABASE: Datos procesados", [
                 'total_campos' => $totalCampos,
                 'campos_con_error' => count($camposConError),
                 'errores' => $camposConError
             ]);
 
             // Aplicar estilos y formato
-            \Log::info("PLABASE: Aplicando estilos");
+            Log::info("PLABASE: Aplicando estilos");
             $this->aplicarEstilos($sheet, $fila - 1, count($pacientes));
 
             // Generar archivo y descargar
             $nombreArchivo = "PLABASE_{$mes}_{$anio}_" . date('YmdHis') . ".xlsx";
             $rutaArchivo = storage_path("app/public/{$nombreArchivo}");
             
-            \Log::info("PLABASE: Guardando archivo", ['ruta' => $rutaArchivo]);
+            Log::info("PLABASE: Guardando archivo", ['ruta' => $rutaArchivo]);
 
             $writer = new Xlsx($spreadsheet);
             $writer->save($rutaArchivo);
             
-            \Log::info("PLABASE: Archivo guardado exitosamente");
+            Log::info("PLABASE: Archivo guardado exitosamente");
 
             // Notificación de éxito y descarga
             Notification::make()
@@ -226,7 +250,7 @@ class PlabaseReport extends Page
                 ->send();
 
         } catch (\Exception $e) {
-            \Log::error("PLABASE: Error general", [
+            Log::error("PLABASE: Error general", [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -349,7 +373,7 @@ class PlabaseReport extends Page
         ];
     }
 
-    private function obtenerValorCampo($campo, $paciente, $analisisMensual, $analisisTrimestral, $analisisSemestral)
+    private function obtenerValorCampo($campo, $paciente, $analisisMensual, $analisisTrimestral, $analisisSemestral, $mes, $anio)
     {
         // Campos del paciente
         switch ($campo) {
@@ -384,8 +408,6 @@ class PlabaseReport extends Page
                     return $this->formatearNumero($analisisMensual->creatinina);
                 case 'uremia_pre':
                     return $this->formatearNumero($analisisMensual->uremia_pre);
-                case 'urea_creat':
-                    return $this->formatearNumero($analisisMensual->urea_creatinina);
                 case 'uremia_pos':
                     return $this->formatearNumero($analisisMensual->uremia_post);
                 case 'rpu':
@@ -412,10 +434,12 @@ class PlabaseReport extends Page
                     return $this->formatearNumero($analisisMensual->gpt);
                 case 'got':
                     return $this->formatearNumero($analisisMensual->got);
+                case 'prom_peso_pre':
+                    return $this->calcularPromedioPeso($paciente->id, $mes, $anio, 'pesopre');
+                case 'prom_peso_pos':
+                    return $this->calcularPromedioPeso($paciente->id, $mes, $anio, 'pesopost');
                 case 'epo_mensual':
                 case 'epo_mensual_kg':
-                case 'prom_peso_pre':
-                case 'prom_peso_pos':
                 case 'prod_k_p':
                     return 'N/D'; // Campos que no tenemos en el modelo actual
             }
@@ -476,7 +500,7 @@ class PlabaseReport extends Page
     private function aplicarEstilos($sheet, $ultimaFila, $numPacientes)
     {
         // Estilo para la primera fila (nombres de pacientes)
-        $ultimaColumna = chr(65 + $numPacientes); // A=65, B=66, etc.
+        $ultimaColumna = $this->getColumnLetter($numPacientes + 1); // +1 porque incluimos la columna A
         $sheet->getStyle("A1:{$ultimaColumna}1")->applyFromArray([
             'font' => ['bold' => true, 'size' => 10],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
@@ -518,6 +542,20 @@ class PlabaseReport extends Page
     }
 
     /**
+     * Convierte un número de columna a letra de Excel (1=A, 26=Z, 27=AA, etc.)
+     */
+    private function getColumnLetter($columnNumber)
+    {
+        $columnLetter = '';
+        while ($columnNumber > 0) {
+            $columnNumber--;
+            $columnLetter = chr(65 + ($columnNumber % 26)) . $columnLetter;
+            $columnNumber = intval($columnNumber / 26);
+        }
+        return $columnLetter;
+    }
+
+    /**
      * Formatear números para evitar problemas de codificación
      */
     private function formatearNumero($numero)
@@ -538,7 +576,7 @@ class PlabaseReport extends Page
             
             // Validar que sea un número válido
             if (!is_numeric($numero)) {
-                \Log::warning("PLABASE: Valor no numérico", ['valor' => $numero]);
+                Log::warning("PLABASE: Valor no numérico", ['valor' => $numero]);
                 return '';
             }
 
@@ -553,7 +591,7 @@ class PlabaseReport extends Page
             return $resultado;
             
         } catch (\Exception $e) {
-            \Log::error("PLABASE: Error en formatearNumero", [
+            Log::error("PLABASE: Error en formatearNumero", [
                 'numero' => $numero,
                 'error' => $e->getMessage()
             ]);
@@ -577,7 +615,7 @@ class PlabaseReport extends Page
 
             // Log valores problemáticos
             if (!mb_check_encoding($valor, 'UTF-8')) {
-                \Log::warning("PLABASE: Valor con codificación problemática", [
+                Log::warning("PLABASE: Valor con codificación problemática", [
                     'valor_original' => $valorOriginal,
                     'valor_string' => $valor,
                     'encoding' => mb_detect_encoding($valor)
@@ -607,7 +645,7 @@ class PlabaseReport extends Page
             $valorFinal = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $valor);
             
             if ($valorFinal === false) {
-                \Log::error("PLABASE: Error en iconv", [
+                Log::error("PLABASE: Error en iconv", [
                     'valor_original' => $valorOriginal,
                     'valor_procesado' => $valor
                 ]);
@@ -617,11 +655,46 @@ class PlabaseReport extends Page
             return trim($valorFinal);
             
         } catch (\Exception $e) {
-            \Log::error("PLABASE: Error en limpiarUTF8", [
+            Log::error("PLABASE: Error en limpiarUTF8", [
                 'valor' => $valor,
                 'error' => $e->getMessage()
             ]);
             return ''; // Retornar cadena vacía en caso de error
+        }
+    }
+
+    /**
+     * Calcula el promedio de peso pre o post para un paciente en un mes específico
+     */
+    private function calcularPromedioPeso($pacienteId, $mes, $anio, $tipoPeso)
+    {
+        try {
+            // Obtener todos los análisis diarios del paciente para el mes y año especificado
+            $analisisDiarios = AnalisisDiario::where('id_paciente', $pacienteId)
+                ->whereYear('fechaanalisis', $anio)
+                ->whereMonth('fechaanalisis', $mes)
+                ->whereNotNull($tipoPeso)
+                ->where($tipoPeso, '>', 0) // Excluir valores nulos o cero
+                ->get();
+
+            if ($analisisDiarios->isEmpty()) {
+                return 'N/D';
+            }
+
+            // Calcular el promedio
+            $promedio = $analisisDiarios->avg($tipoPeso);
+            
+            return $this->formatearNumero($promedio);
+            
+        } catch (\Exception $e) {
+            Log::error("PLABASE: Error calculando promedio de peso", [
+                'paciente_id' => $pacienteId,
+                'mes' => $mes,
+                'anio' => $anio,
+                'tipo_peso' => $tipoPeso,
+                'error' => $e->getMessage()
+            ]);
+            return 'N/D';
         }
     }
 }
