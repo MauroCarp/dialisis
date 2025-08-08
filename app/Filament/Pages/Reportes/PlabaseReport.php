@@ -12,6 +12,7 @@ use App\Models\AnalisisMensual;
 use App\Models\AnalisisTrimestral;
 use App\Models\AnalisisSemestral;
 use App\Models\AnalisisDiario;
+use App\Models\MedicacionPaciente;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -455,6 +456,25 @@ class PlabaseReport extends Page
                 case 'prom_peso_pos':
                     return $this->calcularPromedioPeso($paciente->id, $mes, $anio, 'pesopost');
                 case 'epo_mensual':
+                    // Obtener el promedio de cantidad de medicación EPO (id_medicacion = 2) para el mes/año/paciente
+                    try {
+                        $promedioEpo = MedicacionPaciente::where('id_paciente', $paciente->id)
+                            ->where('id_medicacion', 2)
+                            ->whereYear('fechamedicacion', $anio)
+                            ->whereMonth('fechamedicacion', $mes)
+                            ->whereNotNull('cantidad')
+                            ->where('cantidad', '>', 0)
+                            ->sum('cantidad');
+                        return $this->formatearNumero($promedioEpo);
+                    } catch (\Exception $e) {
+                        Log::error("PLABASE: Error calculando promedio EPO", [
+                            'paciente_id' => $paciente->id,
+                            'mes' => $mes,
+                            'anio' => $anio,
+                            'error' => $e->getMessage()
+                        ]);
+                        return 'N/D';
+                    }
 
                 case 'tac_urea':
                 case 'rpu':
