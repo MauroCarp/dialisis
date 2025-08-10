@@ -12,6 +12,8 @@ class ObraSocial extends Model
 
     protected $table = 'obrassociales';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'abreviatura',
         'descripcion',
@@ -28,5 +30,12 @@ class ObraSocial extends Model
         return $this->belongsToMany(Paciente::class, 'pacientesobrassociales', 'id_obrasocial', 'id_paciente')
                     ->withPivot('fechavigencia', 'nroafiliado')
                     ->withTimestamps();
+    }
+
+    // Relación con Pacientes de Consultorio (muchos a muchos)
+    public function pacientesConsultorio(): BelongsToMany
+    {
+        return $this->belongsToMany(PacienteConsultorio::class, 'pacientesconsultorioobrassociales', 'id_obrasocial', 'id_paciente')
+                    ->withPivot('fechavigencia', 'nroafiliado');
     }
 }

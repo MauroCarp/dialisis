@@ -117,8 +117,7 @@ class PacientesConsultorioResource extends Resource
                                 'AB-' => 'AB-',
                                 'O+' => 'O+',
                                 'O-' => 'O-',
-                            ])
-                            ->required(),
+                            ]),
                         Forms\Components\Grid::make(4)
                             ->schema([
                                 Forms\Components\Toggle::make('fumador')
@@ -145,15 +144,13 @@ class PacientesConsultorioResource extends Resource
                     ->schema([
                         Forms\Components\Repeater::make('obrasSociales')
                             ->label('Obras Sociales del Paciente')
-                            ->relationship()
                             ->schema([
                                 Forms\Components\Grid::make(3)
                                     ->schema([
                                         Forms\Components\Select::make('id')
                                             ->label('Obra Social')
                                             ->options(
-                                                ObraSocial::whereNull('fechaBaja')
-                                                    ->orderBy('abreviatura')
+                                                ObraSocial::orderBy('abreviatura')
                                                     ->get()
                                                     ->mapWithKeys(function ($obra) {
                                                         return [$obra->id => "{$obra->abreviatura} - {$obra->descripcion}"];
@@ -162,11 +159,11 @@ class PacientesConsultorioResource extends Resource
                                             ->searchable()
                                             ->required(),
 
-                                        Forms\Components\TextInput::make('pivot.nroafiliado')
+                                        Forms\Components\TextInput::make('nroafiliado')
                                             ->label('Número de Afiliado')
                                             ->maxLength(50),
 
-                                        Forms\Components\DatePicker::make('pivot.fechavigencia')
+                                        Forms\Components\DatePicker::make('fechavigencia')
                                             ->label('Fecha de Vigencia')
                                             ->displayFormat('d/m/Y'),
                                     ]),
