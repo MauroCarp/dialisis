@@ -37,7 +37,7 @@
                     </div>
                     
                     <div class="flex space-x-3">
-                        <a href="{{ route('pacientes.edit', $paciente->id) }}" 
+                        <a href="{{ url('admin/pacientes/' . $paciente->id . '/edit') }}" 
                            class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
                             <i class="fas fa-edit mr-2"></i>
                             Editar
