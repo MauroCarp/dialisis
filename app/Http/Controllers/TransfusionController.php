@@ -22,6 +22,7 @@ class TransfusionController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $pacienteId)
-            ->with('success', 'Transfusión registrada correctamente.');
+            ->with('success', 'Transfusión registrada correctamente.')
+            ->with('show_tab', 'transfusiones');
     }
 }

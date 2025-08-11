@@ -14,7 +14,7 @@
                         <i class="fas fa-calendar-alt mr-1"></i>
                         Fecha de Implante
                     </label>
-                    <input type="date" name="fecha_implante" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" name="fechaacceso" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div>
@@ -22,7 +22,7 @@
                         <i class="fas fa-list-alt mr-1"></i>
                         Tipo de Acceso
                     </label>
-                    <select name="tipo_acceso_vascular_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="id_tipoacceso" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Seleccionar tipo</option>
                         @foreach($tiposAccesoVascular as $tipo)
                             <option value="{{ $tipo->id }}">{{ $tipo->nombre }}</option>
@@ -36,7 +36,7 @@
                         Cirujano
                     </label>
                     <div class="flex space-x-2">
-                        <select name="cirujano_id" id="cirujano_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select name="id_cirujano" id="id_cirujano" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Seleccionar cirujano</option>
                             @foreach($cirujanos as $cirujano)
                                 <option value="{{ $cirujano->id }}">{{ $cirujano->nombre }}{{ $cirujano->apellido ? ' ' . $cirujano->apellido : '' }}</option>
@@ -49,111 +49,7 @@
                     </div>
                 </div>
 
-                <!-- Modal para agregar cirujano -->
-                <div id="modalAgregarCirujano" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden">
-                    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h5 class="text-lg font-semibold text-gray-800">
-                                <i class="fas fa-user-md mr-2"></i>
-                                Agregar Cirujano
-                            </h5>
-                            <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('modalAgregarCirujano').classList.add('hidden')">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <form id="formAgregarCirujano" method="POST" action="{{ route('cirujanos.store') }}">
-                            @csrf
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-semibold mb-2">Nombre del Cirujano</label>
-                                <input type="text" name="nombre" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-semibold mb-2">Apellido (Opcional)</label>
-                                <input type="text" name="apellido" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-semibold mb-2">Matrícula (Opcional)</label>
-                                <input type="text" name="matricula" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div class="flex justify-end space-x-2">
-                                <button type="button" onclick="document.getElementById('modalAgregarCirujano').classList.add('hidden')" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
-                                    <i class="fas fa-times mr-1"></i> Cancelar
-                                </button>
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
-                                    <i class="fas fa-save mr-1"></i> Guardar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <script>
-                    // Si el usuario selecciona "Agregar otro cirujano...", mostrar el modal
-                    document.getElementById('cirujano_id').addEventListener('change', function() {
-                        if (this.value === 'otro') {
-                            document.getElementById('modalAgregarCirujano').classList.remove('hidden');
-                            this.value = '';
-                        }
-                    });
-
-                    // Manejar el envío del formulario de agregar cirujano
-                    document.getElementById('formAgregarCirujano').addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        
-                        const formData = new FormData(this);
-                        const submitButton = this.querySelector('button[type="submit"]');
-                        const originalText = submitButton.innerHTML;
-                        
-                        // Mostrar estado de carga
-                        submitButton.disabled = true;
-                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...';
-                        
-                        fetch(this.action, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Agregar el nuevo cirujano al select
-                                const select = document.getElementById('cirujano_id');
-                                const option = document.createElement('option');
-                                option.value = data.cirujano.id;
-                                option.textContent = data.cirujano.nombre + (data.cirujano.apellido ? ' ' + data.cirujano.apellido : '');
-                                
-                                // Insertar antes de la opción "Agregar otro cirujano..."
-                                const lastOption = select.lastElementChild;
-                                select.insertBefore(option, lastOption);
-                                
-                                // Seleccionar el nuevo cirujano
-                                select.value = data.cirujano.id;
-                                
-                                // Cerrar el modal
-                                document.getElementById('modalAgregarCirujano').classList.add('hidden');
-                                
-                                // Limpiar el formulario
-                                this.reset();
-                                
-                                // Mostrar mensaje de éxito
-                                alert('Cirujano agregado correctamente');
-                            } else {
-                                alert('Error al agregar el cirujano');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Error al procesar la solicitud');
-                        })
-                        .finally(() => {
-                            // Restaurar el botón
-                            submitButton.disabled = false;
-                            submitButton.innerHTML = originalText;
-                        });
-                    });
-                </script>
+                
             </div>
             
             <div class="mb-4">
@@ -174,6 +70,112 @@
             </div>
         </form>
     </div>
+
+    <!-- Modal para agregar cirujano -->
+    <div id="modalAgregarCirujano" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h5 class="text-lg font-semibold text-gray-800">
+                    <i class="fas fa-user-md mr-2"></i>
+                    Agregar Cirujano
+                </h5>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('modalAgregarCirujano').classList.add('hidden')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formAgregarCirujano" method="POST" action="{{ route('cirujanos.store') }}">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Nombre del Cirujano</label>
+                    <input type="text" name="nombre" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Apellido (Opcional)</label>
+                    <input type="text" name="apellido" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Matrícula (Opcional)</label>
+                    <input type="text" name="matricula" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="document.getElementById('modalAgregarCirujano').classList.add('hidden')" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+                        <i class="fas fa-times mr-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
+                        <i class="fas fa-save mr-1"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Si el usuario selecciona "Agregar otro cirujano...", mostrar el modal
+        document.getElementById('cirujano_id').addEventListener('change', function() {
+            if (this.value === 'otro') {
+                document.getElementById('modalAgregarCirujano').classList.remove('hidden');
+                this.value = '';
+            }
+        });
+
+        // Manejar el envío del formulario de agregar cirujano
+        document.getElementById('formAgregarCirujano').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            // Mostrar estado de carga
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Guardando...';
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Agregar el nuevo cirujano al select
+                    const select = document.getElementById('cirujano_id');
+                    const option = document.createElement('option');
+                    option.value = data.cirujano.id;
+                    option.textContent = data.cirujano.nombre + (data.cirujano.apellido ? ' ' + data.cirujano.apellido : '');
+                    
+                    // Insertar antes de la opción "Agregar otro cirujano..."
+                    const lastOption = select.lastElementChild;
+                    select.insertBefore(option, lastOption);
+                    
+                    // Seleccionar el nuevo cirujano
+                    select.value = data.cirujano.id;
+                    
+                    // Cerrar el modal
+                    document.getElementById('modalAgregarCirujano').classList.add('hidden');
+                    
+                    // Limpiar el formulario
+                    this.reset();
+                    
+                    // Mostrar mensaje de éxito
+                    alert('Cirujano agregado correctamente');
+                } else {
+                    alert('Error al agregar el cirujano');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud');
+            })
+            .finally(() => {
+                // Restaurar el botón
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            });
+        });
+    </script>
 
     <!-- Lista de Accesos Vasculares -->
     <div class="bg-white border border-gray-200 rounded-lg">
