@@ -26,6 +26,7 @@ class InternacionController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $pacienteId)
-            ->with('success', 'Internación registrada correctamente.');
+            ->with('success', 'Internación registrada correctamente.')
+            ->with('show_tab', 'internaciones');
     }
 }

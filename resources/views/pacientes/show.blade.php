@@ -54,9 +54,12 @@
             <!-- Sistema de Pestañas Principal -->
             <div class="bg-white shadow rounded-lg p-6">
                 <div x-data="{ 
-                    activeMainTab: @if(session('show_tab')) 'grupo2' @else 'grupo1' @endif, 
+                    activeMainTab: @if(session('show_tab') == 'internaciones' || session('show_tab') == 'transfuciones' || session('show_tab') == 'accesos') 'grupo3' 
+                                  @elseif(session('show_tab')) 'grupo2' 
+                                  @else 'grupo1' 
+                                  @endif,
                     activeMedicalTab: @if(session('show_tab')) '{{session('show_tab')}}' @else 'historias' @endif,
-                    activeEventTab: 'accesos'
+                    activeEventTab: @if(session('show_tab')) '{{session('show_tab')}}' @else 'accesos' @endif
                 }" class="w-full">
                     <!-- Navegación de pestañas principales (3 grupos) -->
                     <div class="flex border-b border-gray-200 mb-6">
