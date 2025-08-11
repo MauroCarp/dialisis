@@ -86,6 +86,9 @@ class PacienteController extends Controller
                 'tipoDocumento',
                 'obrasSociales',
                 'accesosVasculares.tipoAccesoVascular',
+                'estudiosPacientes' => function($query) {
+                    $query->with('estudio')->orderBy('fechaestudio', 'desc')->limit(10);                    
+                },
                 'historiasClinicas' => function($query) {
                     $query->orderBy('fechahistoriaclinica', 'desc')->limit(10);
                 },

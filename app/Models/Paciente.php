@@ -125,7 +125,7 @@ class Paciente extends Model
     // Relación con Historias Clínicas
     public function historiasClinicas(): HasMany
     {
-        return $this->hasMany(HistoriaClinica::class, 'id_paciente');
+        return $this->hasMany(HistoriaClinica::class, 'id_paciente')->orderBy('fechahistoriaclinica', 'desc');
     }
 
     // Relación con Historias Clínicas Iniciales
@@ -137,7 +137,7 @@ class Paciente extends Model
     // Relación con Transfusiones
     public function transfusiones(): HasMany
     {
-        return $this->hasMany(Transfusion::class, 'id_paciente');
+        return $this->hasMany(Transfusion::class, 'id_paciente')->orderBy('fechatransfusion', 'desc');
     }
 
     // Relación con Internaciones
@@ -156,13 +156,13 @@ class Paciente extends Model
     // Relación con Estudios de Pacientes (registros individuales)
     public function estudiosPacientes(): HasMany
     {
-        return $this->hasMany(EstudioPaciente::class, 'id_paciente');
+        return $this->hasMany(EstudioPaciente::class, 'id_paciente')->orderBy('fechaestudio', 'desc');
     }
 
     // Relación con Patologías de Pacientes (registros individuales)
     public function patologiasPacientes(): HasMany
     {
-        return $this->hasMany(PatologiaPaciente::class, 'id_paciente');
+        return $this->hasMany(PatologiaPaciente::class, 'id_paciente')->orderBy('fechapatologia', 'desc');
     }
 
     // Relación con Antecedentes Personales
@@ -180,12 +180,12 @@ class Paciente extends Model
     // Relación con Medicaciones a través de tabla pivote
     public function medicacionesPacientes(): HasMany
     {
-        return $this->hasMany(MedicacionPaciente::class, 'id_paciente');
+        return $this->hasMany(MedicacionPaciente::class, 'id_paciente')->orderBy('fechamedicacion', 'desc');
     }
 
     // Relación con Vacunas a través de tabla pivote
     public function vacunasPacientes(): HasMany
     {
-        return $this->hasMany(VacunaPaciente::class, 'id_paciente');
+        return $this->hasMany(VacunaPaciente::class, 'id_paciente')->orderBy('fechavacuna', 'desc');
     }
 }
