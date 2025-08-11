@@ -95,8 +95,8 @@ class PacienteController extends Controller
                 'transfusiones' => function($query) {
                     $query->orderBy('fechatransfusion', 'desc')->limit(10);
                 },
-                'medicacionesPacientes.medicacion.tipoMedicacion' => function($query) {
-                    $query->orderBy('nombre', 'desc')->limit(10);
+                'medicacionesPacientes' => function($query) {
+                    $query->with('medicacion.tipoMedicacion')->orderBy('fechamedicacion', 'desc')->limit(10);
                 },
                 'vacunasPacientes.vacuna' => function($query) {
                     $query->orderBy('nombre', 'desc')->limit(10);

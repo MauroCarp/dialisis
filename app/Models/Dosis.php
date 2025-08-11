@@ -11,6 +11,8 @@ class Dosis extends Model
     use HasFactory;
 
     protected $table = 'dosis';
+    
+    public $timestamps = false; // Desactivar timestamps automáticos
 
     protected $fillable = [
         'fechadosis',

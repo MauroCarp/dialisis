@@ -26,6 +26,7 @@ class DosisController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $vacunaPaciente->id_paciente)
-            ->with('success', 'Dosis registrada correctamente.');
+            ->with('success', 'Dosis registrada correctamente.')
+            ->with('show_tab', 'vacunas');
     }
 }

@@ -27,6 +27,7 @@ class MedicacionPacienteController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $pacienteId)
-            ->with('success', 'Medicación registrada correctamente.');
+            ->with('success', 'Medicación registrada correctamente.')
+            ->with('show_tab', 'medicaciones');
     }
 }
