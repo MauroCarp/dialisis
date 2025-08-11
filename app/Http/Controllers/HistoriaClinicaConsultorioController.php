@@ -29,8 +29,9 @@ class HistoriaClinicaConsultorioController extends Controller
         HistoriaClinicaConsultorio::create($validated);
 
         return redirect()
-            ->route('pacientes.show', $paciente->id)
-            ->with('success', 'Historia clínica de consultorio creada exitosamente.');
+            ->route('pacientes.show', ['paciente' => $paciente->id, 'tipo' => 'consultorio'])
+            ->with('success', 'Historia clínica de consultorio creada exitosamente.')
+            ->with('show_tab', 'historias');
     }
 
     public function download($id)

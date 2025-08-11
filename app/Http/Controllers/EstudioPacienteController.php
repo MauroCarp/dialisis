@@ -24,6 +24,7 @@ class EstudioPacienteController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $pacienteId)
-            ->with('success', 'Estudio registrado correctamente.');
+            ->with('success', 'Estudio registrado correctamente.')
+            ->with('show_tab', 'estudios');
     }
 }

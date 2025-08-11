@@ -31,7 +31,8 @@ class HistoriaClinicaController extends Controller
 
         return redirect()
             ->route('pacientes.show', $paciente->id)
-            ->with('success', 'Historia clínica creada exitosamente.');
+            ->with('success', 'Historia clínica creada exitosamente.')
+            ->with('show_tab', 'historias');
     }
 
     public function download($id)

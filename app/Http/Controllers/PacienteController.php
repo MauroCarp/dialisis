@@ -58,14 +58,14 @@ class PacienteController extends Controller
                 'historiasClinicasConsultorio' => function($query) {
                     $query->orderBy('fechahistoriaclinica', 'desc')->limit(10);
                 },
-                'estudiosPacientes.estudio' => function($query) {
-                    $query->orderBy('fechaestudio', 'desc')->limit(10);
+                'estudiosPacientes' => function($query) {
+                    $query->with('estudio')->orderBy('fechaestudio', 'desc')->limit(10);                    
                 },
                 'internaciones.motivoInternacion' => function($query) {
                     $query->orderBy('nombre', 'desc')->limit(10);
                 },
-                'patologiasPacientes.patologia' => function($query) {
-                    $query->orderBy('fechapatologia', 'desc')->limit(10);
+                'patologiasPacientes' => function($query) {
+                    $query->with('patologia')->orderBy('fechapatologia', 'desc')->limit(10);
                 },
                 'transfusiones' => function($query) {
                     $query->orderBy('fechatransfusion', 'desc')->limit(10);
@@ -89,8 +89,8 @@ class PacienteController extends Controller
                 'historiasClinicas' => function($query) {
                     $query->orderBy('fechahistoriaclinica', 'desc')->limit(10);
                 },
-                'patologiasPacientes.patologia' => function($query) {
-                    $query->orderBy('fechapatologia', 'desc')->limit(10);
+                'patologiasPacientes' => function($query) {
+                    $query->with('patologia')->orderBy('fechapatologia', 'desc')->limit(10);
                 },
                 'transfusiones' => function($query) {
                     $query->orderBy('fechatransfusion', 'desc')->limit(10);

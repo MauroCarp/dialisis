@@ -24,6 +24,7 @@ class PatologiaPacienteController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $pacienteId)
-            ->with('success', 'Patología registrada correctamente.');
+            ->with('success', 'Patología registrada correctamente.')
+            ->with('show_tab', 'patologias');
     }
 }

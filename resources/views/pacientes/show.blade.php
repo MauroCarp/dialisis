@@ -54,8 +54,8 @@
             <!-- Sistema de Pestañas Principal -->
             <div class="bg-white shadow rounded-lg p-6">
                 <div x-data="{ 
-                    activeMainTab: 'grupo1', 
-                    activeMedicalTab: 'historias',
+                    activeMainTab: @if(session('show_tab')) 'grupo2' @else 'grupo1' @endif, 
+                    activeMedicalTab: @if(session('show_tab')) '{{session('show_tab')}}' @else 'historias' @endif,
                     activeEventTab: 'accesos'
                 }" class="w-full">
                     <!-- Navegación de pestañas principales (3 grupos) -->
