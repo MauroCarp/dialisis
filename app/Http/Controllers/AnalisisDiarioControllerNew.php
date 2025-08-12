@@ -98,11 +98,11 @@ class AnalisisDiarioController extends Controller
     }
 
     /**
-     * Método original para compatibilidad (redirige al nuevo flujo)
+     * Método original para compatibilidad (opcional)
      */
     public function store(Request $request, $pacienteId)
     {
-        // Redirigir al método pre-dialisis para mantener compatibilidad
+        // Redirigir al método pre-dialisis
         return $this->storePreDialisis($request, $pacienteId);
     }
 }

@@ -11,6 +11,7 @@ use App\Http\Controllers\InternacionController;
 use App\Http\Controllers\PatologiaPacienteController;
 use App\Http\Controllers\TransfusionController;
 use App\Http\Controllers\AnalisisDiarioController;
+use App\Http\Controllers\AnalisisDiarioEtapasController;
 use App\Http\Controllers\AnalisisMensualController;
 use App\Http\Controllers\AnalisisTrimestralController;
 use App\Http\Controllers\AnalisisSemestralController;
@@ -80,8 +81,22 @@ Route::post('/vacunas-pacientes/{vacunaPacienteId}/dosis', [App\Http\Controllers
     ->name('dosis.store');
 
 // Rutas para análisis
+// Rutas para análisis diarios
 Route::post('/pacientes/{paciente}/analisis-diarios', [AnalisisDiarioController::class, 'store'])
     ->name('analisis-diarios.store');
+
+// Rutas para análisis diarios en etapas
+Route::post('/pacientes/{paciente}/analisis-diarios/pre-dialisis', [AnalisisDiarioEtapasController::class, 'storePreDialisis'])
+    ->name('analisis-diarios.store-pre-dialisis');
+
+Route::post('/pacientes/{paciente}/analisis-diarios/post-dialisis', [AnalisisDiarioEtapasController::class, 'storePostDialisis'])
+    ->name('analisis-diarios.store-post-dialisis');
+
+Route::get('/pacientes/{paciente}/analisis-diarios/incompletos', [AnalisisDiarioEtapasController::class, 'getAnalisisIncompletos'])
+    ->name('analisis-diarios.incompletos');
+
+Route::get('/pacientes/{paciente}/analisis-diarios/por-fecha', [AnalisisDiarioEtapasController::class, 'getAnalisisPorFecha'])
+    ->name('analisis-diarios.por-fecha');
 Route::post('/pacientes/{paciente}/analisis-mensuales', [AnalisisMensualController::class, 'store'])
     ->name('analisis-mensuales.store');
 Route::post('/pacientes/{paciente}/analisis-trimestrales', [AnalisisTrimestralController::class, 'store'])

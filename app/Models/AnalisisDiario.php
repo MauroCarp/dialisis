@@ -26,7 +26,8 @@ class AnalisisDiario extends Model
         'taspos',
         'tadpos',
         'relpesosecopesopre',
-        'id_tipofiltro'
+        'id_tipofiltro',
+        'estado'
     ];
 
     protected $casts = [
@@ -57,5 +58,44 @@ class AnalisisDiario extends Model
     public function tipoFiltro(): BelongsTo
     {
         return $this->belongsTo(TipoFiltro::class, 'id_tipofiltro');
+    }
+
+    // Scopes para filtrar por estado
+    public function scopePreDialisis($query)
+    {
+        return $query->where('estado', 'pre_dialisis');
+    }
+
+    public function scopePostDialisis($query)
+    {
+        return $query->where('estado', 'post_dialisis');
+    }
+
+    public function scopeCompleto($query)
+    {
+        return $query->where('estado', 'completo');
+    }
+
+    // Métodos para verificar estado
+    public function esPreDialisis(): bool
+    {
+        return $this->estado === 'pre_dialisis';
+    }
+
+    public function esPostDialisis(): bool
+    {
+        return $this->estado === 'post_dialisis';
+    }
+
+    public function estaCompleto(): bool
+    {
+        return $this->estado === 'completo';
+    }
+
+    // Método para completar el análisis
+    public function completar(): bool
+    {
+        $this->estado = 'completo';
+        return $this->save();
     }
 }
