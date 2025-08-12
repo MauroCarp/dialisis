@@ -545,10 +545,17 @@ class PlabaseReport extends Page
         $ultimaColumna = $this->getColumnLetter($numPacientes + 1); // +1 porque incluimos la columna A
         $sheet->getStyle("A1:{$ultimaColumna}1")->applyFromArray([
             'font' => ['bold' => true, 'size' => 10],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER, 
+                'vertical' => Alignment::VERTICAL_CENTER,
+                'textRotation' => 90  // Rotar texto 90 grados
+            ],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E3F2FD']],
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
+
+        // Ajustar altura de la primera fila para acomodar el texto vertical
+        $sheet->getRowDimension('1')->setRowHeight(120);
 
         // Estilo para las etiquetas de los campos (columna A)
         $sheet->getStyle("A2:A{$ultimaFila}")->applyFromArray([
@@ -579,7 +586,7 @@ class PlabaseReport extends Page
         // Ajustar ancho de columnas
         $sheet->getColumnDimension('A')->setWidth(25); // Columna de etiquetas más ancha
         for ($col = 2; $col <= $numPacientes + 1; $col++) {
-            $sheet->getColumnDimensionByColumn($col)->setWidth(12);
+            $sheet->getColumnDimensionByColumn($col)->setWidth(18); // Aumentar ancho para acomodar texto vertical
         }
     }
 
