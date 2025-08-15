@@ -38,8 +38,16 @@ class PacienteBuscadorWidget extends Widget implements HasForms
     
     public function mount(): void
     {
-        $this->form->fill();
+        // Verificar si el usuario logueado tiene el email específico
+        $user = auth()->user();
+        if ($user && $user->email === 'liliana.monje@chcdg.com') {
+            $this->tipoTabla = 'consultorio';
+        }
+        
         $this->loadSelectData();
+        $this->form->fill([
+            'tipo_tabla' => $this->tipoTabla
+        ]);
     }
     
     protected function loadSelectData(): void
@@ -64,7 +72,7 @@ class PacienteBuscadorWidget extends Widget implements HasForms
                         'hemodialisis' => 'Pacientes Hemodiálisis',
                         'consultorio' => 'Pacientes Consultorio',
                     ])
-                    ->default('hemodialisis')
+                    ->default($this->tipoTabla)
                     ->live()
                     ->afterStateUpdated(function ($state) {
                         $this->tipoTabla = $state;
