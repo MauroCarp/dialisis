@@ -586,6 +586,9 @@ class PlabaseReport extends Page
         for ($col = 2; $col <= $numPacientes + 1; $col++) {
             $sheet->getColumnDimensionByColumn($col)->setWidth(18); // Aumentar ancho para acomodar texto vertical
         }
+
+        // Inmovilizar paneles a partir de la celda B2
+        $sheet->freezePane('B2');
     }
 
     /**
