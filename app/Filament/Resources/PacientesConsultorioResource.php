@@ -32,10 +32,6 @@ class PacientesConsultorioResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Información Personal')
                     ->schema([
-                        Forms\Components\TextInput::make('nroalta')
-                            ->label('Nro. de Alta')
-                            ->maxLength(20),
-
                         Forms\Components\TextInput::make('nombre')
                             ->label('Nombre')
                             ->required()
@@ -187,11 +183,6 @@ class PacientesConsultorioResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nroalta')
-                    ->label('Nro. Alta')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
                 Tables\Columns\TextColumn::make('apellido')
                     ->label('Apellido')
                     ->searchable()

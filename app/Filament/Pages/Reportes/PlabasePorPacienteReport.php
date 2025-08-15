@@ -54,7 +54,7 @@ class PlabasePorPacienteReport extends Page
                                 ->get()
                                 ->mapWithKeys(function ($paciente) {
                                     return [
-                                        $paciente->id => "{$paciente->apellido}, {$paciente->nombre} - Alta: {$paciente->nroalta}"
+                                        $paciente->id => "{$paciente->apellido}, {$paciente->nombre}"
                                     ];
                                 })
                         )
@@ -169,15 +169,11 @@ class PlabasePorPacienteReport extends Page
         $sheet->setCellValue('A4', 'DATOS DEL PACIENTE');
         $sheet->mergeCells('A4:B4');
         
-        $sheet->setCellValue('A5', 'N° Alta:');
-        $sheet->setCellValueExplicit('B5', $paciente->nroalta, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
-        $sheet->getStyle('B5')->getNumberFormat()->setFormatCode('0');
+        $sheet->setCellValue('A5', 'DNI:');
+        $sheet->setCellValue('B5', $paciente->dnicuitcuil);
         
-        $sheet->setCellValue('A6', 'DNI:');
-        $sheet->setCellValue('B6', $paciente->dni);
-        
-        $sheet->setCellValue('A7', 'Apellido y Nombre:');
-        $sheet->setCellValue('B7', "{$paciente->apellido}, {$paciente->nombre}");
+        $sheet->setCellValue('A6', 'Apellido y Nombre:');
+        $sheet->setCellValue('B6', "{$paciente->apellido}, {$paciente->nombre}");
 
         // Encabezados de análisis
         $fila = 10;
@@ -386,8 +382,6 @@ class PlabasePorPacienteReport extends Page
     {
         // Campos del paciente
         switch ($campo) {
-            case 'nroalta':
-                return $paciente->nroalta ?? '';
             case 'apellido':
                 return $paciente->apellido ?? '';
             case 'nombre':

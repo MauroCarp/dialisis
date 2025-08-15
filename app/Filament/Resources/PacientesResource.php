@@ -83,12 +83,8 @@ class PacientesResource extends Resource
 
                 Forms\Components\Section::make('Información Médica')
                     ->schema([
-                        Forms\Components\Grid::make(4)
+                        Forms\Components\Grid::make(3)
                             ->schema([
-                                Forms\Components\TextInput::make('nroalta')
-                                    ->label('Número de Alta')
-                                    ->numeric(),
-
                                 Forms\Components\TextInput::make('pesoseco')
                                     ->label('Peso Seco (kg)')
                                     ->numeric()

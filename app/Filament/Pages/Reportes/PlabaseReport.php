@@ -404,14 +404,12 @@ class PlabaseReport extends Page
     {
         // Campos del paciente
         switch ($campo) {
-            case 'nroalta':
-                return $paciente->nroalta ?? '';
             case 'apellido':
                 return $paciente->apellido ?? '';
             case 'nombre':
                 return $paciente->nombre ?? '';
             case 'dni':
-                return $paciente->dni ?? '';
+                return $paciente->dnicuitcuil ?? '';
         }
 
         // Campos de analisis mensual

@@ -33,9 +33,6 @@
                                         <p class="text-sm text-gray-600 dark:text-gray-400">
                                             DNI/CUIL/CUIT: {{ $paciente['dnicuitcuil'] ?? 'N/A' }}
                                         </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                                            Nro. Alta: {{ $paciente['nroalta'] ?? 'N/A' }}
-                                        </p>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
@@ -61,8 +58,7 @@
                                     {{ $pacienteSeleccionado['apellido'] }}, {{ $pacienteSeleccionado['nombre'] }}
                                 </h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    {{ $tipoTabla === 'hemodialisis' ? 'Paciente de Hemodiálisis' : 'Paciente de Consultorio' }} 
-                                    - Nro. Alta: {{ $pacienteSeleccionado['nroalta'] ?? 'N/A' }}
+                                    {{ $tipoTabla === 'hemodialisis' ? 'Paciente de Hemodiálisis' : 'Paciente de Consultorio' }}
                                 </p>
                             </div>
                             <a href="{{ $tipoTabla === 'hemodialisis' ? route('pacientes.edit', $pacienteSeleccionado['id']) : '/admin/pacientes-consultorios/' . $pacienteSeleccionado['id'] . '/edit' }}"

@@ -14,12 +14,6 @@
                         <span class="text-sm font-medium text-gray-500">DNI/CUIT/CUIL:</span>
                         <p class="text-gray-900">{{ $paciente->dnicuitcuil ?? 'No especificado' }}</p>
                     </div>
-                    @if($paciente->nroalta)
-                    <div>
-                        <span class="text-sm font-medium text-gray-500">Nro. Alta:</span>
-                        <p class="text-gray-900">{{ $paciente->nroalta }}</p>
-                    </div>
-                    @endif
                     @if($paciente->fechanacimiento)
                     <div>
                         <span class="text-sm font-medium text-gray-500">Fecha de Nacimiento:</span>

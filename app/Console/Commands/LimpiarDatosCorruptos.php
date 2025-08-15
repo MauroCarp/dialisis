@@ -125,8 +125,8 @@ class LimpiarDatosCorruptos extends Command
         
         // Lista de tablas principales que pueden contener datos de texto
         $tablasABuscar = [
-            'pacientes' => ['nombre', 'apellido', 'direccion', 'telefono', 'email','dnicuitcuil','nroalta','gruposanguineo'],
-            'pacientesconsultorio' => ['nombre', 'apellido', 'direccion', 'telefono', 'email', 'derivante','dnicuitcuil','nroalta','gruposanguineo'],
+            'pacientes' => ['nombre', 'apellido', 'direccion', 'telefono', 'email','dnicuitcuil','gruposanguineo'],
+            'pacientesconsultorio' => ['nombre', 'apellido', 'direccion', 'telefono', 'email', 'derivante','dnicuitcuil','gruposanguineo'],
             'historiasclinicas' => ['observaciones'],
             'historiasclinicasconsultorio' => ['observaciones'],
             'provincias' => ['nombre'],

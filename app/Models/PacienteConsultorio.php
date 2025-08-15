@@ -17,7 +17,6 @@ class PacienteConsultorio extends Model
     public $timestamps = false; // Esta tabla no tiene created_at/updated_at
 
     protected $fillable = [
-        'nroalta',
         'nombre',
         'apellido',
         'pesoseco',
