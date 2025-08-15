@@ -159,7 +159,7 @@ class PlabasePorPacienteReport extends Page
         // Ajustar texto en celdas mergeadas
         $sheet->getStyle('A1')->getAlignment()->setWrapText(true)->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
         // Ajustar el alto de la fila para mostrar todo el texto
-        $sheet->getRowDimension(1)->setRowHeight(-1);
+        $sheet->getRowDimension(1)->setRowHeight(50);
         $sheet->mergeCells('A1:B1');
 
         $sheet->setCellValue('A2', "Mes: {$mes}/{$año} - Generado: " . now()->format('d/m/Y H:i:s'));
@@ -170,7 +170,8 @@ class PlabasePorPacienteReport extends Page
         $sheet->mergeCells('A4:B4');
         
         $sheet->setCellValue('A5', 'N° Alta:');
-        $sheet->setCellValue('B5', $paciente->nroalta);
+        $sheet->setCellValueExplicit('B5', $paciente->nroalta, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+        $sheet->getStyle('B5')->getNumberFormat()->setFormatCode('0');
         
         $sheet->setCellValue('A6', 'DNI:');
         $sheet->setCellValue('B6', $paciente->dni);
@@ -183,11 +184,11 @@ class PlabasePorPacienteReport extends Page
         $sheet->setCellValue("A{$fila}", 'ANÁLISIS MENSUAL');
         $sheet->mergeCells("A{$fila}:B{$fila}");
         
-        $fila = 25;
+        $fila = 41;
         $sheet->setCellValue("A{$fila}", 'ANÁLISIS TRIMESTRAL');
         $sheet->mergeCells("A{$fila}:B{$fila}");
         
-        $fila = 35;
+        $fila = 49;
         $sheet->setCellValue("A{$fila}", 'ANÁLISIS SEMESTRAL');
         $sheet->mergeCells("A{$fila}:B{$fila}");
     }
@@ -224,12 +225,12 @@ class PlabasePorPacienteReport extends Page
                         $sheet->setCellValue("B{$fila}", $formula);
                     break;
                 case 'ktv_basile':
-                        // $filaUremaPre = $this->encontrarFilaPorCampo($campos['mensual'], 'uremia_pre') + 10;
-                        // $filaUremaPost = $this->encontrarFilaPorCampo($campos['mensual'], 'uremia_pos') + 10;
-                        // $filaPromPesoPre = $this->encontrarFilaPorCampo($campos['mensual'], 'prom_peso_pre') + 10;
-                        // $filaPromPesoPos = $this->encontrarFilaPorCampo($campos['mensual'], 'prom_peso_pos') + 10;
-                        // $formula = "=ROUND(-LN(B{$filaUremaPost}/B{$filaUremaPre} - 0.008 * 4)+(4-3.5*B{$filaUremaPost}/B{$filaUremaPre})*(B{$filaPromPesoPre}-B{$filaPromPesoPos})/B{$filaPromPesoPos},2)";
-                        // $sheet->setCellValue("B{$fila}", $formula);
+                        $filaUremaPre = $this->encontrarFilaPorCampo($campos['mensual'], 'uremia_pre') + 10;
+                        $filaUremaPost = $this->encontrarFilaPorCampo($campos['mensual'], 'uremia_pos') + 10;
+                        $filaPromPesoPre = $this->encontrarFilaPorCampo($campos['mensual'], 'prom_peso_pre') + 10;
+                        $filaPromPesoPos = $this->encontrarFilaPorCampo($campos['mensual'], 'prom_peso_pos') + 10;
+                        $formula = "=ROUND(-LN(B{$filaUremaPost}/B{$filaUremaPre} - 0.008 * 4)+(4-3.5*B{$filaUremaPost}/B{$filaUremaPre})*(B{$filaPromPesoPre}-B{$filaPromPesoPos})/B{$filaPromPesoPos},2)";
+                        $sheet->setCellValue("B{$fila}", $formula);
                     break;
                 case 'tac_urea':
                         $filaUremaPre = $this->encontrarFilaPorCampo($campos['mensual'], 'uremia_pre') + 10;
@@ -575,7 +576,7 @@ class PlabasePorPacienteReport extends Page
         ]);
 
         // Estilo para secciones
-        foreach ([4, 10, 25, 35] as $fila) {
+        foreach ([4, 10, 41, 49] as $fila) {
             $sheet->getStyle("A{$fila}:B{$fila}")->applyFromArray([
                 'font' => ['bold' => true, 'size' => 12],
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
