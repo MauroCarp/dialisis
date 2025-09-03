@@ -70,7 +70,7 @@
                                     @endif
                                 </div>
                                 
-                                <!-- Botón de descarga individual para cada historia -->
+                                <!-- Botones de acción para cada historia -->
                                 <div class="flex items-center space-x-2">
                                     @if(isset($esPacienteConsultorio) && $esPacienteConsultorio)
                                         <a href="{{ route('historia-clinica-consultorio.download', ['id' => $historia->id]) }}" 
@@ -79,6 +79,18 @@
                                             <i class="fas fa-download mr-1"></i>
                                             PDF
                                         </a>
+                                        <form method="POST" action="{{ route('historias-clinicas-consultorio.destroy', $historia->id) }}" 
+                                              class="inline-block"
+                                              onsubmit="return confirm('¿Está seguro que desea eliminar esta historia clínica? Esta acción no se puede deshacer.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="inline-flex items-center px-3 py-1 rounded text-sm bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+                                                    title="Eliminar Historia Clínica">
+                                                <i class="fas fa-trash mr-1"></i>
+                                                Eliminar
+                                            </button>
+                                        </form>
                                     @else
                                         <a href="{{ route('historias-clinicas.download', ['id' => $historia->id]) }}" 
                                            class="inline-flex items-center px-3 py-1 rounded text-sm bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200"
@@ -86,6 +98,18 @@
                                             <i class="fas fa-download mr-1"></i>
                                             PDF
                                         </a>
+                                        <form method="POST" action="{{ route('historias-clinicas.destroy', $historia->id) }}" 
+                                              class="inline-block"
+                                              onsubmit="return confirm('¿Está seguro que desea eliminar esta historia clínica? Esta acción no se puede deshacer.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="inline-flex items-center px-3 py-1 rounded text-sm bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+                                                    title="Eliminar Historia Clínica">
+                                                <i class="fas fa-trash mr-1"></i>
+                                                Eliminar
+                                            </button>
+                                        </form>
                                     @endif
                                 </div>
                             </div>

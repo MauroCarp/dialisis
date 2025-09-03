@@ -39,11 +39,13 @@ Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name
 Route::get('/pacientes/{id}/historias-clinicas/create', [HistoriaClinicaController::class, 'create'])->name('historias-clinicas.create');
 Route::post('/pacientes/{id}/historias-clinicas', [HistoriaClinicaController::class, 'store'])->name('historias-clinicas.store');
 Route::get('/historias-clinicas/{id}/download', [HistoriaClinicaController::class, 'download'])->name('historias-clinicas.download');
+Route::delete('/historias-clinicas/{id}', [HistoriaClinicaController::class, 'destroy'])->name('historias-clinicas.destroy');
 
 // Rutas para historias clínicas de consultorio
 Route::get('/pacientes/{id}/historias-clinicas-consultorio/create', [HistoriaClinicaConsultorioController::class, 'create'])->name('historias-clinicas-consultorio.create');
 Route::post('/pacientes/{id}/historias-clinicas-consultorio', [HistoriaClinicaConsultorioController::class, 'store'])->name('historias-clinicas-consultorio.store');
 Route::get('/historias-clinicas-consultorio/{id}/download', [HistoriaClinicaConsultorioController::class, 'download'])->name('historia-clinica-consultorio.download');
+Route::delete('/historias-clinicas-consultorio/{id}', [HistoriaClinicaConsultorioController::class, 'destroy'])->name('historias-clinicas-consultorio.destroy');
 
 // Ruta para crear accesos vasculares
 Route::post('/pacientes/{paciente}/accesos-vasculares', [AccesoVascularController::class, 'store'])
@@ -103,3 +105,14 @@ Route::post('/pacientes/{paciente}/analisis-trimestrales', [AnalisisTrimestralCo
     ->name('analisis-trimestrales.store');
 Route::post('/pacientes/{paciente}/analisis-semestrales', [AnalisisSemestralController::class, 'store'])
     ->name('analisis-semestrales.store');
+
+// Ruta para descargar reportes
+Route::get('/reportes/download/{filename}', function ($filename) {
+    $path = storage_path("app/public/{$filename}");
+    
+    if (!file_exists($path)) {
+        abort(404, 'Archivo no encontrado');
+    }
+    
+    return response()->download($path);
+})->name('reportes.download')->where('filename', '.*');

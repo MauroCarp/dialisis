@@ -90,10 +90,10 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">CENTRO DE DIÁLISIS</div>
+        <div class="logo">CENTRO DE HEMODIÁLISIS</div>
         <div class="clinic-info">
-            Dirección: Av. Principal #123 - Teléfono: (555) 123-4567<br>
-            Email: info@centrodialisis.com - Ciudad, País
+            Dirección: Alte. Brown 832 - Teléfono: (03471) 421939<br>
+            Email: hemodialisis.cdg@hotmail.com - Cañada de Gómez, Argentina
         </div>
     </div>
 
@@ -157,7 +157,7 @@
     </div>
 
     <div class="footer">
-        Documento generado el {{ now()->format('d/m/Y H:i') }} - Sistema de Gestión de Pacientes
+        Documento generado el {{ now()->format('d/m/Y H:i') }} - Centro de Hemodialisis Cañada de Gómez
     </div>
 </body>
 </html>

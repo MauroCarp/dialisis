@@ -138,7 +138,7 @@ class PlabasePorPacienteReport extends Page
                 ->actions([
                     \Filament\Notifications\Actions\Action::make('descargar')
                         ->label('Descargar')
-                        ->url(asset("storage/{$nombreArchivo}"))
+                        ->url(route('reportes.download', ['filename' => $nombreArchivo]))
                         ->openUrlInNewTab(),
                 ])
                 ->send();

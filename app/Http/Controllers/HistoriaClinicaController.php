@@ -49,4 +49,17 @@ class HistoriaClinicaController extends Controller
 
         return $pdf->download($filename);
     }
+
+    public function destroy($id)
+    {
+        $historia = HistoriaClinica::with('paciente')->findOrFail($id);
+        $pacienteId = $historia->paciente->id;
+        
+        $historia->delete();
+
+        return redirect()
+            ->route('pacientes.show', $pacienteId)
+            ->with('success', 'Historia clínica eliminada exitosamente.')
+            ->with('show_tab', 'historias');
+    }
 }

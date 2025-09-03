@@ -48,4 +48,17 @@ class HistoriaClinicaConsultorioController extends Controller
 
         return $pdf->download($filename);
     }
+
+    public function destroy($id)
+    {
+        $historia = HistoriaClinicaConsultorio::with('pacienteConsultorio')->findOrFail($id);
+        $pacienteId = $historia->pacienteConsultorio->id;
+        
+        $historia->delete();
+
+        return redirect()
+            ->route('pacientes.show', ['paciente' => $pacienteId, 'tipo' => 'consultorio'])
+            ->with('success', 'Historia clínica de consultorio eliminada exitosamente.')
+            ->with('show_tab', 'historias');
+    }
 }
