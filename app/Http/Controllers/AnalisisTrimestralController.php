@@ -30,6 +30,45 @@ class AnalisisTrimestralController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $paciente->id)
-            ->with('success', 'Análisis trimestral registrado correctamente.');
+            ->with('success', 'Análisis trimestral registrado correctamente.')
+            ->with('show_tab', 'analisis')
+            ->with('analisis_tab', 'trimestrales');
+    }
+
+    public function edit($id)
+    {
+        $analisis = AnalisisTrimestral::findOrFail($id);
+        return response()->json($analisis);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'fechaanalisis' => 'nullable|date',
+            'protocolo' => 'nullable|string|max:100',
+            'linfocitos' => 'nullable|numeric',
+            'albumina' => 'nullable|numeric',
+            'colesterol' => 'nullable|numeric',
+        ]);
+
+        $analisis = AnalisisTrimestral::findOrFail($id);
+        $analisis->update($request->all());
+
+        return redirect()->route('pacientes.show', $analisis->id_paciente)
+            ->with('success', 'Análisis trimestral actualizado correctamente.')
+            ->with('show_tab', 'analisis')
+            ->with('analisis_tab', 'trimestrales');
+    }
+
+    public function destroy($id)
+    {
+        $analisis = AnalisisTrimestral::findOrFail($id);
+        $pacienteId = $analisis->id_paciente;
+        $analisis->delete();
+
+        return redirect()->route('pacientes.show', $pacienteId)
+            ->with('success', 'Análisis trimestral eliminado correctamente.')
+            ->with('show_tab', 'analisis')
+            ->with('analisis_tab', 'trimestrales');
     }
 }

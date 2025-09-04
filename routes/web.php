@@ -101,10 +101,28 @@ Route::get('/pacientes/{paciente}/analisis-diarios/por-fecha', [AnalisisDiarioEt
     ->name('analisis-diarios.por-fecha');
 Route::post('/pacientes/{paciente}/analisis-mensuales', [AnalisisMensualController::class, 'store'])
     ->name('analisis-mensuales.store');
+Route::get('/analisis-mensuales/{id}/edit', [AnalisisMensualController::class, 'edit'])
+    ->name('analisis-mensuales.edit');
+Route::put('/analisis-mensuales/{id}', [AnalisisMensualController::class, 'update'])
+    ->name('analisis-mensuales.update');
+Route::delete('/analisis-mensuales/{id}', [AnalisisMensualController::class, 'destroy'])
+    ->name('analisis-mensuales.destroy');
 Route::post('/pacientes/{paciente}/analisis-trimestrales', [AnalisisTrimestralController::class, 'store'])
     ->name('analisis-trimestrales.store');
+Route::get('/analisis-trimestrales/{id}/edit', [AnalisisTrimestralController::class, 'edit'])
+    ->name('analisis-trimestrales.edit');
+Route::put('/analisis-trimestrales/{id}', [AnalisisTrimestralController::class, 'update'])
+    ->name('analisis-trimestrales.update');
+Route::delete('/analisis-trimestrales/{id}', [AnalisisTrimestralController::class, 'destroy'])
+    ->name('analisis-trimestrales.destroy');
 Route::post('/pacientes/{paciente}/analisis-semestrales', [AnalisisSemestralController::class, 'store'])
     ->name('analisis-semestrales.store');
+Route::get('/analisis-semestrales/{id}/edit', [AnalisisSemestralController::class, 'edit'])
+    ->name('analisis-semestrales.edit');
+Route::put('/analisis-semestrales/{id}', [AnalisisSemestralController::class, 'update'])
+    ->name('analisis-semestrales.update');
+Route::delete('/analisis-semestrales/{id}', [AnalisisSemestralController::class, 'destroy'])
+    ->name('analisis-semestrales.destroy');
 
 // Ruta para descargar reportes
 Route::get('/reportes/download/{filename}', function ($filename) {

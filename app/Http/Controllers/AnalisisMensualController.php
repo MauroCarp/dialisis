@@ -68,7 +68,7 @@ class AnalisisMensualController extends Controller
         $calculoUremico = 4 - 3.5 * $request->uremia_post / $request->uremia_pre;
 
         $analisis = AnalisisMensual::create([
-            'id_paciente' => $id,
+            'id_paciente' => $pacienteId,
             'fechaanalisis' => $request->fechaanalisis,
             'protocolo' => $request->protocolo,
             'hemoglobina' => $request->hemoglobina,
@@ -95,6 +95,67 @@ class AnalisisMensualController extends Controller
         ]);
 
         return redirect()->route('pacientes.show', $paciente->id)
-            ->with('success', 'Análisis mensual registrado correctamente.');
+            ->with('success', 'Análisis mensual registrado correctamente.')
+            ->with('show_tab', 'analisis')
+            ->with('analisis_tab', 'mensuales');
+    }
+
+    public function edit($id)
+    {
+        $analisis = AnalisisMensual::findOrFail($id);
+        return response()->json($analisis);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'fechaanalisis' => 'nullable|date',
+            'protocolo' => 'nullable|string|max:100',
+            'hemoglobina' => 'nullable|numeric',
+            'hematocrito' => 'nullable|numeric',
+            'globulos_blancos' => 'nullable|numeric',
+            'plaquetas' => 'nullable|numeric',
+            'transferrina' => 'nullable|numeric',
+            'ferritina' => 'nullable|numeric',
+            'urea' => 'nullable|numeric',
+            'creatinina' => 'nullable|numeric',
+            'acido_urico' => 'nullable|numeric',
+            'clearance_creatinina' => 'nullable|numeric',
+            'colesterol_total' => 'nullable|numeric',
+            'hdl' => 'nullable|numeric',
+            'ldl' => 'nullable|numeric',
+            'trigliceridos' => 'nullable|numeric',
+            'glucemia' => 'nullable|numeric',
+            'albumina' => 'nullable|numeric',
+            'proteinas_totales' => 'nullable|numeric',
+            'sodio' => 'nullable|numeric',
+            'potasio' => 'nullable|numeric',
+            'calcemia' => 'nullable|numeric',
+            'fosfatemia' => 'nullable|numeric',
+            'gpt' => 'nullable|numeric',
+            'got' => 'nullable|numeric',
+            'fosfatasa_alcalina' => 'nullable|numeric',
+            'pcr' => 'nullable|numeric',
+        ]);
+
+        $analisis = AnalisisMensual::findOrFail($id);
+        $analisis->update($request->all());
+
+        return redirect()->route('pacientes.show', $analisis->id_paciente)
+            ->with('success', 'Análisis mensual actualizado correctamente.')
+            ->with('show_tab', 'analisis')
+            ->with('analisis_tab', 'mensuales');
+    }
+
+    public function destroy($id)
+    {
+        $analisis = AnalisisMensual::findOrFail($id);
+        $pacienteId = $analisis->id_paciente;
+        $analisis->delete();
+
+        return redirect()->route('pacientes.show', $pacienteId)
+            ->with('success', 'Análisis mensual eliminado correctamente.')
+            ->with('show_tab', 'analisis')
+            ->with('analisis_tab', 'mensuales');
     }
 }

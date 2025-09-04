@@ -73,8 +73,8 @@ class PacienteController extends Controller
                 'medicacionesPacientes.medicacion.tipoMedicacion' => function($query) {
                     $query->orderBy('nombre', 'desc')->limit(10);
                 },
-                'vacunasPacientes.vacuna' => function($query) {
-                    $query->orderBy('fechavacuna', 'desc')->limit(10);
+                'vacunasPacientes' => function($query) {
+                    $query->with('vacuna')->orderBy('fechavacuna', 'desc')->limit(10);
                 },
                 'vacunasPacientes.dosis' => function($query) {
                     $query->orderBy('fechadosis', 'desc');

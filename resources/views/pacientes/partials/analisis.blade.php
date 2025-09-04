@@ -2,7 +2,7 @@
 @if(!isset($esPacienteConsultorio) || !$esPacienteConsultorio)
 <div class="space-y-4">
     <!-- Pestañas de Análisis -->
-    <div x-data="{ activeTab: 'diarios' }" class="w-full">
+    <div x-data="{ activeTab: @if(session('analisis_tab')) '{{session('analisis_tab')}}' @else 'diarios' @endif }" class="w-full">
         <!-- Navegación de pestañas -->
         <div class="flex border-b border-gray-200 mb-6">
             <button 
