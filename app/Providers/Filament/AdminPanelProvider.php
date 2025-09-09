@@ -50,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 \App\Filament\Widgets\PacienteBuscadorWidget::class,
+                \App\Filament\Widgets\AnalisisPendientesWidget::class,
             ])
             ->navigationGroups([
                 NavigationGroup::make('Gestión de Pacientes')
