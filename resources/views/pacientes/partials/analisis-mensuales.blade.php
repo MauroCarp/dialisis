@@ -331,10 +331,10 @@
                         </div>
                     </div>
 
-                    <!-- Hemograma -->
+                    <!-- Hematología -->
                     <div class="col-span-full">
                         <h4 class="text-md font-semibold text-gray-800 mb-3 p-2 bg-red-50 rounded">
-                            <i class="fas fa-tint mr-2 text-red-500"></i>Hemograma
+                            <i class="fas fa-tint mr-2 text-red-500"></i>Hematología
                         </h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
@@ -346,20 +346,16 @@
                                 <input type="number" step="0.01" id="edit_hematocrito" name="hematocrito" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label for="edit_globulos_blancos" class="block text-sm font-medium text-gray-700 mb-1">Glóbulos Blancos</label>
-                                <input type="number" step="0.01" id="edit_globulos_blancos" name="globulos_blancos" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="edit_rto_blancos" class="block text-sm font-medium text-gray-700 mb-1">Rto. Blancos</label>
+                                <input type="number" step="0.01" id="edit_rto_blancos" name="rto_blancos" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label for="edit_plaquetas" class="block text-sm font-medium text-gray-700 mb-1">Plaquetas</label>
-                                <input type="number" step="0.01" id="edit_plaquetas" name="plaquetas" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="edit_rto_rojos" class="block text-sm font-medium text-gray-700 mb-1">Rto. Rojos</label>
+                                <input type="number" step="0.01" id="edit_rto_rojos" name="rto_rojos" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label for="edit_transferrina" class="block text-sm font-medium text-gray-700 mb-1">Transferrina</label>
-                                <input type="number" step="0.01" id="edit_transferrina" name="transferrina" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_ferritina" class="block text-sm font-medium text-gray-700 mb-1">Ferritina</label>
-                                <input type="number" step="0.01" id="edit_ferritina" name="ferritina" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="edit_rto_plaquetas" class="block text-sm font-medium text-gray-700 mb-1">Rto. Plaquetas</label>
+                                <input type="number" step="0.01" id="edit_rto_plaquetas" name="rto_plaquetas" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
                     </div>
@@ -367,70 +363,20 @@
                     <!-- Función Renal -->
                     <div class="col-span-full">
                         <h4 class="text-md font-semibold text-gray-800 mb-3 p-2 bg-blue-50 rounded">
-                            <i class="fas fa-filter mr-2 text-blue-500"></i>Función Renal
+                            <i class="fas fa-kidneys mr-2 text-blue-500"></i>Función Renal
                         </h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label for="edit_urea" class="block text-sm font-medium text-gray-700 mb-1">Urea</label>
-                                <input type="number" step="0.01" id="edit_urea" name="urea" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
                             <div>
                                 <label for="edit_creatinina" class="block text-sm font-medium text-gray-700 mb-1">Creatinina</label>
                                 <input type="number" step="0.01" id="edit_creatinina" name="creatinina" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label for="edit_acido_urico" class="block text-sm font-medium text-gray-700 mb-1">Ácido Úrico</label>
-                                <input type="number" step="0.01" id="edit_acido_urico" name="acido_urico" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="edit_uremia_pre" class="block text-sm font-medium text-gray-700 mb-1">Uremia Pre</label>
+                                <input type="number" step="0.01" id="edit_uremia_pre" name="uremia_pre" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label for="edit_clearance_creatinina" class="block text-sm font-medium text-gray-700 mb-1">Clearance Creatinina</label>
-                                <input type="number" step="0.01" id="edit_clearance_creatinina" name="clearance_creatinina" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Perfil Lipídico -->
-                    <div class="col-span-full">
-                        <h4 class="text-md font-semibold text-gray-800 mb-3 p-2 bg-yellow-50 rounded">
-                            <i class="fas fa-chart-line mr-2 text-yellow-500"></i>Perfil Lipídico
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label for="edit_colesterol_total" class="block text-sm font-medium text-gray-700 mb-1">Colesterol Total</label>
-                                <input type="number" step="0.01" id="edit_colesterol_total" name="colesterol_total" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_hdl" class="block text-sm font-medium text-gray-700 mb-1">HDL</label>
-                                <input type="number" step="0.01" id="edit_hdl" name="hdl" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_ldl" class="block text-sm font-medium text-gray-700 mb-1">LDL</label>
-                                <input type="number" step="0.01" id="edit_ldl" name="ldl" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_trigliceridos" class="block text-sm font-medium text-gray-700 mb-1">Triglicéridos</label>
-                                <input type="number" step="0.01" id="edit_trigliceridos" name="trigliceridos" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Glucemia y Metabolismo -->
-                    <div class="col-span-full">
-                        <h4 class="text-md font-semibold text-gray-800 mb-3 p-2 bg-purple-50 rounded">
-                            <i class="fas fa-candy-cane mr-2 text-purple-500"></i>Glucemia y Metabolismo
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label for="edit_glucemia" class="block text-sm font-medium text-gray-700 mb-1">Glucemia</label>
-                                <input type="number" step="0.01" id="edit_glucemia" name="glucemia" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_albumina" class="block text-sm font-medium text-gray-700 mb-1">Albumina</label>
-                                <input type="number" step="0.01" id="edit_albumina" name="albumina" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_proteinas_totales" class="block text-sm font-medium text-gray-700 mb-1">Proteínas Totales</label>
-                                <input type="number" step="0.01" id="edit_proteinas_totales" name="proteinas_totales" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label for="edit_uremia_post" class="block text-sm font-medium text-gray-700 mb-1">Uremia Post</label>
+                                <input type="number" step="0.01" id="edit_uremia_post" name="uremia_post" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
                     </div>
@@ -438,7 +384,7 @@
                     <!-- Electrolitos -->
                     <div class="col-span-full">
                         <h4 class="text-md font-semibold text-gray-800 mb-3 p-2 bg-green-50 rounded">
-                            <i class="fas fa-vial mr-2 text-green-500"></i>Electrolitos
+                            <i class="fas fa-atom mr-2 text-green-500"></i>Electrolitos
                         </h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
@@ -463,7 +409,7 @@
                     <!-- Función Hepática -->
                     <div class="col-span-full">
                         <h4 class="text-md font-semibold text-gray-800 mb-3 p-2 bg-orange-50 rounded">
-                            <i class="fas fa-liver mr-2 text-orange-500"></i>Función Hepática e Inflamación
+                            <i class="fas fa-liver mr-2 text-orange-500"></i>Función Hepática
                         </h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
@@ -477,10 +423,6 @@
                             <div>
                                 <label for="edit_fosfatasa_alcalina" class="block text-sm font-medium text-gray-700 mb-1">Fosfatasa Alcalina</label>
                                 <input type="number" step="0.01" id="edit_fosfatasa_alcalina" name="fosfatasa_alcalina" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="edit_pcr" class="block text-sm font-medium text-gray-700 mb-1">PCR</label>
-                                <input type="number" step="0.01" id="edit_pcr" name="pcr" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
                     </div>
@@ -507,25 +449,33 @@ function editarAnalisisMensual(id) {
         .then(response => response.json())
         .then(data => {
             // Llenar el formulario con los datos
+            console.log(data)
             document.getElementById('edit_protocolo').value = data.protocolo || '';
-            document.getElementById('edit_fechaanalisis').value = data.fechaanalisis || '';
+
+            if (data.fechaanalisis) {
+                try {
+                    const fecha = new Date(data.fechaanalisis);
+                    if (!isNaN(fecha.getTime())) {
+                        forzarValorInput('edit_fechaanalisis', fecha.toISOString().split('T')[0]);
+                    } else {
+                        forzarValorInput('edit_fechaanalisis', new Date().toISOString().split('T')[0]);
+                    }
+                } catch (e) {
+                    console.error('Error parseando fecha:', e);
+                    forzarValorInput('edit_fechaanalisis', new Date().toISOString().split('T')[0]);
+                }
+            } else {
+                forzarValorInput('edit_fechaanalisis', new Date().toISOString().split('T')[0]);
+            }       
+            
             document.getElementById('edit_hemoglobina').value = data.hemoglobina || '';
             document.getElementById('edit_hematocrito').value = data.hematocrito || '';
-            document.getElementById('edit_globulos_blancos').value = data.globulos_blancos || '';
-            document.getElementById('edit_plaquetas').value = data.plaquetas || '';
-            document.getElementById('edit_transferrina').value = data.transferrina || '';
-            document.getElementById('edit_ferritina').value = data.ferritina || '';
-            document.getElementById('edit_urea').value = data.urea || '';
+            document.getElementById('edit_rto_blancos').value = data.rto_blancos || '';
+            document.getElementById('edit_rto_rojos').value = data.rto_rojos || '';
+            document.getElementById('edit_rto_plaquetas').value = data.rto_plaquetas || '';
             document.getElementById('edit_creatinina').value = data.creatinina || '';
-            document.getElementById('edit_acido_urico').value = data.acido_urico || '';
-            document.getElementById('edit_clearance_creatinina').value = data.clearance_creatinina || '';
-            document.getElementById('edit_colesterol_total').value = data.colesterol_total || '';
-            document.getElementById('edit_hdl').value = data.hdl || '';
-            document.getElementById('edit_ldl').value = data.ldl || '';
-            document.getElementById('edit_trigliceridos').value = data.trigliceridos || '';
-            document.getElementById('edit_glucemia').value = data.glucemia || '';
-            document.getElementById('edit_albumina').value = data.albumina || '';
-            document.getElementById('edit_proteinas_totales').value = data.proteinas_totales || '';
+            document.getElementById('edit_uremia_pre').value = data.uremia_pre || '';
+            document.getElementById('edit_uremia_post').value = data.uremia_post || '';
             document.getElementById('edit_sodio').value = data.sodio || '';
             document.getElementById('edit_potasio').value = data.potasio || '';
             document.getElementById('edit_calcemia').value = data.calcemia || '';
@@ -533,7 +483,6 @@ function editarAnalisisMensual(id) {
             document.getElementById('edit_gpt').value = data.gpt || '';
             document.getElementById('edit_got').value = data.got || '';
             document.getElementById('edit_fosfatasa_alcalina').value = data.fosfatasa_alcalina || '';
-            document.getElementById('edit_pcr').value = data.pcr || '';
             
             // Establecer la acción del formulario
             document.getElementById('formEditarAnalisisMensual').action = `/analisis-mensuales/${id}`;

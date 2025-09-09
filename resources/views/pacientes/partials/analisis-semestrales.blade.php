@@ -313,12 +313,12 @@
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                             <div class="col-span-2 md:col-span-3">
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Fecha de Análisis</label>
-                                <input type="date" id="edit_fechaanalisis" name="fechaanalisis" class="w-full border rounded px-3 py-2" style="background-color: white !important; color: black !important;">
+                                <input type="date" id="edit_fechaanalisisSemestral" name="fechaanalisis" class="w-full border rounded px-3 py-2" style="background-color: white !important; color: black !important;">
                             </div>
                             
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Protocolo</label>
-                                <input type="text" id="edit_protocolo" name="protocolo" class="w-full border rounded px-3 py-2" style="background-color: white !important; color: black !important;">
+                                <input type="text" id="edit_protocoloSemestral" name="protocolo" class="w-full border rounded px-3 py-2" style="background-color: white !important; color: black !important;">
                             </div>
                             
                             <!-- Marcadores Virológicos -->
@@ -379,7 +379,7 @@
                             
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Ferritina</label>
-                                <input type="number" step="0.01" id="edit_ferritina" name="ferritina" class="w-full border rounded px-3 py-2" style="background-color: white !important; color: black !important;">
+                                <input type="number" step="0.01" id="edit_ferritinaSemestral" name="ferritina" class="w-full border rounded px-3 py-2" style="background-color: white !important; color: black !important;">
                             </div>
                             
                             <div>
@@ -420,42 +420,36 @@ function editarAnalisisSemestral(id) {
             // Dar un momento para que el modal se renderice
             setTimeout(() => {
                 // Llenar el formulario con los datos usando múltiples métodos
-                const protocoloInput = document.getElementById('edit_protocolo');
-                const fechaInput = document.getElementById('edit_fechaanalisis');
-                const ferritinaInput = document.getElementById('edit_ferritina');
-                
-                console.log('Elementos encontrados:', {
-                    protocolo: !!protocoloInput,
-                    fecha: !!fechaInput,
-                    ferritina: !!ferritinaInput
-                });
-                
+                const protocoloInput = document.getElementById('edit_protocoloSemestral');
+                const fechaInput = document.getElementById('edit_fechaanalisisSemestral');
+                const ferritinaInput = document.getElementById('edit_ferritinaSemestral');
+
                 // Usar la función auxiliar para forzar valores
-                forzarValorInput('edit_protocolo', data.protocolo || '');
-                
+                forzarValorInput('edit_protocoloSemestral', data.protocolo || '');
+
                 // Fecha con formato especial
                 if (data.fechaanalisis) {
                     try {
                         const fecha = new Date(data.fechaanalisis);
                         if (!isNaN(fecha.getTime())) {
-                            forzarValorInput('edit_fechaanalisis', fecha.toISOString().split('T')[0]);
+                            forzarValorInput('edit_fechaanalisisSemestral', fecha.toISOString().split('T')[0]);
                         } else {
-                            forzarValorInput('edit_fechaanalisis', new Date().toISOString().split('T')[0]);
+                            forzarValorInput('edit_fechaanalisisSemestral', new Date().toISOString().split('T')[0]);
                         }
                     } catch (e) {
                         console.error('Error parseando fecha:', e);
-                        forzarValorInput('edit_fechaanalisis', new Date().toISOString().split('T')[0]);
+                        forzarValorInput('edit_fechaanalisisSemestral', new Date().toISOString().split('T')[0]);
                     }
                 } else {
-                    forzarValorInput('edit_fechaanalisis', new Date().toISOString().split('T')[0]);
+                    forzarValorInput('edit_fechaanalisisSemestral', new Date().toISOString().split('T')[0]);
                 }
-                
+
                 // Campos numéricos
-                forzarValorInput('edit_valorantihbsag', data.valorantihbsag || '');
-                forzarValorInput('edit_pth', data.pth || '');
-                forzarValorInput('edit_ferritina', data.ferritina || '');
-                forzarValorInput('edit_ferremia', data.ferremia || '');
-                
+                document.getElementById('edit_valorantihbsag').value = data.valorantihbsag;
+                document.getElementById('edit_pth').value = data.pth;
+                document.getElementById('edit_ferritinaSemestral').value = data.ferritina;
+                document.getElementById('edit_ferremia').value = data.ferremia;
+
                 // Checkboxes
                 document.getElementById('edit_hbsag').checked = data.hbsag == 1;
                 document.getElementById('edit_antihbsag').checked = data.antihbsag == 1;
@@ -465,17 +459,7 @@ function editarAnalisisSemestral(id) {
                 
                 // Configurar action del formulario
                 document.getElementById('formEditarSemestral').action = `/analisis-semestrales/${id}`;
-                
-                console.log('Formulario configurado con action:', document.getElementById('formEditarSemestral').action);
-                
-                // Verificación final
-                setTimeout(() => {
-                    console.log('Verificación final de valores:');
-                    console.log('Protocolo final:', document.getElementById('edit_protocolo').value);
-                    console.log('Fecha final:', document.getElementById('edit_fechaanalisis').value);
-                    console.log('Ferritina final:', document.getElementById('edit_ferritina').value);
-                }, 100);
-                
+                            
             }, 200);
         })
         .catch(error => {
