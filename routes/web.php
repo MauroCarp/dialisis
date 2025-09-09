@@ -99,6 +99,15 @@ Route::get('/pacientes/{paciente}/analisis-diarios/incompletos', [AnalisisDiario
 
 Route::get('/pacientes/{paciente}/analisis-diarios/por-fecha', [AnalisisDiarioEtapasController::class, 'getAnalisisPorFecha'])
     ->name('analisis-diarios.por-fecha');
+
+// Rutas para editar y eliminar análisis diarios
+Route::get('/analisis-diarios/{id}/edit', [AnalisisDiarioEtapasController::class, 'edit'])
+    ->name('analisis-diarios.edit');
+Route::put('/analisis-diarios/{id}', [AnalisisDiarioEtapasController::class, 'update'])
+    ->name('analisis-diarios.update');
+Route::delete('/analisis-diarios/{id}', [AnalisisDiarioEtapasController::class, 'destroy'])
+    ->name('analisis-diarios.destroy');
+
 Route::post('/pacientes/{paciente}/analisis-mensuales', [AnalisisMensualController::class, 'store'])
     ->name('analisis-mensuales.store');
 Route::get('/analisis-mensuales/{id}/edit', [AnalisisMensualController::class, 'edit'])

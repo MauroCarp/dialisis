@@ -142,4 +142,116 @@ class AnalisisDiarioEtapasController extends Controller
             'puede_completar' => $analisis->esPreDialisis()
         ]);
     }
+
+    /**
+     * Editar análisis diario (obtener datos para edición)
+     */
+    public function edit($id)
+    {
+        try {
+            $analisis = AnalisisDiario::with(['tipoFiltro', 'tipoSesion', 'paciente'])->findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'analisis' => $analisis
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar los datos del análisis'
+            ], 500);
+        }
+    }
+
+    /**
+     * Actualizar análisis diario
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'fechaanalisis' => 'required|date',
+            'pesopre' => 'required|numeric|min:0|max:500',
+            'taspre' => 'required|numeric|min:0|max:300',
+            'tadpre' => 'required|numeric|min:0|max:200',
+            'id_tipofiltro' => 'required|exists:tiposfiltros,id',
+            'relpesosecopesopre' => 'nullable|numeric|min:0|max:100',
+            'interdialitico' => 'nullable|numeric|min:0|max:100'
+        ]);
+
+        try {
+            $analisis = AnalisisDiario::findOrFail($id);
+            $pacienteId = $analisis->id_paciente;
+
+            // Verificar si ya existe otro análisis para la nueva fecha (excepto el actual)
+            $existeOtroAnalisis = AnalisisDiario::where('id_paciente', $pacienteId)
+                ->whereDate('fechaanalisis', $request->fechaanalisis)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($existeOtroAnalisis) {
+                return redirect()->back()
+                    ->withErrors(['fechaanalisis' => 'Ya existe un análisis para esa fecha'])
+                    ->with('show_tab', 'analisis');
+            }
+
+            // Actualizar solo los datos pre-diálisis
+            $analisis->update([
+                'fechaanalisis' => $request->fechaanalisis,
+                'pesopre' => $request->pesopre,
+                'taspre' => $request->taspre,
+                'tadpre' => $request->tadpre,
+                'id_tipofiltro' => $request->id_tipofiltro,
+                'relpesosecopesopre' => $request->relpesosecopesopre,
+                'interdialitico' => $request->interdialitico,
+                // Mantener los datos post-diálisis si existen
+            ]);
+
+            return redirect()->route('pacientes.show', $pacienteId)
+                ->with('success', 'Análisis diario actualizado correctamente')
+                ->with('show_tab', 'analisis');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al actualizar el análisis: ' . $e->getMessage())
+                ->with('show_tab', 'analisis');
+        }
+    }
+
+    /**
+     * Eliminar análisis diario
+     */
+    public function destroy($id)
+    {
+        try {
+            $analisis = AnalisisDiario::findOrFail($id);
+            $pacienteId = $analisis->id_paciente;
+            
+            $analisis->delete();
+
+            // Si es una petición AJAX, responder con JSON
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Análisis diario eliminado correctamente'
+                ]);
+            }
+
+            return redirect()->route('pacientes.show', $pacienteId)
+                ->with('success', 'Análisis diario eliminado correctamente')
+                ->with('show_tab', 'analisis');
+
+        } catch (\Exception $e) {
+            // Si es una petición AJAX, responder con JSON de error
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al eliminar el análisis: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Error al eliminar el análisis: ' . $e->getMessage())
+                ->with('show_tab', 'analisis');
+        }
+    }
 }

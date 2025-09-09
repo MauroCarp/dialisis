@@ -90,7 +90,13 @@
                 </div>
             </div>
             
-            <div class="flex justify-end">
+            <div class="flex justify-between">
+                <button type="button" onclick="resetearFormularioPreDialisis()"
+                        class="px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 text-white font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nuevo Análisis
+                </button>
+                
                 <button type="submit"
                         class="px-6 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <i class="fas fa-save mr-2"></i>
@@ -267,11 +273,25 @@
                         </span>
                     </div>
                     
-                    <button onclick="mostrarFormularioCompletar('{{ $pendiente->id }}', '{{ $pendiente->fechaanalisis }}')"
-                            class="px-3 py-1 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded font-medium transition-colors duration-200">
-                        <i class="fas fa-plus mr-1"></i>
-                        Completar
-                    </button>
+                    <div class="flex space-x-2">
+                        <button onclick="mostrarFormularioCompletar('{{ $pendiente->id }}', '{{ $pendiente->fechaanalisis }}')"
+                                class="px-3 py-1 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded font-medium transition-colors duration-200">
+                            <i class="fas fa-plus mr-1"></i>
+                            Completar
+                        </button>
+                        
+                        <button onclick="editarAnalisisPre('{{ $pendiente->id }}')"
+                                class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors duration-200">
+                            <i class="fas fa-edit mr-1"></i>
+                            Editar
+                        </button>
+                        
+                        <button onclick="eliminarAnalisisPre('{{ $pendiente->id }}', '{{ \Carbon\Carbon::parse($pendiente->fechaanalisis)->format('d/m/Y') }}')"
+                                class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded font-medium transition-colors duration-200">
+                            <i class="fas fa-trash mr-1"></i>
+                            Eliminar
+                        </button>
+                    </div>
                 </div>
             </div>
             @endforeach
@@ -335,6 +355,117 @@
                 </button>
             </div>
         </form>
+    </div>
+    
+    <!-- Modal para Editar Análisis PRE-Diálisis -->
+    <div id="modalEditarPreDialisis" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50" onclick="cerrarModalEditarPre()">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white" onclick="event.stopPropagation()">
+            <div class="mt-3">
+                <!-- Header del modal -->
+                <div class="flex items-center justify-between pb-3 border-b">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-edit mr-2 text-orange-600"></i>
+                        Editar Análisis Pre-Diálisis
+                    </h3>
+                    <button type="button" onclick="cerrarModalEditarPre()" 
+                            class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Formulario de edición -->
+                <form id="formEditarPreDialisis" method="POST">
+                    @csrf
+                    <input type="hidden" name="_method" value="PUT">
+                    
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                <i class="fas fa-calendar mr-1"></i>
+                                Fecha *
+                            </label>
+                            <input type="date" name="fechaanalisis" id="edit_fechaanalisis" required
+                                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                <i class="fas fa-weight mr-1"></i>
+                                Peso Pre (kg) *
+                            </label>
+                            <input type="number" step="0.01" name="pesopre" id="edit_pesopre" min="0" max="500" required
+                                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                    <i class="fas fa-heartbeat mr-1"></i>
+                                    TAS Pre *
+                                </label>
+                                <input type="number" name="taspre" id="edit_taspre" min="0" max="300" required
+                                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                    <i class="fas fa-heartbeat mr-1"></i>
+                                    TAD Pre *
+                                </label>
+                                <input type="number" name="tadpre" id="edit_tadpre" min="0" max="200" required
+                                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                <i class="fas fa-filter mr-1"></i>
+                                Tipo de Filtro *
+                            </label>
+                            <select name="id_tipofiltro" id="edit_id_tipofiltro" required
+                                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="">Seleccione un filtro</option>
+                                @foreach($tiposFiltros as $filtro)
+                                    <option value="{{ $filtro->id }}">{{ $filtro->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                <i class="fas fa-percentage mr-1"></i>
+                                % Rel. Peso Seco/Pre
+                            </label>
+                            <input type="number" step="0.01" name="relpesosecopesopre" id="edit_relpesosecopesopre" min="0" max="100"
+                                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-2">
+                                <i class="fas fa-clock mr-1"></i>
+                                Interdiálitico
+                            </label>
+                            <input type="number" step="0.01" name="interdialitico" id="edit_interdialitico" min="0" max="10"
+                                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                    </div>
+                    
+                    <!-- Botones del modal -->
+                    <div class="mt-6 flex justify-between space-x-3">
+                        <button type="button" onclick="cerrarModalEditarPre()"
+                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            Actualizar Análisis
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     
     <!-- Lista de Análisis Completos -->
@@ -454,5 +585,151 @@ function mostrarFormularioOtraFecha() {
 
 function ocultarFormularioOtraFecha() {
     document.getElementById('formularioOtraFecha').classList.add('hidden');
+}
+
+function editarAnalisisPre(analisisId) {
+    // Hacer petición AJAX para obtener los datos del análisis
+    fetch(`/analisis-diarios/${analisisId}/edit`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+
+                // Formatear la fecha para el input date (YYYY-MM-DD)
+                let fechaFormateada = data.analisis.fechaanalisis;
+
+                if (fechaFormateada) {
+                    // Si la fecha viene en formato 'YYYY-MM-DD HH:MM:SS', extraer solo la parte de la fecha
+                    fechaFormateada = fechaFormateada.split('T')[0];
+                    // Si la fecha viene en otro formato, convertirla
+                    if (fechaFormateada.includes('/')) {
+                        // Convertir de DD/MM/YYYY a YYYY-MM-DD
+                        const partes = fechaFormateada.split('/');
+                        if (partes.length === 3) {
+                            fechaFormateada = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+                        }
+                    }
+                }
+                
+                // Llenar el modal con los datos existentes
+                document.getElementById('edit_fechaanalisis').value = fechaFormateada;
+                document.getElementById('edit_pesopre').value = data.analisis.pesopre;
+                document.getElementById('edit_taspre').value = data.analisis.taspre;
+                document.getElementById('edit_tadpre').value = data.analisis.tadpre;
+                document.getElementById('edit_id_tipofiltro').value = data.analisis.id_tipofiltro;
+                document.getElementById('edit_relpesosecopesopre').value = data.analisis.relpesosecopesopre || '';
+                document.getElementById('edit_interdialitico').value = data.analisis.interdialitico || '';
+                
+                // Configurar la acción del formulario
+                const form = document.getElementById('formEditarPreDialisis');
+                form.action = `/analisis-diarios/${analisisId}`;
+                
+                // Mostrar el modal
+                document.getElementById('modalEditarPreDialisis').classList.remove('hidden');
+                
+            } else {
+                alert('Error al cargar los datos del análisis');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar los datos del análisis');
+        });
+}
+
+function cerrarModalEditarPre() {
+    document.getElementById('modalEditarPreDialisis').classList.add('hidden');
+    document.getElementById('formEditarPreDialisis').reset();
+}
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('modalEditarPreDialisis');
+        if (modal && !modal.classList.contains('hidden')) {
+            cerrarModalEditarPre();
+        }
+    }
+});
+
+function eliminarAnalisisPre(analisisId, fecha) {
+    if (confirm(`¿Estás seguro de que deseas eliminar el análisis pre-diálisis del ${fecha}? Esta acción no se puede deshacer.`)) {
+        // Obtener el token CSRF de forma más robusta
+        let csrfToken = null;
+        const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+        if (metaCsrf) {
+            csrfToken = metaCsrf.getAttribute('content');
+        } else {
+            // Buscar el token en un input hidden si existe
+            const csrfInput = document.querySelector('input[name="_token"]');
+            if (csrfInput) {
+                csrfToken = csrfInput.value;
+            }
+        }
+        
+        if (!csrfToken) {
+            alert('Error: No se pudo obtener el token de seguridad. Recargue la página e intente nuevamente.');
+            return;
+        }
+        
+        // Usar fetch para hacer la petición DELETE de forma asíncrona
+        fetch(`/analisis-diarios/${analisisId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensaje de éxito (puedes usar alert o un toast personalizado)
+                alert(data.message || 'Análisis eliminado correctamente');
+                
+                // Recargar la página manteniendo la pestaña activa
+                const urlActual = new URL(window.location);
+                urlActual.searchParams.set('show_tab', 'analisis');
+                window.location.href = urlActual.toString();
+            } else {
+                alert(data.message || 'Error al eliminar el análisis');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar el análisis. Por favor, inténtelo de nuevo.');
+        });
+    }
+}
+
+function resetearFormularioPreDialisis() {
+    const form = document.getElementById('formPreDialisis');
+    if (form) {
+        // Resetear la acción del formulario
+        form.action = `{{ route('analisis-diarios.store-pre-dialisis', $paciente) }}`;
+        
+        // Remover campo method si existe
+        const methodField = form.querySelector('input[name="_method"]');
+        if (methodField) {
+            methodField.remove();
+        }
+        
+        // Resetear el botón
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.innerHTML = '<i class="fas fa-save mr-2"></i>Guardar Pre-Diálisis';
+            submitButton.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+            submitButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+        }
+        
+        // Limpiar los campos
+        form.reset();
+        
+        // Establecer fecha de hoy
+        const fechaInput = form.querySelector('input[name="fechaanalisis"]');
+        if (fechaInput) {
+            const today = new Date().toISOString().split('T')[0];
+            fechaInput.value = today;
+        }
+    }
 }
 </script>
