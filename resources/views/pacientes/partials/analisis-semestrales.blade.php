@@ -161,7 +161,7 @@
                                 <!-- Botón de eliminar -->
                                 <form method="POST" action="{{ route('analisis-semestrales.destroy', $analisis->id) }}" 
                                       class="inline-block"
-                                      onsubmit="return confirm('¿Está seguro que desea eliminar este análisis semestral? Esta acción no se puede deshacer.')">
+                                      onsubmit="return confirmarEliminacionForm(event, '¿Está seguro que desea eliminar este análisis semestral? Esta acción no se puede deshacer.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
@@ -464,7 +464,7 @@ function editarAnalisisSemestral(id) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al cargar los datos del análisis');
+            mostrarError('Error', 'Error al cargar los datos del análisis');
         });
 }
 

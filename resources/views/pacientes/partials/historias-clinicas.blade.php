@@ -81,7 +81,7 @@
                                         </a>
                                         <form method="POST" action="{{ route('historias-clinicas-consultorio.destroy', $historia->id) }}" 
                                               class="inline-block"
-                                              onsubmit="return confirm('¿Está seguro que desea eliminar esta historia clínica? Esta acción no se puede deshacer.')">
+                                              onsubmit="return confirmarEliminacionForm(event, '¿Está seguro que desea eliminar esta historia clínica? Esta acción no se puede deshacer.')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
@@ -100,7 +100,7 @@
                                         </a>
                                         <form method="POST" action="{{ route('historias-clinicas.destroy', $historia->id) }}" 
                                               class="inline-block"
-                                              onsubmit="return confirm('¿Está seguro que desea eliminar esta historia clínica? Esta acción no se puede deshacer.')">
+                                              onsubmit="return confirmarEliminacionForm(event, '¿Está seguro que desea eliminar esta historia clínica? Esta acción no se puede deshacer.')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 

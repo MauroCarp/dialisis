@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-6">
@@ -276,5 +278,90 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Funciones helper para SweetAlert2
+        
+        // Función para mostrar confirmación de eliminación
+        function confirmarEliminacion(mensaje, callback) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: mensaje,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed && callback) {
+                    callback();
+                }
+                return result.isConfirmed;
+            });
+        }
+
+        // Función para mostrar mensaje de éxito
+        function mostrarExito(titulo, mensaje, callback) {
+            Swal.fire({
+                title: titulo || '¡Éxito!',
+                text: mensaje,
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                if (callback) callback();
+            });
+        }
+
+        // Función para mostrar mensaje de error
+        function mostrarError(titulo, mensaje) {
+            Swal.fire({
+                title: titulo || 'Error',
+                text: mensaje,
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+
+        // Función para mostrar loading
+        function mostrarLoading(titulo, mensaje) {
+            Swal.fire({
+                title: titulo || 'Procesando...',
+                text: mensaje || 'Por favor espere',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+        }
+
+        // Función para cerrar cualquier modal de Swal
+        function cerrarSwal() {
+            Swal.close();
+        }
+
+        // Reemplazar confirm nativo con SweetAlert2
+        window.confirmarEliminacionForm = function(evento, mensaje) {
+            evento.preventDefault();
+            const form = evento.target;
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: mensaje,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            
+            return false;
+        };
+    </script>
 </body>
 </html>

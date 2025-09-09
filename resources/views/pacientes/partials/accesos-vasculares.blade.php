@@ -160,14 +160,14 @@
                     this.reset();
                     
                     // Mostrar mensaje de éxito
-                    alert('Cirujano agregado correctamente');
+                    mostrarExito('¡Éxito!', 'Cirujano agregado correctamente');
                 } else {
-                    alert('Error al agregar el cirujano');
+                    mostrarError('Error', 'Error al agregar el cirujano');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al procesar la solicitud');
+                mostrarError('Error', 'Error al procesar la solicitud');
             })
             .finally(() => {
                 // Restaurar el botón

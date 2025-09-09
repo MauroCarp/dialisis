@@ -627,12 +627,22 @@ function editarAnalisisPre(analisisId) {
                 document.getElementById('modalEditarPreDialisis').classList.remove('hidden');
                 
             } else {
-                alert('Error al cargar los datos del análisis');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al cargar los datos del análisis',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al cargar los datos del análisis');
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al cargar los datos del análisis',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
         });
 }
 
@@ -652,53 +662,123 @@ document.addEventListener('keydown', function(event) {
 });
 
 function eliminarAnalisisPre(analisisId, fecha) {
-    if (confirm(`¿Estás seguro de que deseas eliminar el análisis pre-diálisis del ${fecha}? Esta acción no se puede deshacer.`)) {
-        // Obtener el token CSRF de forma más robusta
-        let csrfToken = null;
-        const metaCsrf = document.querySelector('meta[name="csrf-token"]');
-        if (metaCsrf) {
-            csrfToken = metaCsrf.getAttribute('content');
-        } else {
-            // Buscar el token en un input hidden si existe
-            const csrfInput = document.querySelector('input[name="_token"]');
-            if (csrfInput) {
-                csrfToken = csrfInput.value;
-            }
-        }
-        
-        if (!csrfToken) {
-            alert('Error: No se pudo obtener el token de seguridad. Recargue la página e intente nuevamente.');
-            return;
-        }
-        
-        // Usar fetch para hacer la petición DELETE de forma asíncrona
-        fetch(`/analisis-diarios/${analisisId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Mostrar mensaje de éxito (puedes usar alert o un toast personalizado)
-                alert(data.message || 'Análisis eliminado correctamente');
-                
-                // Recargar la página manteniendo la pestaña activa
-                const urlActual = new URL(window.location);
-                urlActual.searchParams.set('show_tab', 'analisis');
-                window.location.href = urlActual.toString();
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Deseas eliminar el análisis pre-diálisis del ${fecha}? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#3498db',
+        confirmButtonText: '<i class="fas fa-trash mr-2"></i>Sí, eliminar',
+        cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancelar',
+        customClass: {
+            confirmButton: 'font-bold',
+            cancelButton: 'font-bold'
+        },
+        backdrop: `
+            rgba(0,0,123,0.4)
+            url("data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cpattern id='a' patternUnits='userSpaceOnUse' width='20' height='20'%3e%3ccircle cx='10' cy='10' r='1.5' fill='%23fff' fill-opacity='0.1'/%3e%3c/pattern%3e%3c/defs%3e%3crect width='100%25' height='100%25' fill='url(%23a)'/%3e%3c/svg%3e")
+            center left
+            no-repeat
+        `
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Obtener el token CSRF de forma más robusta
+            let csrfToken = null;
+            const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+            if (metaCsrf) {
+                csrfToken = metaCsrf.getAttribute('content');
             } else {
-                alert(data.message || 'Error al eliminar el análisis');
+                // Buscar el token en un input hidden si existe
+                const csrfInput = document.querySelector('input[name="_token"]');
+                if (csrfInput) {
+                    csrfToken = csrfInput.value;
+                }
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al eliminar el análisis. Por favor, inténtelo de nuevo.');
-        });
-    }
+            
+            if (!csrfToken) {
+                Swal.fire({
+                    title: 'Error de Seguridad',
+                    text: 'No se pudo obtener el token de seguridad. Recargue la página e intente nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Recargar Página',
+                    confirmButtonColor: '#e74c3c'
+                }).then(() => {
+                    window.location.reload();
+                });
+                return;
+            }
+            
+            // Mostrar loading con timer
+            Swal.fire({
+                title: 'Eliminando análisis...',
+                html: '<div class="flex items-center justify-center"><i class="fas fa-spinner fa-spin mr-2"></i>Por favor espere</div>',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                timer: 30000, // 30 segundos máximo
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+            
+            // Usar fetch para hacer la petición DELETE de forma asíncrona
+            fetch(`/analisis-diarios/${analisisId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar mensaje de éxito con animación
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: data.message || 'Análisis eliminado correctamente',
+                        icon: 'success',
+                        confirmButtonText: 'Continuar',
+                        confirmButtonColor: '#27ae60',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInUp'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutDown'
+                        }
+                    }).then(() => {
+                        // Recargar la página manteniendo la pestaña activa
+                        const urlActual = new URL(window.location);
+                        urlActual.searchParams.set('show_tab', 'analisis');
+                        window.location.href = urlActual.toString();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error al Eliminar',
+                        text: data.message || 'Error al eliminar el análisis',
+                        icon: 'error',
+                        confirmButtonText: 'Intentar Nuevamente',
+                        confirmButtonColor: '#e74c3c'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error de Conexión',
+                    text: 'Error al eliminar el análisis. Verifique su conexión a internet e inténtelo de nuevo.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#e74c3c',
+                    footer: '<small>Si el problema persiste, contacte al administrador</small>'
+                });
+            });
+        }
+    });
 }
 
 function resetearFormularioPreDialisis() {
