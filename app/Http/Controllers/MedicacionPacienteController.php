@@ -30,4 +30,21 @@ class MedicacionPacienteController extends Controller
             ->with('success', 'Medicación registrada correctamente.')
             ->with('show_tab', 'medicaciones');
     }
+
+    public function destroy($id)
+    {
+        try {
+            $medicacionPaciente = MedicacionPaciente::findOrFail($id);
+            $pacienteId = $medicacionPaciente->id_paciente;
+            
+            $medicacionPaciente->delete();
+
+            return redirect()->route('pacientes.show', $pacienteId)
+                ->with('success', 'Medicación eliminada correctamente.')
+                ->with('show_tab', 'medicaciones');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al eliminar la medicación: ' . $e->getMessage());
+        }
+    }
 }

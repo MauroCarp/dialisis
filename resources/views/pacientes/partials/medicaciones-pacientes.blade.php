@@ -106,12 +106,28 @@
                                     @endif
                                 </div>
                                 
-                                @if($medicacionPaciente->fechamedicacion)
-                                    <span class="text-sm text-gray-500">
-                                        <i class="fas fa-calendar mr-1"></i>
-                                        {{ \Carbon\Carbon::parse($medicacionPaciente->fechamedicacion)->format('d/m/Y H:i') }}
-                                    </span>
-                                @endif
+                                <div class="flex items-center space-x-3">
+                                    @if($medicacionPaciente->fechamedicacion)
+                                        <span class="text-sm text-gray-500">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            {{ \Carbon\Carbon::parse($medicacionPaciente->fechamedicacion)->format('d/m/Y H:i') }}
+                                        </span>
+                                    @endif
+                                    
+                                    <!-- Botón de eliminar -->
+                                    <form method="POST" action="{{ route('medicaciones-pacientes.destroy', $medicacionPaciente->id) }}" 
+                                          class="inline-block"
+                                          onsubmit="return confirmarEliminacionForm(event, '¿Está seguro que desea eliminar esta medicación? Esta acción no se puede deshacer.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="inline-flex items-center px-2 py-1 rounded text-xs bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+                                                title="Eliminar Medicación">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">

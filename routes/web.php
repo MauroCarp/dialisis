@@ -73,6 +73,8 @@ Route::post('/pacientes/{pacienteId}/transfusiones', [App\Http\Controllers\Trans
 // Rutas para medicaciones de pacientes
 Route::post('/pacientes/{pacienteId}/medicaciones', [App\Http\Controllers\MedicacionPacienteController::class, 'store'])
     ->name('medicaciones-pacientes.store');
+Route::delete('/medicaciones-pacientes/{id}', [App\Http\Controllers\MedicacionPacienteController::class, 'destroy'])
+    ->name('medicaciones-pacientes.destroy');
 
 // Rutas para vacunas de pacientes
 Route::post('/pacientes/{pacienteId}/vacunas', [App\Http\Controllers\VacunaPacienteController::class, 'store'])
