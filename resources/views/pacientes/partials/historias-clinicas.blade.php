@@ -6,7 +6,7 @@
             <i class="fas fa-notes-medical mr-2 text-green-600"></i>
             Nueva Historia Clínica
         </h4>
-        <form method="POST" action="{{ isset($esPacienteConsultorio) && $esPacienteConsultorio ? route('historias-clinicas-consultorio.store', $paciente->id) : route('historias-clinicas.store', $paciente->id) }}">
+        <form method="POST" action="{{ isset($esPacienteConsultorio) && $esPacienteConsultorio ? route('historias-clinicas-consultorio.store', $paciente->id) : route('historias-clinicas.store', $paciente->id) }}" data-track-changes>
             @csrf
 
             <input type="hidden" name="fechahistoriaclinica" value="{{ now()->format('Y-m-d H:i:s') }}">

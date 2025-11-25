@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Historia Clínica - {{ $paciente->nombre }} {{ $paciente->apellido }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('js/unsaved-changes-detector.js') }}"></script>
+    <script src="{{ asset('js/unsaved-changes-indicator.js') }}"></script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -34,7 +36,7 @@
 
             <!-- Formulario -->
             <div class="bg-white shadow rounded-lg p-6">
-                <form method="POST" action="{{ route('historias-clinicas-consultorio.store', $paciente->id) }}">
+                <form method="POST" action="{{ route('historias-clinicas-consultorio.store', $paciente->id) }}" data-track-changes>
                     @csrf
                     
                     <div class="grid grid-cols-1 gap-6">

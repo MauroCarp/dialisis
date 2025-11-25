@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Detector de cambios sin guardar -->
+    <script src="{{ asset('js/unsaved-changes-detector.js') }}"></script>
+    <script src="{{ asset('js/unsaved-changes-indicator.js') }}"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-6">

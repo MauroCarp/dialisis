@@ -139,7 +139,17 @@ class AnalisisMensualController extends Controller
         ]);
 
         $analisis = AnalisisMensual::findOrFail($id);
-        $analisis->update($request->all());
+        
+        // Preparar los datos para actualizar, excluyendo fechaanalisis si viene vacío
+        $updateData = $request->all();
+        
+        // Si fechaanalisis viene vacío o null, removerlo de los datos de actualización
+        // para preservar el valor original en la base de datos
+        if (empty($request->fechaanalisis)) {
+            unset($updateData['fechaanalisis']);
+        }
+        
+        $analisis->update($updateData);
 
         return redirect()->route('pacientes.show', $analisis->id_paciente)
             ->with('success', 'Análisis mensual actualizado correctamente.')
