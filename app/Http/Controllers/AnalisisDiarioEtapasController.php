@@ -78,7 +78,6 @@ class AnalisisDiarioEtapasController extends Controller
             'taspos' => 'required|numeric|min:0|max:300',
             'tadpos' => 'required|numeric|min:0|max:200',
             'id_tiposesion' => 'nullable|exists:tipossesiones,id',
-            'observaciones' => 'nullable|string|max:1000'
         ]);
 
         // Buscar el análisis existente para esta fecha
@@ -98,7 +97,6 @@ class AnalisisDiarioEtapasController extends Controller
             'taspos' => $request->taspos,
             'tadpos' => $request->tadpos,
             'id_tiposesion' => $request->id_tiposesion,
-            'observaciones' => $request->observaciones,
             'estado' => 'completo'
         ]);
 
@@ -151,14 +149,16 @@ class AnalisisDiarioEtapasController extends Controller
         try {
             $analisis = AnalisisDiario::with(['tipoFiltro', 'tipoSesion', 'paciente'])->findOrFail($id);
             
-            return response()->json([
-                'success' => true,
-                'analisis' => $analisis
-            ]);
+            // Log para debug
+            \Log::info('Análisis encontrado:', ['id' => $id, 'analisis' => $analisis->toArray()]);
+            
+            return response()->json($analisis);
         } catch (\Exception $e) {
+            \Log::error('Error al cargar análisis:', ['id' => $id, 'error' => $e->getMessage()]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cargar los datos del análisis'
+                'message' => 'Error al cargar los datos del análisis: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -175,7 +175,12 @@ class AnalisisDiarioEtapasController extends Controller
             'tadpre' => 'required|numeric|min:0|max:200',
             'id_tipofiltro' => 'required|exists:tiposfiltros,id',
             'relpesosecopesopre' => 'nullable|numeric|min:0|max:100',
-            'interdialitico' => 'nullable|numeric|min:0|max:100'
+            'interdialitico' => 'nullable|numeric|min:0|max:100',
+            // Datos POST (opcionales para análisis completos)
+            'pesopost' => 'nullable|numeric|min:0|max:500',
+            'taspos' => 'nullable|numeric|min:0|max:300',
+            'tadpos' => 'nullable|numeric|min:0|max:200',
+            'id_tiposesion' => 'nullable|exists:tipossesiones,id',
         ]);
 
         try {
@@ -194,8 +199,8 @@ class AnalisisDiarioEtapasController extends Controller
                     ->with('show_tab', 'analisis');
             }
 
-            // Actualizar solo los datos pre-diálisis
-            $analisis->update([
+            // Preparar datos para actualizar
+            $datosUpdate = [
                 'fechaanalisis' => $request->fechaanalisis,
                 'pesopre' => $request->pesopre,
                 'taspre' => $request->taspre,
@@ -203,14 +208,43 @@ class AnalisisDiarioEtapasController extends Controller
                 'id_tipofiltro' => $request->id_tipofiltro,
                 'relpesosecopesopre' => $request->relpesosecopesopre,
                 'interdialitico' => $request->interdialitico,
-                // Mantener los datos post-diálisis si existen
-            ]);
+            ];
+
+            // Si se incluyen datos POST, también actualizarlos
+            if ($request->filled('pesopost') || $request->filled('taspos') || 
+                $request->filled('tadpos')) {
+                $datosUpdate = array_merge($datosUpdate, [
+                    'pesopost' => $request->pesopost,
+                    'taspos' => $request->taspos,
+                    'tadpos' => $request->tadpos,
+                    'id_tiposesion' => $request->id_tiposesion,
+                    'estado' => 'completo'
+                ]);
+            }
+
+            $analisis->update($datosUpdate);
+
+            // Si es una petición AJAX, responder con JSON
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Análisis diario actualizado correctamente'
+                ]);
+            }
 
             return redirect()->route('pacientes.show', $pacienteId)
                 ->with('success', 'Análisis diario actualizado correctamente')
                 ->with('show_tab', 'analisis');
 
         } catch (\Exception $e) {
+            // Si es una petición AJAX, responder con JSON de error
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al actualizar el análisis: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()
                 ->with('error', 'Error al actualizar el análisis: ' . $e->getMessage())
                 ->with('show_tab', 'analisis');

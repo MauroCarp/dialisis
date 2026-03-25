@@ -492,17 +492,45 @@
                 @foreach($analisisData['diarios']->where('estado', 'completo') as $analisis)
                     <div class="border border-gray-200 rounded-lg p-4 bg-white">
                         <div class="flex justify-between items-start mb-3">
-                            @if($analisis->fechaanalisis)
+                            <div class="flex items-center space-x-2">
+                                @if($analisis->fechaanalisis)
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
+                                    </span>
+                                @endif
+                                
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <i class="fas fa-calendar mr-1"></i>
-                                    {{ \Carbon\Carbon::parse($analisis->fechaanalisis)->format('d/m/Y') }}
+                                    <i class="fas fa-check mr-1"></i>
+                                    Completo
                                 </span>
-                            @endif
+                            </div>
                             
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <i class="fas fa-check mr-1"></i>
-                                Completo
-                            </span>
+                            <!-- Botones de acción -->
+                            <div class="flex space-x-2">
+                                <!-- Botón de editar -->
+                                <button 
+                                    onclick="editarAnalisisCompleto({{ $analisis->id }})"
+                                    class="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200"
+                                    title="Editar Análisis">
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Editar
+                                </button>
+                                
+                                <!-- Botón de eliminar -->
+                                <form method="POST" action="{{ route('analisis-diarios.destroy', $analisis->id) }}" 
+                                      class="inline-block"
+                                      onsubmit="return confirmarEliminacionForm(event, '¿Está seguro que desea eliminar este análisis diario? Esta acción no se puede deshacer.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="inline-flex items-center px-2 py-1 rounded text-xs bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+                                            title="Eliminar Análisis">
+                                        <i class="fas fa-trash mr-1"></i>
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                         
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
@@ -531,16 +559,6 @@
                                 <p class="font-medium">{{ $analisis->interdialitico ?? 'N/A' }}</p>
                             </div>
                         </div>
-                        
-                        @if($analisis->observaciones)
-                            <div class="mt-3 pt-3 border-t border-gray-200">
-                                <span class="text-gray-500 font-medium text-sm">
-                                    <i class="fas fa-file-alt mr-1"></i>
-                                    Observaciones:
-                                </span>
-                                <p class="text-sm text-gray-700 mt-1">{{ $analisis->observaciones }}</p>
-                            </div>
-                        @endif
                     </div>
                 @endforeach
             @else
@@ -552,6 +570,113 @@
                     <p class="text-sm text-gray-500">Los análisis diarios aparecerán aquí una vez que se registren.</p>
                 </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar análisis completo -->
+<div id="modalEditarAnalisisCompleto" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-md bg-white max-h-screen overflow-y-auto">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Editar Análisis Completo</h3>
+                <button onclick="cerrarModalEditarCompleto()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="formEditarAnalisisCompleto" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <!-- Fecha del análisis -->
+                <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                    <label for="edit_completo_fechaanalisis" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Análisis</label>
+                    <input type="date" id="edit_completo_fechaanalisis" name="fechaanalisis" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" readonly>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Datos PRE-Diálisis -->
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="text-md font-semibold text-blue-800 mb-3">
+                            <i class="fas fa-arrow-right mr-2"></i>Datos PRE-Diálisis
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="edit_completo_pesopre" class="block text-sm font-medium text-gray-700 mb-1">Peso Pre (kg)</label>
+                                <input type="number" step="0.1" id="edit_completo_pesopre" name="pesopre" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="edit_completo_taspre" class="block text-sm font-medium text-gray-700 mb-1">TAS Pre</label>
+                                    <input type="number" id="edit_completo_taspre" name="taspre" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label for="edit_completo_tadpre" class="block text-sm font-medium text-gray-700 mb-1">TAD Pre</label>
+                                    <input type="number" id="edit_completo_tadpre" name="tadpre" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="edit_completo_id_tipofiltro" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Filtro</label>
+                                <select id="edit_completo_id_tipofiltro" name="id_tipofiltro" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Seleccionar filtro...</option>
+                                    @if(isset($tiposFiltros))
+                                        @foreach($tiposFiltros as $filtro)
+                                            <option value="{{ $filtro->id }}">{{ $filtro->nombre }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div>
+                                <label for="edit_completo_interdialitico" class="block text-sm font-medium text-gray-700 mb-1">Interdiálitico</label>
+                                <input type="number" step="0.1" id="edit_completo_interdialitico" name="interdialitico" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datos POST-Diálisis -->
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="text-md font-semibold text-green-800 mb-3">
+                            <i class="fas fa-arrow-left mr-2"></i>Datos POST-Diálisis
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="edit_completo_pesopost" class="block text-sm font-medium text-gray-700 mb-1">Peso Post (kg)</label>
+                                <input type="number" step="0.1" id="edit_completo_pesopost" name="pesopost" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="edit_completo_taspos" class="block text-sm font-medium text-gray-700 mb-1">TAS Post</label>
+                                    <input type="number" id="edit_completo_taspos" name="taspos" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label for="edit_completo_tadpos" class="block text-sm font-medium text-gray-700 mb-1">TAD Post</label>
+                                    <input type="number" id="edit_completo_tadpos" name="tadpos" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                    <button type="button" onclick="cerrarModalEditarCompleto()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarAnalisisCompleto()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        Actualizar Análisis
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -650,6 +775,167 @@ function cerrarModalEditarPre() {
     document.getElementById('modalEditarPreDialisis').classList.add('hidden');
     document.getElementById('formEditarPreDialisis').reset();
 }
+
+// Funciones para análisis completos
+function editarAnalisisCompleto(id) {
+    console.log('Iniciando edición para análisis ID:', id);
+    
+    // Hacer petición AJAX para obtener los datos del análisis
+    fetch(`/analisis-diarios/${id}/edit`)
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Datos del análisis recibidos:', data);
+            
+            // Verificar si es un error
+            if (data.success === false) {
+                throw new Error(data.message || 'Error desconocido');
+            }
+            
+            // Llenar el formulario con los datos
+            if (data.fechaanalisis) {
+                try {
+                    const fecha = new Date(data.fechaanalisis);
+                    if (!isNaN(fecha.getTime())) {
+                        const fechaElement = document.getElementById('edit_completo_fechaanalisis');
+                        if (fechaElement) fechaElement.value = fecha.toISOString().split('T')[0];
+                    }
+                } catch (e) {
+                    console.error('Error parseando fecha:', e);
+                }
+            }
+            
+            // Datos PRE - Verificar que los elementos existan
+            const pesoPre = document.getElementById('edit_completo_pesopre');
+            if (pesoPre) pesoPre.value = data.pesopre || '';
+            
+            const tasPre = document.getElementById('edit_completo_taspre');
+            if (tasPre) tasPre.value = data.taspre || '';
+            
+            const tadPre = document.getElementById('edit_completo_tadpre');
+            if (tadPre) tadPre.value = data.tadpre || '';
+            
+            const tipoFiltro = document.getElementById('edit_completo_id_tipofiltro');
+            if (tipoFiltro) tipoFiltro.value = data.id_tipofiltro || '';
+            
+            const relPesoSeco = document.getElementById('edit_completo_relpesosecopesopre');
+            if (relPesoSeco) relPesoSeco.value = data.relpesosecopesopre || '';
+            
+            const interdialitico = document.getElementById('edit_completo_interdialitico');
+            if (interdialitico) interdialitico.value = data.interdialitico || '';
+            
+            // Datos POST - Verificar que los elementos existan
+            const pesoPost = document.getElementById('edit_completo_pesopost');
+            if (pesoPost) pesoPost.value = data.pesopost || '';
+            
+            const tasPost = document.getElementById('edit_completo_taspos');
+            if (tasPost) tasPost.value = data.taspos || '';
+            
+            const tadPost = document.getElementById('edit_completo_tadpos');
+            if (tadPost) tadPost.value = data.tadpos || '';
+            
+            const tipoSesion = document.getElementById('edit_completo_id_tiposesion');
+            if (tipoSesion) tipoSesion.value = data.id_tiposesion || '';
+            
+            // Establecer la acción del formulario
+            document.getElementById('formEditarAnalisisCompleto').action = `/analisis-diarios/${id}`;
+            
+            // Mostrar el modal
+            document.getElementById('modalEditarAnalisisCompleto').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error completo:', error);
+            mostrarError('Error', `Error al cargar los datos del análisis: ${error.message}`);
+        });
+}
+
+function cerrarModalEditarCompleto() {
+    document.getElementById('modalEditarAnalisisCompleto').classList.add('hidden');
+}
+
+function guardarAnalisisCompleto() {
+    const form = document.getElementById('formEditarAnalisisCompleto');
+    const formData = new FormData(form);
+    
+    // Mostrar loading
+    Swal.fire({
+        title: 'Guardando cambios...',
+        html: '<div class="flex items-center justify-center"><i class="fas fa-spinner fa-spin mr-2"></i>Por favor espere</div>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading()
+        }
+    });
+    
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value,
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success !== false) {
+            // Cerrar el modal
+            cerrarModalEditarCompleto();
+            
+            // Mostrar confirmación de éxito
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Los datos del análisis fueron actualizados correctamente',
+                icon: 'success',
+                confirmButtonText: 'Continuar',
+                confirmButtonColor: '#10b981',
+                timer: 3000,
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'animate__animated animate__bounceIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then(() => {
+                // Recargar la página manteniendo la pestaña activa
+                const urlActual = new URL(window.location);
+                urlActual.searchParams.set('show_tab', 'analisis');
+                window.location.href = urlActual.toString();
+            });
+        } else {
+            throw new Error(data.message || 'Error desconocido');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Error al actualizar el análisis: ${error.message}`,
+            icon: 'error',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#ef4444'
+        });
+    });
+}
+
+// Cerrar modal al hacer clic fuera de él
+document.getElementById('modalEditarAnalisisCompleto')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModalEditarCompleto();
+    }
+});
 
 // Cerrar modal con tecla Escape
 document.addEventListener('keydown', function(event) {
